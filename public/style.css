@@ -43,6 +43,7 @@ nav{
   nav ul{
     float: right;
     margin-right: 20px;
+    padding-top: 20px;
   }
   nav ul li{
     display: inline-block;
@@ -201,10 +202,10 @@ section{
     color: black;
 }
 .kutyak{
-    justify-content: center;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, auto));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 2rem;
+    justify-items: center;
 }
 .row{
     background-color: transparent;
@@ -276,6 +277,12 @@ section{
     .main-btn{
         padding: 10px 20px;
         transition: .4s;
+    }
+    .row {
+        height: auto;
+    }
+    .row-inner {
+        height: auto;
     }
 }
 

@@ -51,7 +51,7 @@ nav ul li a {
 
 nav ul li a:hover,
 nav ul li a.active {
-    color: #0082e6; /* hover szín */
+    color: black;
 }
 
 /* Hamburger ikon mobilhoz */
@@ -145,7 +145,7 @@ nav ul li a.active {
 .register-form button {
     width: 100%;
     padding: 12px;
-    background: #f39c12;
+    background: #007bff;
     border: none;
     border-radius: 6px;
     color: white;

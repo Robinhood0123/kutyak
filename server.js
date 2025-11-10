@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 
 
 const storage = multer.diskStorage({
@@ -85,7 +86,7 @@ function insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res) {
   const sql = 'INSERT INTO kutyak (nev, eletkor, nem, fajta_id, kep_url) VALUES (?, ?, ?, ?, ?)';
   db.query(sql, [nev, eletkor || null, nem || null, fajta_id, kepUrl], err => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba kutya beszúrásnál!' });
-    res.json({ message: 'Kutya sikeresen hozzáadva!' });
+    res.json({ message: 'Kutya sikeresen hozzáadva! (f5)' });
   });
 }
 // <<< IDÁIG >>>
@@ -132,6 +133,50 @@ app.post('/adomany', (req, res) => {
     res.json({ message: 'Adomány sikeresen rögzítve!' });
   });
 });
+
+
+
+
+
+
+
+// --- FELHASZNÁLÓ REGISZTRÁCIÓ ---
+app.post('/register', (req, res) => {
+  const { nev, email, jelszo } = req.body;
+
+  if (!nev || !email || !jelszo) {
+    return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
+  }
+
+  // Ellenőrizzük, hogy létezik-e már a felhasználó
+  const checkSql = 'SELECT * FROM felhasznalok WHERE felhasznalonev = ?';
+  db.query(checkSql, [email], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
+    }
+
+    // Jelszó hash-elés (bcrypt)
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
+    bcrypt.hash(jelszo, saltRounds, (err, hash) => {
+      if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
+
+      const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, jelszo, szerepkor) VALUES (?, ?, ?)';
+      db.query(insertSql, [email, hash, 'onkentes'], (err2) => {
+        if (err2) return res.status(500).json({ error: 'Mentési hiba!' });
+        res.json({ message: 'Sikeres regisztráció!' });
+      });
+    });
+  });
+});
+
+
+
+
+
+
+
 
 
 app.get('/orvosi', (req, res) => {

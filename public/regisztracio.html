@@ -23,24 +23,21 @@
             </label>
             <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
             <ul>
-              <li><a class="active" href="#">Főoldal</a></li>
-              <li><a href="#ricsirobi">Rólunk</a></li>
-              <li><a href="#Visszajelzések">Visszajelzések</a></li>
-              <li><a href="#elerheto">Elérhetőségek</a></li>
-              <li><a href="regbeje.html">Regisztráció</a></li>
+              <li><a class="active" href="index.html">Főoldal</a></li>
             </ul>
         </nav>
     </header>
     
     <section id="regisztracio" class="register-section">
         <h2>Regisztráció</h2>
-        <form class="register-form">
-            <input type="text" placeholder="Teljes név" required>
-            <input type="email" placeholder="Email cím" required>
-            <input type="password" placeholder="Jelszó" required>
-            <input type="password" placeholder="Jelszó megerősítése" required>
+        <form id ="regForm" class="register-form">
+            <input type="text" id="nev" placeholder="Teljes név" required>
+            <input type="email" id="email" placeholder="Email cím" required>
+            <input type="password" id="jelszo" placeholder="Jelszó" required>
+            <input type="password" id="jelszo2" placeholder="Jelszó megerősítése" required>
             <button type="submit">Regisztrálok</button>
         </form>
+        <p id="regError" style="color:red;text-align:center;"></p>
     </section>
 
 
@@ -62,5 +59,6 @@
                 </div>
         </div>
    </footer>
+   <script src="java.js"></script>
 </body>
 </html>

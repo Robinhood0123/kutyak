@@ -148,4 +148,42 @@ document.getElementById("adoptForm").addEventListener("submit", function(e) {
     alert("Hiba történt a mentés közben.");
   });
 });
+
+
+
+
+
+
+document.getElementById('regForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nev = document.getElementById('nev').value;
+  const email = document.getElementById('email').value;
+  const jelszo = document.getElementById('jelszo').value;
+  const jelszo2 = document.getElementById('jelszo2').value;
+  const error = document.getElementById('regError');
+
+  if (jelszo !== jelszo2) {
+    error.textContent = 'A két jelszó nem egyezik!';
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:3000/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nev, email, jelszo })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert(data.message);
+      document.getElementById('regForm').reset();
+    } else {
+      error.textContent = data.error || 'Ismeretlen hiba történt.';
+    }
+  } catch (err) {
+    error.textContent = 'Szerverhiba: ' + err.message;
+  }
+});
   
