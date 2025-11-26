@@ -120,7 +120,7 @@ app.post('/kutyak', upload.single('kep'), (req, res) => {
   const { nev, eletkor, nem, fajta } = req.body;
   if (!nev || !fajta) return res.status(400).json({ error: 'Hiányzó adatok!' });
 
-  const kepUrl = req.file ? '/img/kutyak/' + req.file.filename : null;
+  const kepUrl = req.file ? `${req.protocol}://${req.get('host')}/img/kutyak/${req.file.filename}` : null;
 
   const checkFajta = 'SELECT fajta_id FROM fajtak WHERE nev = ? LIMIT 1';
   db.query(checkFajta, [fajta], (err, results) => {
@@ -137,6 +137,23 @@ app.post('/kutyak', upload.single('kep'), (req, res) => {
     }
   });
 });
+
+app.get('/kutyak', (req, res) => {
+  const sql = `
+    SELECT k.kutya_id, k.nev, k.eletkor, k.nem, k.kep_url, f.nev AS fajta
+    FROM kutyak k
+    JOIN fajtak f ON k.fajta_id = f.fajta_id
+    ORDER BY k.kutya_id DESC
+  `;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Hiba a kutyák lekérdezésekor:', err);
+      return res.status(500).json({ error: 'Nem sikerült lekérni a kutyák adatait' });
+    }
+    res.json(results);
+  });
+});
+
 
 function insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res) {
   const sql = 'INSERT INTO kutyak (nev, eletkor, nem, fajta_id, kep_url) VALUES (?, ?, ?, ?, ?)';
