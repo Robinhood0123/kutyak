@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 
 
 const storage = multer.diskStorage({
@@ -46,9 +47,44 @@ app.post('/visszajelzes', (req, res) => {
   if (!email || !szoveg) return res.status(400).json({ error: 'Hiányzó adatok!' });
 
   const sql = 'INSERT INTO visszajelzesek (email, uzenet) VALUES (?, ?)';
-  db.query(sql, [email, szoveg], err => {
+  db.query(sql, [email, szoveg], async (err) => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-    res.json({ message: 'Sikeres mentés!' });
+
+    try {
+      // Gmail SMTP beállítás
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'kirajok69@gmail.com',
+          pass: 'ajhpvculrtgbklua' // szóközök nélkül!
+        }
+      });
+      
+      let mailOptions = {
+        from: 'kirajok69@gmail.com',
+        replyTo: email, // ide jön a felhasználó címe
+        to: 'kirajok69@gmail.com',
+        subject: 'Új visszajelzés az oldalról',
+        text: `Feladó: ${email}\nÜzenet: ${szoveg}`
+      };
+      
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error('Email hiba:', err);
+          return res.status(500).json({ error: 'Nem sikerült elküldeni az emailt.' });
+        }
+        console.log('Email elküldve:', info.response);
+        res.json({ message: 'Visszajelzés mentve és emailben elküldve!' });
+      });
+      
+
+      await transporter.sendMail(mailOptions);
+
+      res.json({ message: 'Visszajelzés mentve és emailben elküldve!' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Nem sikerült elküldeni az emailt.' });
+    }
   });
 });
 
