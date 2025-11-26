@@ -186,4 +186,27 @@ document.getElementById('regForm').addEventListener('submit', async (e) => {
     error.textContent = 'Szerverhiba: ' + err.message;
   }
 });
-  
+ 
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('feedbackForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+      name: form.name.value,
+      email: form.email.value,
+      message: form.message.value
+    };
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      alert(json.success ? 'Köszönjük, üzeneted elküldve.' : ('Hiba: ' + (json.error || 'Ismeretlen hiba')));
+    } catch (err) {
+      alert('Hálózati hiba: ' + err.message);
+    }
+  });
+});
+
