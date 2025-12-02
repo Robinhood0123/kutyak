@@ -562,6 +562,23 @@ button:hover {
   .feedback-card .btn-primary:hover {
     background: #0056b3;
   }
+
+  .kutya-kartya-kep {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+  
+  .row-back {
+    display: none !important;
+  }
+  
+  .row-inner {
+    transform: none !important;
+    perspective: none !important;
+  }
   
 
 

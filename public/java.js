@@ -26,17 +26,14 @@ window.addEventListener('DOMContentLoaded', () => {
         const div = document.createElement('div');
         div.className = 'row';
         div.innerHTML = `
-          <div class="row-inner">
-            <div class="row-front">
-              <img src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev || 'Ismeretlen kutya'}">
-            </div>
-            <div class="row-back">
-              <h1>${kutya.nev || 'Ismeretlen'}<br>${kutya.fajta || 'Ismeretlen fajta'}</h1>
-              <p>Kor: ${kutya.eletkor || 'n/a'} év<br>
-              Nem: ${kutya.nem || '-'}<br></p>
-              <button class="gomb">Örökbe fogadás</button>
-            </div>
+          <div class="row-inner" data-kutya-id="${kutya.kutya_id}">
+            <img class="kutya-kartya-kep" src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev}">
           </div>`;
+        
+        div.querySelector('.row-inner').addEventListener('click', () => {
+          megnyitKutyaModalt(kutya);
+        });
+      
         lista.appendChild(div);
       });
     })
@@ -150,10 +147,6 @@ document.getElementById("adoptForm").addEventListener("submit", function(e) {
 });
 
 
-
-
-
-
 document.getElementById('regForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const nev = document.getElementById('nev').value;
@@ -209,4 +202,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+function setupOrkbeBtn() {
+  const orokbeBtn = document.getElementById('orokbeBtn');
+  if (orokbeBtn) {
+      orokbeBtn.addEventListener('click', () => {
+          $('#dogModal').modal('hide');
+          $('#adoptModal').modal('show');
+      });
+  }
+}
+
+// Minden kutya modal megnyitásakor futtasd:
+function megnyitKutyaModalt(kutya) {
+  document.getElementById('kutyaModalKep').src = kutya.kep_url;
+  document.getElementById('kutyaModalNev').innerText = kutya.nev;
+  document.getElementById('kutyaModalEletkor').innerText = kutya.eletkor;
+  document.getElementById('kutyaModalNem').innerText = kutya.nem;
+  document.getElementById('kutyaModalFajta').innerText = kutya.fajta;
+  document.getElementById('kutya_id').value = kutya.kutya_id;
+
+  $('#dogModal').modal('show');
+
+  // Eseménycsatolás itt, biztosan létezik az elem
+  setupOrkbeBtn();
+}
+
 
