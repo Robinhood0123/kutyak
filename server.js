@@ -1,33 +1,34 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/kutyak'); // ide kerülnek a képek
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
-    cb(null, uniqueName);
-  }
-});
-
-// az upload változó, amit a route‑ban használsz
-const upload = multer({ storage: storage });
-
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Statikus fájlok
 app.use(express.static(path.join(__dirname, 'public')));
 
+// --- Multer beállítás ---
+const uploadDir = path.join(__dirname, 'public/img/kutyak');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
+const upload = multer({ storage });
+
+// --- MySQL kapcsolat ---
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -35,170 +36,148 @@ const db = mysql.createConnection({
   database: 'menhely',
   port: 3307
 });
-
 db.connect(err => {
   if (err) console.error('MySQL kapcsolódási hiba:', err);
   else console.log('MySQL kapcsolat sikeres');
 });
 
-
-app.post('/visszajelzes', (req, res) => {
-  const { email, szoveg } = req.body;
-  if (!email || !szoveg) return res.status(400).json({ error: 'Hiányzó adatok!' });
-
-  const sql = 'INSERT INTO visszajelzesek (email, uzenet) VALUES (?, ?)';
-  db.query(sql, [email, szoveg], async (err) => {
-    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-
-    try {
-      // Gmail SMTP beállítás
-      let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'kirajok69@gmail.com',
-          pass: 'ajhpvculrtgbklua' // szóközök nélkül!
-        }
-      });
-      
-      let mailOptions = {
-        from: 'kirajok69@gmail.com',
-        replyTo: email, // ide jön a felhasználó címe
-        to: 'kirajok69@gmail.com',
-        subject: 'Új visszajelzés az oldalról',
-        text: `Feladó: ${email}\nÜzenet: ${szoveg}`
-      };
-      
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error('Email hiba:', err);
-          return res.status(500).json({ error: 'Nem sikerült elküldeni az emailt.' });
-        }
-        console.log('Email elküldve:', info.response);
-        res.json({ message: 'Visszajelzés mentve és emailben elküldve!' });
-      });
-      
-
-      await transporter.sendMail(mailOptions);
-
-      res.json({ message: 'Visszajelzés mentve és emailben elküldve!' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Nem sikerült elküldeni az emailt.' });
-    }
-  });
+// --- CSP lazább fejlesztéshez ---
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; connect-src 'self' http://localhost:* ws://localhost:*; img-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+  );
+  next();
 });
 
+// --- Email transporter ---
+const required = ['EMAIL_USER','EMAIL_PASS','EMAIL_FROM','ADMIN_EMAIL'];
+for (const k of required) {
+  if (!process.env[k]) {
+    console.error(`Hiányzó környezeti változó: ${k}`);
+    process.exit(1);
+  }
+}
 
-// <<< EZT A RÉSZT MÓDOSÍTOTTAM >>>
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: Number(process.env.EMAIL_PORT) || 465,
+  secure: process.env.EMAIL_SECURE === 'true',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+transporter.verify()
+  .then(() => console.log('SMTP kapcsolat rendben'))
+  .catch(err => {
+    console.error('SMTP kapcsolat hiba:', err);
+    process.exit(1);
+  });
+
+// --- Feedback endpoint ---
+app.post('/api/feedback', async (req, res) => {
+  const { name, email, message } = req.body;
+  if (!email || !message) return res.status(400).json({ success: false, error: 'Hiányzó mezők' });
+
+  const adminMail = {
+    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    to: process.env.ADMIN_EMAIL,
+    subject: `[Visszajelzés] ${name || 'Név nélkül'} - ${email}`,
+    text: `Új visszajelzés érkezett.\n\nNév: ${name || '—'}\nEmail: ${email}\n\nÜzenet:\n${message}`
+  };
+
+  const userMail = {
+    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    to: email,
+    subject: process.env.FEEDBACK_SUBJECT || 'Köszönjük a visszajelzésedet',
+    text: `Kedves ${name || 'Felhasználó'},\n\nKöszönjük, megkaptuk az üzenetedet. Hamarosan válaszolunk.\n\nÜdvözlettel,\nA csapat`
+  };
+
+  try {
+    const adminInfo = await transporter.sendMail(adminMail);
+    let userInfo = null;
+    try {
+      userInfo = await transporter.sendMail(userMail);
+    } catch (userErr) {
+      console.warn('Felhasználói visszaigazoló email küldése sikertelen:', userErr);
+    }
+
+    return res.json({
+      success: true,
+      adminMessageId: adminInfo.messageId,
+      userMessageId: userInfo ? userInfo.messageId : null
+    });
+  } catch (err) {
+    console.error('Hiba az email küldésekor:', err);
+    return res.status(500).json({ success: false, error: 'Nem sikerült elküldeni az emailt' });
+  }
+});
+
+// --- Kutya hozzáadás ---
 app.post('/kutyak', upload.single('kep'), (req, res) => {
-  const { nev, eletkor, nem, fajta } = req.body; // fajta szövegesen
+  const { nev, eletkor, nem, fajta } = req.body;
   if (!nev || !fajta) return res.status(400).json({ error: 'Hiányzó adatok!' });
 
-  const kepUrl = req.file ? '/img/kutyak/' + req.file.filename : null;
+  const kepUrl = req.file ? `${req.protocol}://${req.get('host')}/img/kutyak/${req.file.filename}` : null;
 
-  // Ellenőrizzük, hogy létezik-e a fajta
   const checkFajta = 'SELECT fajta_id FROM fajtak WHERE nev = ? LIMIT 1';
   db.query(checkFajta, [fajta], (err, results) => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba fajta ellenőrzésnél!' });
 
     if (results.length > 0) {
-      // Már létezik a fajta
-      const fajta_id = results[0].fajta_id;
-      insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res);
+      insertKutya(nev, eletkor, nem, results[0].fajta_id, kepUrl, res);
     } else {
-      // Új fajta beszúrása
       const insertFajta = 'INSERT INTO fajtak (nev) VALUES (?)';
       db.query(insertFajta, [fajta], (err2, result2) => {
         if (err2) return res.status(500).json({ error: 'Adatbázis hiba fajta beszúrásnál!' });
-        const fajta_id = result2.insertId;
-        insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res);
+        insertKutya(nev, eletkor, nem, result2.insertId, kepUrl, res);
       });
     }
   });
 });
 
-// Segédfüggvény a kutya beszúrásához
+app.get('/kutyak', (req, res) => {
+  const sql = `
+    SELECT k.kutya_id, k.nev, k.eletkor, k.nem, k.kep_url, f.nev AS fajta
+    FROM kutyak k
+    JOIN fajtak f ON k.fajta_id = f.fajta_id
+    ORDER BY k.kutya_id DESC
+  `;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Hiba a kutyák lekérdezésekor:', err);
+      return res.status(500).json({ error: 'Nem sikerült lekérni a kutyák adatait' });
+    }
+    res.json(results);
+  });
+});
+
+
 function insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res) {
   const sql = 'INSERT INTO kutyak (nev, eletkor, nem, fajta_id, kep_url) VALUES (?, ?, ?, ?, ?)';
   db.query(sql, [nev, eletkor || null, nem || null, fajta_id, kepUrl], err => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba kutya beszúrásnál!' });
-    res.json({ message: 'Kutya sikeresen hozzáadva! (f5)' });
+    res.json({ message: 'Kutya sikeresen hozzáadva!' });
   });
 }
-// <<< IDÁIG >>>
 
-
-
-app.get('/kutyak', (req, res) => {
-  const sql = `
-    SELECT k.kutya_id, 
-           k.nev, 
-           k.eletkor, 
-           k.nem, 
-           f.nev AS fajta, 
-           k.erkezes_datum, 
-           k.kep_url
-    FROM kutyak k
-    LEFT JOIN fajtak f ON k.fajta_id = f.fajta_id
-  `;
-  db.query(sql, (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Adatbázis hiba!' });
-    }
-    res.json(results);
-  });
-});
-
-
-app.get('/orokbefogadok', (req, res) => {
-  db.query('SELECT * FROM orokbefogadok', (err, results) => {
-    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-    res.json(results);
-  });
-});
-
-
-app.post('/adomany', (req, res) => {
-  const { orokbefogado_id, datum, osszeg, targy } = req.body;
-  if (!datum || (!osszeg && !targy))
-    return res.status(400).json({ error: 'Hiányzó adatok!' });
-
-  const sql = 'INSERT INTO adomanyok (orokbefogado_id, datum, osszeg, targy) VALUES (?, ?, ?, ?)';
-  db.query(sql, [orokbefogado_id || null, datum, osszeg || null, targy || null], err => {
-    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-    res.json({ message: 'Adomány sikeresen rögzítve!' });
-  });
-});
-
-
-
-
-
-
-
-// --- FELHASZNÁLÓ REGISZTRÁCIÓ ---
+// --- Regisztráció ---
 app.post('/register', (req, res) => {
   const { nev, email, jelszo } = req.body;
+  if (!nev || !email || !jelszo) return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
 
-  if (!nev || !email || !jelszo) {
-    return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
-  }
-
-  // Ellenőrizzük, hogy létezik-e már a felhasználó
-  const checkSql = 'SELECT * FROM felhasznalok WHERE felhasznalonev = ?';
+  const checkSql = 'SELECT * FROM felhasznalok WHERE email = ?';
   db.query(checkSql, [email], (err, results) => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-    if (results.length > 0) {
-      return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
-    }
+    if (results.length > 0) return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
 
-    // Jelszó hash-elés (bcrypt)
-    const bcrypt = require('bcrypt');
     const saltRounds = 10;
     bcrypt.hash(jelszo, saltRounds, (err, hash) => {
       if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
 
-      const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, jelszo, szerepkor) VALUES (?, ?, ?)';
+      const insertSql = 'INSERT INTO felhasznalok (email, jelszo, szerepkor) VALUES (?, ?, ?)';
       db.query(insertSql, [email, hash, 'onkentes'], (err2) => {
         if (err2) return res.status(500).json({ error: 'Mentési hiba!' });
         res.json({ message: 'Sikeres regisztráció!' });
@@ -207,59 +186,9 @@ app.post('/register', (req, res) => {
   });
 });
 
-
-
-
-
-
-
-
-
-app.get('/orvosi', (req, res) => {
-  const sql = `
-    SELECT o.vizsgalat_id, k.nev AS kutya_nev, o.datum, o.kezeles, o.allatorvos
-    FROM orvosi_vizsgalatok o
-    JOIN kutyak k ON o.kutya_id = k.kutya_id
-  `;
-  db.query(sql, (err, results) => {
-    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-    res.json(results);
-  });
-});
-
-// Örökbefogadás feldolgozása
-app.post('/orokbefogadas', (req, res) => {
-  const { nev, telefonszam, cim, kutya_id } = req.body;
-
-  // 1. Új örökbefogadó beszúrása
-  const sql1 = 'INSERT INTO menhely_orokbefogadok (nev, telefonszam, email) VALUES (?, ?, ?)';
-  db.query(sql1, [nev, telefonszam, null], (err, result) => {
-    if (err) return res.status(500).json({ message: 'Hiba az örökbefogadó mentésénél!' });
-
-    const orokbefogadoId = result.insertId;
-
-    // 2. Örökbefogadás rögzítése
-    const sql2 = 'INSERT INTO menhely_orokbefogadasok (kutya_id, orokbefogado_id, datum) VALUES (?, ?, CURDATE())';
-    db.query(sql2, [kutya_id, orokbefogadoId], (err2) => {
-      if (err2) return res.status(500).json({ message: 'Hiba az örökbefogadás mentésénél!' });
-
-      // 3. Kutya rekord frissítése (beállítjuk az örökbefogadó_id-t)
-      const sql3 = 'UPDATE menhely_kutyak SET orokbefogado_id = ? WHERE kutya_id = ?';
-      db.query(sql3, [orokbefogadoId, kutya_id], (err3) => {
-        if (err3) return res.status(500).json({ message: 'Hiba a kutya frissítésénél!' });
-
-        res.json({ message: 'Örökbefogadás sikeresen rögzítve!' });
-      });
-    });
-  });
-});
-
-
+// --- Index oldal ---
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
-app.listen(3000, () => {
-  console.log('Szerver fut a 3000-es porton');
-});
+app.listen(3000, () => console.log('Szerver fut a 3000-es porton'));

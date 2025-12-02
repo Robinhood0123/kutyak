@@ -61,24 +61,25 @@
         </div>
     </section>
 
-    <section id="Visszajelzések">
-        <br><h1>Visszajelzések</h1>
-        <div class="container">
-            <p>Itt írd meg nekünk, ha van problémád az oldallal, vagy javaslatod!</p>
-                <form id="registrationForm">
-                    <div class="form-group">
-                        <label for="email">E-mail:</label>
-                        <input type="email" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="szoveg">Üzenet:</label>
-                        <input type="text" id="szoveg" required>
-                    </div>
-                    <button type="button" onclick="validateForm()">Küldés</button>
-                    <div id="errorMessage" class="error-message"></div>
-                </form>
-        </div>
+    <section id="visszajelzesek">
+      <div class="feedback-card">
+        <h2>Visszajelzések</h2>
+        <p>Itt írd meg nekünk, ha van problémád az oldallal, vagy javaslatod!</p>
+        <form id="feedbackForm" method="post" action="/api/feedback">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="Név">
+          </div>
+          <div class="form-group">
+            <input type="email" name="email" placeholder="Email" required>
+          </div>
+          <div class="form-group">
+            <textarea name="message" placeholder="Üzenet" required></textarea>
+          </div>
+          <button type="submit" class="btn-primary">Küldés</button>
+        </form>
+      </div>
     </section>
+    
 
     <section id="elerheto">
         <div class="rolunk">
