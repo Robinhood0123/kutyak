@@ -93,16 +93,74 @@
 
     <!-- Új kutya feltöltő form -->
     <section id="feltoltes">
-        <h1>Új kutya hozzáadása</h1>
-        <form id="kutyaForm" enctype="multipart/form-data">
-          <input type="text" name="nev" placeholder="Kutya neve" required>
-          <input type="number" name="eletkor" placeholder="Életkor">
-          <input type="text" name="nem" placeholder="Nem">
-          <input type="text" name="fajta" placeholder="Fajta (pl. Labrador)" required>
-          <input type="file" name="kep">
-          <button type="submit">Feltöltés</button>
-        </form>
-    </section>
+      <h1>Új kutya hozzáadása</h1>
+      <form id="kutyaForm" enctype="multipart/form-data">
+        <input type="text" name="nev" placeholder="Kutya neve" required>
+        <input type="number" name="eletkor" placeholder="Életkor">
+  
+        <select name="nem" required>
+          <option value="">Válassz nemet</option>
+          <option value="kan">Kan</option>
+          <option value="szuka">Szuka</option>
+        </select>
+  
+        <select name="fajta" required>
+          <option value="">Válassz fajtát</option>
+          <option value="Labrador Retriever">Labrador Retriever</option>
+          <option value="Német juhász">Német juhász</option>
+          <option value="Golden Retriever">Golden Retriever</option>
+          <option value="Border Collie">Border Collie</option>
+          <option value="Vizsla">Magyar Vizsla</option>
+          <option value="Tacskó">Tacskó</option>
+          <option value="Beagle">Beagle</option>
+          <option value="Francia bulldog">Francia bulldog</option>
+          <option value="Angol bulldog">Angol bulldog</option>
+          <option value="Rottweiler">Rottweiler</option>
+          <option value="Dobermann">Dobermann</option>
+          <option value="Boxer">Boxer</option>
+          <option value="Husky">Szibériai Husky</option>
+          <option value="Mopsz">Mopsz</option>
+          <option value="Shih Tzu">Shih Tzu</option>
+          <option value="Máltai selyemkutya">Máltai selyemkutya</option>
+          <option value="Yorkshire terrier">Yorkshire terrier</option>
+          <option value="Westie">West Highland White Terrier</option>
+          <option value="Skót juhász">Skót juhász (Collie)</option>
+          <option value="Bernáthegyi">Bernáthegyi</option>
+          <option value="Newfoundland">Újfundlandi</option>
+          <option value="Akita Inu">Akita Inu</option>
+          <option value="Shiba Inu">Shiba Inu</option>
+          <option value="Dalmatin">Dalmatin</option>
+          <option value="Whippet">Whippet</option>
+          <option value="Greyhound">Angol agár</option>
+          <option value="Ír szetter">Ír szetter</option>
+          <option value="Angol springer spániel">Angol springer spániel</option>
+          <option value="Cocker spániel">Cocker spániel</option>
+          <option value="Puli">Puli</option>
+          <option value="Komondor">Komondor</option>
+          <option value="Kuvasz">Kuvasz</option>
+          <option value="Mudi">Mudi</option>
+          <option value="Csivava">Csivava</option>
+          <option value="Papillon">Papillon</option>
+          <option value="Basenji">Basenji</option>
+          <option value="Shar Pei">Shar Pei</option>
+          <option value="Kaukázusi juhász">Kaukázusi juhász</option>
+          <option value="Tosa Inu">Tosa Inu</option>
+          <option value="Bullterrier">Bullterrier</option>
+          <option value="Staffordshire bullterrier">Staffordshire bullterrier</option>
+          <option value="Amerikai staffordshire terrier">Amerikai staffordshire terrier</option>
+          <option value="Pitbull">Pitbull</option>
+          <option value="Alaszkai malamut">Alaszkai malamut</option>
+          <option value="Samoyed">Samoyed</option>
+          <option value="Bichon Frisé">Bichon Frisé</option>
+          <option value="Havanese">Havanese</option>
+          <option value="Pomerániai törpespicc">Pomerániai törpespicc</option>
+          <option value="Egyéb">Egyéb</option>
+        </select>
+  
+        <input type="file" name="kep">
+        <button type="submit">Feltöltés</button>
+      </form>
+  </section>
 
     <footer class="footer">
         <div class="container">
