@@ -227,5 +227,3 @@ function megnyitKutyaModalt(kutya) {
   // Eseménycsatolás itt, biztosan létezik az elem
   setupOrkbeBtn();
 }
-
-
