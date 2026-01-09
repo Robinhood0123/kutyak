@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kutyamenhely - Admin</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css"> </head>
+<body class="admin-body">
+
+    <header>
+        <nav>
+            <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
+            <ul>
+                <li><a href="index.html">Vissza a főoldalra</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="admin-section">
+        <div class="feedback-card"> <h2>Új kutya hozzáadása</h2>
+            <p>Töltsd ki az alábbi adatokat az új lakó rögzítéséhez!</p>
+            
+            <form id="kutyaForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="text" name="nev" placeholder="Kutya neve" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="number" name="eletkor" placeholder="Életkor">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <select name="nem" required>
+                            <option value="">Válassz nemet</option>
+                            <option value="kan">Kan</option>
+                            <option value="szuka">Szuka</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <select name="fajta" required>
+                        <option value="">Válassz fajtát</option>
+                        <option value="Labrador Retriever">Labrador Retriever</option>
+                        <option value="Német juhász">Német juhász</option>
+                        <option value="Golden Retriever">Golden Retriever</option>
+                        <option value="Puli">Puli</option>
+                        <option value="Egyéb">Egyéb</option>
+                    </select>
+                </div>
+
+                <div class="form-group text-left">
+                    <label class="file-label">Fénykép feltöltése:</label>
+                    <input type="file" name="kep" class="file-input">
+                </div>
+
+                <button type="submit" class="btn-primary">Kutya mentése a rendszerbe</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="java.js"></script>
+</body>
+</html>

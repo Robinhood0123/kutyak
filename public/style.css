@@ -580,5 +580,65 @@ button:hover {
     perspective: none !important;
   }
   
+/* --- Admin Oldal Egyedi Stílusai --- */
 
+.admin-body {
+    background-color: #f4f7f6; /* Világosszürke háttér az egész oldalnak */
+}
+
+.admin-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding-top: 100px; /* Hogy ne takarja el a fix navbar */
+}
+
+/* Az inputok és select-ek egységesítése */
+#kutyaForm input, 
+#kutyaForm select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #fff;
+    transition: all 0.3s;
+}
+
+#kutyaForm input:focus, 
+#kutyaForm select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.2);
+    outline: none;
+}
+
+/* Fájlfeltöltő mező díszítése */
+.file-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+}
+
+.file-input {
+    padding: 5px !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+/* Bootstrap sorok finomítása az admin formon belül */
+.form-row {
+    margin-bottom: 0;
+}
+
+/* Mentés gomb kiemelése */
+#kutyaForm .btn-primary {
+    margin-top: 20px;
+    background-color: #007bff;
+    border-radius: 10px;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
 
