@@ -218,28 +218,32 @@
 </div>
 
 <div class="modal fade" id="dogModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title" id="kutyaModalNev">Kutya neve</h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
+  <div class="modal-dialog modal-lg modal-dialog-centered"> <div class="modal-content modern-modal">
+      <div class="modal-header border-0">
+        <h5 class="modal-title font-weight-bold" id="kutyaModalNev">Kutya neve</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
-
-      <div class="modal-body text-center">
-
-        <img id="kutyaModalKep" src="" class="img-fluid mb-3" style="max-height:250px;">
-
-        <p><b>Kor:</b> <span id="kutyaModalEletkor"></span> év</p>
-        <p><b>Nem:</b> <span id="kutyaModalNem"></span></p>
-        <p><b>Fajta:</b> <span id="kutyaModalFajta"></span></p>
-
-        <button class="btn btn-primary mt-3" id="orokbeBtn">Örökbe fogadom</button>
-
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-6 p-0">
+              <img id="kutyaModalKep" src="" class="img-fluid modern-modal-img">
+            </div>
+            <div class="col-md-6 modern-modal-details">
+              <div class="info-grid">
+                <p><strong>Fajta:</strong> <span id="kutyaModalFajta"></span></p>
+                <p><strong>Kor:</strong> <span id="kutyaModalEletkor"></span> év</p>
+                <p><strong>Nem:</strong> <span id="kutyaModalNem"></span></p>
+              </div>
+              <hr>
+              <h6><strong>Történet / Leírás:</strong></h6>
+              <p id="kutyaModalLeiras" class="text-muted">Itt fog megjelenni a kutya leírása...</p>
+              
+              <button class="btn btn-primary btn-block mt-4" id="orokbeBtn">Örökbe fogadom</button>
+            </div>
+          </div>
+        </div>
       </div>
-
     </div>
   </div>
 </div>

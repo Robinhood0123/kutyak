@@ -201,69 +201,78 @@ section{
 .center-text span{
     color: black;
 }
-.kutyak{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    justify-items: center;
-}
-.row{
-    background-color: transparent;
-    width: 280px;
-    height: 280px;
-    perspective: 1000px;
-    display: inline-block;
-    margin: 0px;
-    margin-bottom: 75px;
-}
-  
-.row-inner {
-    position: relative;
+
+/* --- Modern Kutyalist Elrendezés --- */
+.kutyak {
+    display: grid !important; /* Kényszerítjük a rács elrendezést */
+    /* Ez mondja meg, hogy a kártyák min. 250px, max 300px szélesek legyenek: */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 300px)); 
+    gap: 20px; /* Távolság a kártyák között */
+    justify-content: center; /* Középre rendezi a kártyákat */
+    padding: 20px;
     width: 100%;
-    height: 127.3%;
-    transition: 0.6s;
-    text-align: center;
-    transform-style: preserve-3d;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5);
 }
-  
-.row:hover .row-inner {
-    transform: rotateY(180deg);
+
+.kutya-card {
+    width: 100%; /* A grid szabályozza a szélességet, itt maradjon 100% */
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
 }
-  
-.row-front, .row-back {
-    position: absolute;
+
+.kutya-card-img-wrapper {
+    width: 100%;
+    height: 200px; /* Itt állítsd be, milyen magas legyen a kiskép */
+}
+
+.kutya-card-img {
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    padding: 5px;
+    object-fit: cover; /* Ez vágja méretre a képet torzítás nélkül */
 }
-  
-.row-front {
-    background-color: white;
-    color: black;
+
+.kutya-card:hover .kutya-card-img {
+    transform: scale(1.1);
 }
-  
-.row-back {
-    background-color: darkgray;
+
+/* Kártya szöveges része */
+.kutya-card-body {
+    padding: 20px;
+    text-align: center;
+    flex-grow: 1; /* Kitölti a maradék helyet */
+}
+
+.kutya-card-body h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.kutya-card-body p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.btn-reszletek-custom {
+    background-color: #007bff;
     color: white;
-    transform: rotateY(180deg);
-}
-.row img{
-    width: 100%;
-    height: auto;
-    transition: all .40s;
-}
-.row-back h1{
-    color: black;
-    text-transform: capitalize;
-    font-weight: 500;
-    text-decoration: underline;
+    padding: 10px 25px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    transition: background 0.3s ease;
 }
 
-
-
+.kutya-card:hover .btn-reszletek-custom {
+    background-color: #0056b3;
+}
 
 @media(max-width:630px){
     .main-text h1{
@@ -563,23 +572,6 @@ button:hover {
     background: #0056b3;
   }
 
-  .kutya-kartya-kep {
-    width: 100%;
-    height: 260px;
-    object-fit: cover;
-    border-radius: 15px;
-    cursor: pointer;
-  }
-  
-  .row-back {
-    display: none !important;
-  }
-  
-  .row-inner {
-    transform: none !important;
-    perspective: none !important;
-  }
-  
 /* --- Admin Oldal Egyedi Stílusai --- */
 
 .admin-body {
@@ -642,3 +634,43 @@ button:hover {
     letter-spacing: 0.5px;
 }
 
+.modern-modal {
+    border-radius: 20px;
+    overflow: hidden;
+    border: none;
+}
+
+.modern-modal-img {
+    width: 100%;
+    height: 100%;
+    min-height: 350px;
+    object-fit: cover; /* Kitölti a helyet, nem torzul */
+    border-radius: 15px;
+}
+
+.modern-modal-details {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-grid p {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+#kutyaModalLeiras {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-height: 150px;
+    overflow-y: auto; /* Ha hosszú a leírás, görgethető lesz */
+}
+
+/* Szögletes gomb a modalba is, ha azt szereted */
+.modern-modal .btn-primary {
+    border-radius: 0px; 
+    padding: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}

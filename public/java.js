@@ -9,7 +9,7 @@ function scrollFunction() {
   }
 }
 
-// --- Kutyák betöltése ---
+// --- Kutyák betöltése (MODERN VERZIÓ) ---
 window.addEventListener('DOMContentLoaded', () => {
   const lista = document.getElementById('kutyaLista');
   lista.innerHTML = ''; 
@@ -23,18 +23,26 @@ window.addEventListener('DOMContentLoaded', () => {
       }
 
       data.forEach(kutya => {
-        const div = document.createElement('div');
-        div.className = 'row';
-        div.innerHTML = `
-          <div class="row-inner" data-kutya-id="${kutya.kutya_id}">
-            <img class="kutya-kartya-kep" src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev}">
+        // Létrehozzuk a kártyát
+        const card = document.createElement('div');
+        card.className = 'kutya-card'; // Ez csatlakozik az új CSS-hez
+        
+        card.innerHTML = `
+          <div class="kutya-card-img-wrapper">
+            <img class="kutya-card-img" src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev}">
+          </div>
+          <div class="kutya-card-body">
+            <h3>${kutya.nev}</h3>
+            <p>${kutya.fajta} <br> ${kutya.eletkor} éves • ${kutya.nem}</p>
+            <span class="btn-reszletek-custom">Részletek</span>
           </div>`;
         
-        div.querySelector('.row-inner').addEventListener('click', () => {
+        // Kattintásra megnyitjuk a modalt
+        card.addEventListener('click', () => {
           megnyitKutyaModalt(kutya);
         });
       
-        lista.appendChild(div);
+        lista.appendChild(card);
       });
     })
     .catch(() => {
@@ -215,15 +223,19 @@ function setupOrkbeBtn() {
 
 // Minden kutya modal megnyitásakor futtasd:
 function megnyitKutyaModalt(kutya) {
-  document.getElementById('kutyaModalKep').src = kutya.kep_url;
+  document.getElementById('kutyaModalKep').src = kutya.kep_url || 'img/alap.png';
   document.getElementById('kutyaModalNev').innerText = kutya.nev;
   document.getElementById('kutyaModalEletkor').innerText = kutya.eletkor;
   document.getElementById('kutyaModalNem').innerText = kutya.nem;
   document.getElementById('kutyaModalFajta').innerText = kutya.fajta;
+  
+  // Leírás betöltése (ha van a JSON-ben 'leiras' mező)
+  const leirasElem = document.getElementById('kutyaModalLeiras');
+  leirasElem.innerText = kutya.leiras || "Sajnos ehhez a kutyushoz még nem tartozik leírás, de érdeklődj telefonon!";
+
+  document.getElementById('kutyaModalLeiras').innerText = kutya.leiras || "Nincs elérhető leírás.";
   document.getElementById('kutya_id').value = kutya.kutya_id;
 
   $('#dogModal').modal('show');
-
-  // Eseménycsatolás itt, biztosan létezik az elem
   setupOrkbeBtn();
 }

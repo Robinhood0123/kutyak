@@ -1,0 +1,49 @@
+    /* A kártya és az inputok alapstílusa */
+    .feedback-card input, 
+    .feedback-card select {
+        height: 45px !important; /* Egységes magasság */
+    }
+
+    /* Select2 tároló szélessége */
+    .select2-container {
+        display: block;
+        width: 100% !important;
+    }
+
+    /* A Select2 látható dobozának javítása (Bootstrap 4 téma mellett) */
+    .select2-container--bootstrap4 .select2-selection--single {
+        height: 45px !important;
+        line-height: 45px !important;
+        padding: 0 0.75rem !important;
+        display: flex !important;
+        align-items: center !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 0.25rem !important;
+    }
+
+    /* A szöveg pozícionálása a keresőben */
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+        line-height: 45px !important;
+        padding-left: 0 !important;
+    }
+
+    /* A kis nyíl (dropdown arrow) középre igazítása */
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+        height: 43px !important;
+    }
+
+    #kutyaForm textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+        resize: vertical; /* Csak függőlegesen lehessen nyújtani */
+        min-height: 100px;
+    }
+    
+    #kutyaForm textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0,123,255,0.2);
+        outline: none;
+    }
