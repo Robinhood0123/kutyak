@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2025. Nov 03. 10:09
+-- Létrehozás ideje: 2026. Jan 12. 11:55
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -60,6 +60,14 @@ CREATE TABLE `fajtak` (
   `nev` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- A tábla adatainak kiíratása `fajtak`
+--
+
+INSERT INTO `fajtak` (`fajta_id`, `nev`) VALUES
+(10, 'labrador'),
+(11, 'németjuhász');
+
 -- --------------------------------------------------------
 
 --
@@ -69,10 +77,19 @@ CREATE TABLE `fajtak` (
 CREATE TABLE `felhasznalok` (
   `felhasznalo_id` int(11) NOT NULL,
   `felhasznalonev` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
   `szerepkor` enum('admin','dolgozo','onkentes') DEFAULT 'dolgozo',
   `dolgozo_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `felhasznalok`
+--
+
+INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `dolgozo_id`) VALUES
+(1, 'Robi', 'kispista123@gmail.com', '$2b$10$.iWvyoWxv.D20KYAQRoEQOzzNMjEm8pKZ6/s2jOfjSIc54UCwRW9G', 'onkentes', NULL),
+(2, 'Ricsi', 'Ricsivok@gmail.com', '$2b$10$PEZtKeEZP.vLS4UtlMCPO.JWyEPkvWgq9cCtsTTdvvqIiEj0r7oSC', 'onkentes', NULL);
 
 -- --------------------------------------------------------
 
@@ -101,6 +118,14 @@ CREATE TABLE `kutyak` (
   `kennel_id` int(11) DEFAULT NULL,
   `kep_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `kutyak`
+--
+
+INSERT INTO `kutyak` (`kutya_id`, `nev`, `eletkor`, `nem`, `erkezes_datum`, `fajta_id`, `kennel_id`, `kep_url`) VALUES
+(14, 'morzsi', 2, 'kan', NULL, 10, NULL, '/img/kutyak/1762767522223-kutya3.jpg'),
+(15, 'Kecske', 1, 'szuka', NULL, 11, NULL, '/img/kutyak/1762767581152-kutya2.jpg');
 
 -- --------------------------------------------------------
 
@@ -228,13 +253,13 @@ ALTER TABLE `dolgozok`
 -- AUTO_INCREMENT a táblához `fajtak`
 --
 ALTER TABLE `fajtak`
-  MODIFY `fajta_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `fajta_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT a táblához `felhasznalok`
 --
 ALTER TABLE `felhasznalok`
-  MODIFY `felhasznalo_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `felhasznalo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT a táblához `kennelek`
@@ -246,7 +271,7 @@ ALTER TABLE `kennelek`
 -- AUTO_INCREMENT a táblához `kutyak`
 --
 ALTER TABLE `kutyak`
-  MODIFY `kutya_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `kutya_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT a táblához `orokbefogadasok`

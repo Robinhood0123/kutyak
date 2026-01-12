@@ -164,6 +164,7 @@ function insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res) {
 }
 
 // --- Regisztráció ---
+// A server.js regisztrációs része legyen pontosan ez:
 app.post('/register', (req, res) => {
   const { nev, email, jelszo } = req.body;
   if (!nev || !email || !jelszo) return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
@@ -173,13 +174,17 @@ app.post('/register', (req, res) => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
     if (results.length > 0) return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
 
-    const saltRounds = 10;
-    bcrypt.hash(jelszo, saltRounds, (err, hash) => {
+    bcrypt.hash(jelszo, 10, (err, hash) => {
       if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
 
-      const insertSql = 'INSERT INTO felhasznalok (email, jelszo, szerepkor) VALUES (?, ?, ?)';
-      db.query(insertSql, [email, hash, 'onkentes'], (err2) => {
-        if (err2) return res.status(500).json({ error: 'Mentési hiba!' });
+      // Explicit módon átadjuk a NULL értéket a dolgozo_id-nak
+      const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, dolgozo_id) VALUES (?, ?, ?, ?, ?)';
+      
+      db.query(insertSql, [nev, email, hash, 'onkentes', null], (err2) => {
+        if (err2) {
+          console.error("PONTOS SQL HIBA:", err2.sqlMessage); 
+          return res.status(500).json({ error: 'Adatbázis mentési hiba: ' + err2.sqlMessage });
+        }
         res.json({ message: 'Sikeres regisztráció!' });
       });
     });
