@@ -191,6 +191,50 @@ app.post('/register', (req, res) => {
   });
 });
 
+// --- Bejelentkezés ---
+app.post('/login', (req, res) => {
+  const { email, jelszo } = req.body;
+  if (!email || !jelszo) {
+    return res.status(400).json({ error: 'Hiányzó adatok!' });
+  }
+
+  const sql = 'SELECT * FROM felhasznalok WHERE email = ? LIMIT 1';
+  db.query(sql, [email], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Adatbázis hiba!' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Hibás email vagy jelszó!' });
+    }
+
+    const user = results[0];
+
+    bcrypt.compare(jelszo, user.jelszo, (err, isMatch) => {
+      if (err) {
+        return res.status(500).json({ error: 'Jelszó ellenőrzési hiba!' });
+      }
+
+      if (!isMatch) {
+        return res.status(401).json({ error: 'Hibás email vagy jelszó!' });
+      }
+
+      // sikeres bejelentkezés
+      res.json({
+        message: 'Sikeres bejelentkezés!',
+        user: {
+          id: user.felhasznalo_id,
+          nev: user.felhasznalonev,
+          email: user.email,
+          szerepkor: user.szerepkor
+        }
+      });
+    });
+  });
+});
+
+
 // --- Index oldal ---
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilom - Kutyamenhely</title>
+    <link rel="stylesheet" href="reg.css">
+    <link rel="icon" type="image/x-icon" href="img/logo2.png">
+</head>
+<body>
+    <header>
+        <nav>
+            <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
+            <ul>
+              <li><a href="index.html">Főoldal</a></li>
+              <li><a href="profil.html" class="active">Profil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="register-section">
+        <h2>Profilom</h2>
+        <div id="profileInfo" style="text-align:center;">
+            <p>Betöltés...</p>
+        </div>
+        <div style="text-align:center; margin-top: 20px;">
+            <button id="logoutBtn">Kijelentkezés</button>
+        </div>
+    </section>
+
+    <script>
+        // --- Ellenőrizd, hogy a felhasználó be van-e jelentkezve ---
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+
+        const profileInfo = document.getElementById('profileInfo');
+
+        if (!user) {
+            profileInfo.innerHTML = '<p style="color:red;">Nincs bejelentkezett felhasználó! <a href="bejelentkezes.html">Jelentkezz be</a></p>';
+        } else {
+            profileInfo.innerHTML = `
+                <p><strong>Név:</strong> ${user.nev}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+            `;
+        }
+
+        // --- Kijelentkezés ---
+        const logoutBtn = document.getElementById('logoutBtn');
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            alert('Sikeresen kijelentkeztél!');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
