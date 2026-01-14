@@ -149,7 +149,7 @@ section{
     margin: 6px 0 10px;
 }
 .main-text p{
-    color: cadetblue;
+    color:  #007bff;;
     font-size: 20px;
     font-style: italic;
     margin-bottom: 20px;
@@ -309,9 +309,15 @@ ul {
     list-style: none;
 }
 
+main {
+    flex: 1;
+}
+
 .footer {
     background-color: #24262b;
     padding: 70px 0;
+    margin-top: 100px;
+    width: 100%;
 }
 
 .container {
@@ -350,15 +356,26 @@ ul {
     width: 50px;
 }
 
-.footer-col p {
+.footer-col p, .footer-col ul li a {
     font-size: 18px;
     color: #bbbbbb;
     line-height: 1.6;
+    text-decoration: none;
 }
 
-.footer-col p a {
-    color: #bbbbbb;
-    text-decoration: none;
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-col ul li a {
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.footer-col ul li a:hover {
+    color: #ffffff;
+    padding-left: 8px;
 }
 
 .footer-col .social-links a {
@@ -386,24 +403,13 @@ ul {
 }
 
 @media (max-width: 992px) {
-    .footer-col {
-        width: 50%;
-        margin-bottom: 30px;
-    }
-    .footer-col:last-child {
-        width: 100%;
-    }
+    .footer-col { width: 50%; margin-bottom: 30px; }
+    .footer-col:last-child { width: 100%; }
 }
 
 @media (max-width: 767px) {
-    .footer-col {
-        width: 100%;
-        text-align: center;
-    }
-    .footer-col h4::before {
-        left: 50%;
-        transform: translateX(-50%);
-    }
+    .footer-col { width: 100%; text-align: center; }
+    .footer-col h4::before { left: 50%; transform: translateX(-50%); }
 }
 
 .home{
@@ -519,7 +525,6 @@ button:hover {
 
 /* --- Feedback form --- */
 #visszajelzesek {
-    background: #f9f9f9;
     padding: 60px 20px;
   }
   
@@ -689,9 +694,14 @@ button:hover {
     text-transform: uppercase;
 }
 
-#loginNavItem #profileNavItem {
-    display: inline-block; /* alapból el van rejtve */
-    vertical-align: middle;
+nav ul, .navbar-nav { 
+    display: flex;
+    align-items: center;
+}
+
+#loginNavItem, #profileNavItem {
+    display: flex;
+    align-items: center;
 }
 
 #profileNavItem img {
@@ -699,6 +709,10 @@ button:hover {
     height: 35px;
     border-radius: 50%;
     cursor: pointer;
-    display: inline-block;
-    vertical-align: middle; /* inline-block elemekhez */
+    display: block;
+}
+
+#loginNavItem a {
+    text-decoration: none;
+    display: block;
 }
