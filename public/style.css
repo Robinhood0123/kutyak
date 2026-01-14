@@ -49,6 +49,7 @@ nav{
     display: inline-block;
     line-height: 80px;
     margin: 0 5px;
+    vertical-align: middle;
   }
   nav ul li a{
     color: black;
@@ -112,6 +113,18 @@ nav{
       left: 0;
     }
   }
+  @media (max-width: 858px) {
+    #profileNavItem {
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    #profileNavItem img {
+        width: 70px;
+        height: 70px;
+        margin-left: 0;
+    }
+}
 
 
   
@@ -705,14 +718,38 @@ nav ul, .navbar-nav {
 }
 
 #profileNavItem img {
-    width: 35px;
-    height: 35px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     cursor: pointer;
     display: block;
+    object-fit: cover;
+    border: 2px solid #007bff;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    margin-left: #0056b3;
+}
+
+#profileNavItem img:hover {
+    transform: scale(1.1);
+    border-color: #0056b3;
 }
 
 #loginNavItem a {
     text-decoration: none;
     display: block;
 }
+
+#profileModalImg {
+    border: 3px solid #eee;
+    padding: 2px;
+    transition: all 0.3s ease;
+}
+
+#profileModalImg:hover {
+    opacity: 0.8;
+    filter: brightness(80%);
+    border-color: #007bff;
+    cursor: pointer;
+}
+
+

@@ -31,8 +31,8 @@
           
               <!-- Bejelentkezés gomb, ami eltűnik ha bejelentkezve -->
               <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
-              <li id="profileNavItem" style="display:none;">
-                <img id="profileIcon" src="img/default-profile.png" style="width:35px; height:35px; border-radius:50%; cursor:pointer;">
+              <li id="profileNavItem" style="display:none; vertical-align: middle;">
+                <img id="profileIcon" src="img/default-profile.png" style="width:50px; height:50px; border-radius:50%; cursor:pointer;border: 2px solid #f0f0f0; object-fit: cover; margin-left: 15px;">
             </li>
             
           </ul>
@@ -191,40 +191,35 @@
 
 
 <!-- Profil Modal -->
-<div id="profileModal" style="
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-">
-    <div style="
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        min-width: 300px;
-        max-width: 400px;
-        text-align: center;
-        position: relative;
-    ">
-        <span id="closeProfileModal" style="
-            position: absolute;
-            top: 10px; right: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 20px;
-        ">&times;</span>
-        <img id="profileModalImg" src="img/profile-icon.png" style="width:80px; border-radius:50%; margin-bottom:15px;">
-        <p><strong>Név:</strong> <span id="profileModalName"></span></p>
-        <p><strong>Email:</strong> <span id="profileModalEmail"></span></p>
-        <button id="logoutBtnModal" style="margin-top:15px; padding:5px 10px;">Kijelentkezés</button>
-    </div>
+<div id="profileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000;">
+  <div style="background: white; padding: 20px; border-radius: 8px; min-width: 350px; text-align: center; position: relative;">
+      <span id="closeProfileModal" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px;">×</span>
+      
+      <div style="position: relative; display: inline-block;">
+          <img id="profileModalImg" src="img/default-profile.png" 
+               style="width:100px; height:100px; border-radius:50%; object-fit: cover; cursor: pointer; border: 2px solid #ddd;"
+               title="Kattints a kép módosításához">
+          <div style="font-size: 10px; color: #666; margin-top: 5px;">Kattints a képre a cseréhez</div>
+      </div>
+      
+      <input type="file" id="profileImageInput" style="display: none;" accept="image/*">
+
+      <div class="text-left mt-3">
+          <label>Név:</label>
+          <input type="text" id="editNameInput" class="form-control" placeholder="Új név">
+          
+          <label class="mt-2">Jelszó módosítása:</label>
+          <input type="password" id="editPasswordInput" class="form-control" placeholder="Új jelszó">
+          
+          <p class="mt-3"><strong>Email:</strong> <span id="profileModalEmail"></span></p>
+      </div>
+
+      <button id="saveProfileBtn" class="btn btn-success btn-block">Adatok mentése</button>
+      <button id="logoutBtnModal" class="btn btn-danger btn-block mt-2">Kijelentkezés</button>
+  </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="java.js"></script>
 </body>

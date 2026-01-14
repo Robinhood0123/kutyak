@@ -16,11 +16,28 @@ app.use(express.urlencoded({ extended: true }));
 // Statikus fájlok
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// --- Profilkép mappa létrehozása ---
+const profileDir = path.join(__dirname, 'public/img/profilok');
+if (!fs.existsSync(profileDir)) {
+  fs.mkdirSync(profileDir, { recursive: true });
+}
+
+
 // --- Multer beállítás ---
 const uploadDir = path.join(__dirname, 'public/img/kutyak');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+
+// Multer profilképekhez
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, profileDir),
+  filename: (req, file, cb) => cb(null, 'profile-' + Date.now() + path.extname(file.originalname))
+});
+const uploadProfile = multer({ storage: profileStorage });
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
@@ -164,30 +181,28 @@ function insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res) {
 }
 
 // --- Regisztráció ---
-// A server.js regisztrációs része legyen pontosan ez:
 app.post('/register', (req, res) => {
   const { nev, email, jelszo } = req.body;
   if (!nev || !email || !jelszo) return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
 
   const checkSql = 'SELECT * FROM felhasznalok WHERE email = ?';
   db.query(checkSql, [email], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
-    if (results.length > 0) return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
+      if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+      if (results.length > 0) return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
 
-    bcrypt.hash(jelszo, 10, (err, hash) => {
-      if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
+      bcrypt.hash(jelszo, 10, (err, hash) => {
+          if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
 
-      // Explicit módon átadjuk a NULL értéket a dolgozo_id-nak
-      const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, dolgozo_id) VALUES (?, ?, ?, ?, ?)';
-      
-      db.query(insertSql, [nev, email, hash, 'onkentes', null], (err2) => {
-        if (err2) {
-          console.error("PONTOS SQL HIBA:", err2.sqlMessage); 
-          return res.status(500).json({ error: 'Adatbázis mentési hiba: ' + err2.sqlMessage });
-        }
-        res.json({ message: 'Sikeres regisztráció!' });
+          // Hozzáadtuk a kep_url-t az INSERT-hez (alapértelmezett értéke null)
+          const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, dolgozo_id, kep_url) VALUES (?, ?, ?, ?, ?, ?)';
+          
+          db.query(insertSql, [nev, email, hash, 'onkentes', null, null], (err2) => {
+              if (err2) {
+                  return res.status(500).json({ error: 'Adatbázis mentési hiba: ' + err2.sqlMessage });
+              }
+              res.json({ message: 'Sikeres regisztráció!' });
+          });
       });
-    });
   });
 });
 
@@ -227,10 +242,63 @@ app.post('/login', (req, res) => {
           id: user.felhasznalo_id,
           nev: user.felhasznalonev,
           email: user.email,
-          szerepkor: user.szerepkor
+          szerepkor: user.szerepkor,
+          kep: user.kep_url
         }
       });
     });
+  });
+});
+
+
+// --- Profil frissítése endpoint módosítása ---
+app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => {
+  const { email, nev, jelszo } = req.body;
+  let updateFields = [];
+  let params = [];
+
+  if (nev) {
+      updateFields.push("felhasznalonev = ?");
+      params.push(nev);
+  }
+
+  if (req.file) {
+      // A teljes URL helyett csak a relatív utat mentsük el!
+      // Így az adatbázisban csak ennyi lesz: /img/profilok/profile-123.jpg
+      const kepEleresiUt = `/img/profilok/${req.file.filename}`;
+      updateFields.push("kep_url = ?");
+      params.push(kepEleresiUt);
+  }
+
+  if (jelszo && jelszo.trim() !== "") {
+      const hash = await bcrypt.hash(jelszo, 10);
+      updateFields.push("jelszo = ?");
+      params.push(hash);
+  }
+
+  if (updateFields.length === 0) {
+      return res.status(400).json({ error: "Nincs módosítandó adat!" });
+  }
+
+  params.push(email);
+  const sql = `UPDATE felhasznalok SET ${updateFields.join(", ")} WHERE email = ?`;
+
+  db.query(sql, params, (err, result) => {
+      if (err) return res.status(500).json({ error: "Adatbázis hiba!" });
+      
+      db.query("SELECT felhasznalonev, email, kep_url FROM felhasznalok WHERE email = ?", [email], (err2, results) => {
+          if (err2) return res.status(500).json({ error: "Hiba lekéréskor!" });
+          
+          // Itt visszaadjuk az új adatokat a frontendnek
+          res.json({ 
+              message: "Profil sikeresen frissítve!", 
+              user: {
+                  nev: results[0].felhasznalonev,
+                  email: results[0].email,
+                  kep: results[0].kep_url // Ez most már a relatív út lesz
+              }
+          });
+      });
   });
 });
 

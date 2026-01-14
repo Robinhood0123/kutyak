@@ -229,8 +229,11 @@ if (loginForm) {
             if (res.ok) {
                 // 1. Mentés localStorage-ba
                 localStorage.setItem('loggedInUser', JSON.stringify({ 
+                    id: data.user.id,
                     nev: data.user.nev, 
-                    email: data.user.email 
+                    email: data.user.email,
+                    szerepkor: data.user.szerepkor,
+                    kep: data.user.kep
                 }));
                 
                 // 2. SZÉP ÉRTESÍTÉS MEGJELENÍTÉSE
@@ -258,57 +261,134 @@ if (loginForm) {
 
 
 
-// --- Profil modal kezelése ---
+// --- Profil modal kezelése (SweetAlert nélkül) ---
 document.addEventListener('DOMContentLoaded', () => {
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
+  const serverUrl = "http://localhost:3000"; // A szervered címe
+
+if (user) {
+    // ...
+    const navIcon = document.getElementById('profileIcon');
+    if (navIcon) {
+        // Ha a kep_url per jellel kezdődik (relatív), rakjuk elé a szerver címet
+        const kepUtvonal = user.kep && user.kep.startsWith('http') 
+                           ? user.kep 
+                           : (user.kep ? serverUrl + user.kep : 'img/default-profile.png');
+        navIcon.src = kepUtvonal;
+    }
+}
   const loginNavItem = document.getElementById('loginNavItem');
   const profileNavItem = document.getElementById('profileNavItem');
   const profileModal = document.getElementById('profileModal');
-  const profileModalName = document.getElementById('profileModalName');
-  const profileModalEmail = document.getElementById('profileModalEmail');
+  
   const profileModalImg = document.getElementById('profileModalImg');
+  const profileModalEmail = document.getElementById('profileModalEmail');
+  const editNameInput = document.getElementById('editNameInput');
+  const editPasswordInput = document.getElementById('editPasswordInput');
+  const profileImageInput = document.getElementById('profileImageInput');
+  if (profileModalImg && profileImageInput) {
+    // 1. Ha a képre kattintunk, nyissa meg a fájlválasztót
+    profileModalImg.addEventListener('click', () => {
+        profileImageInput.click();
+    });
+
+    // 2. Kép előnézet (Preview): ha választott fájlt, azonnal jelenjen meg a modalban
+    profileImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                profileModalImg.src = event.target.result; // Lecseréli a modalban a képet az újra
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+  
   const closeProfileModal = document.getElementById('closeProfileModal');
   const logoutBtnModal = document.getElementById('logoutBtnModal');
+  const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-  if(user && loginNavItem && profileNavItem) {
-      // Bejelentkezés gomb eltűntetése
-      loginNavItem.style.display = 'none';
-      // Profil ikon mutatása
-      profileNavItem.style.display = 'inline-block';
+  if (user) {
+      if (loginNavItem) loginNavItem.style.display = 'none';
+      if (profileNavItem) {
+          profileNavItem.style.display = 'inline-block';
+          const navIcon = document.getElementById('profileIcon');
+          if (navIcon) navIcon.src = user.kep || 'img/default-profile.png';
+      }
 
-      // Kattintás profil ikonra → modal
-      const profileIcon = profileNavItem.querySelector('#profileIcon');
-      if(profileIcon) {
+      const profileIcon = document.getElementById('profileIcon');
+      if (profileIcon) {
           profileIcon.addEventListener('click', () => {
-              if(profileModal) profileModal.style.display = 'flex';
-              if(profileModalName) profileModalName.innerText = user.nev;
-              if(profileModalEmail) profileModalEmail.innerText = user.email;
-              if(profileModalImg) profileModalImg.src = user.kep || 'img/profile-icon.png';
+              if (profileModal) {
+                  profileModal.style.display = 'flex';
+                  if (profileModalImg) profileModalImg.src = user.kep || 'img/default-profile.png';
+                  if (profileModalEmail) profileModalEmail.innerText = user.email;
+                  if (editNameInput) editNameInput.value = user.nev;
+                  if (editPasswordInput) editPasswordInput.value = ''; 
+              }
           });
       }
 
-      // Modal bezárás X gombbal
-      if(closeProfileModal) {
+      if (saveProfileBtn) {
+          saveProfileBtn.addEventListener('click', async () => {
+              const ujNev = editNameInput.value;
+              const ujJelszo = editPasswordInput.value;
+              const kepFile = profileImageInput.files[0];
+
+              const formData = new FormData();
+              formData.append('email', user.email);
+              if (ujNev) formData.append('nev', ujNev);
+              if (ujJelszo) formData.append('jelszo', ujJelszo);
+              if (kepFile) formData.append('profilkep', kepFile);
+
+              try {
+                  const res = await fetch('http://localhost:3000/user/update', {
+                      method: 'POST',
+                      body: formData
+                  });
+
+                  const data = await res.json();
+
+                  if (res.ok) {
+                      localStorage.setItem('loggedInUser', JSON.stringify({
+                          id: user.id,
+                          nev: data.user.nev,
+                          email: data.user.email,
+                          kep: data.user.kep,
+                          szerepkor: user.szerepkor
+                      }));
+
+                      // Itt az egyszerűsítés:
+                      alert('Sikeres mentés! A profilod frissült.');
+                      location.reload();
+
+                  } else {
+                      alert('Hiba: ' + (data.error || 'Ismeretlen hiba történt.'));
+                  }
+              } catch (err) {
+                  console.error('Szerver hiba:', err);
+                  alert('Hálózati hiba történt a mentés során.');
+              }
+          });
+      }
+
+      if (closeProfileModal) {
           closeProfileModal.addEventListener('click', () => {
-              if(profileModal) profileModal.style.display = 'none';
+              profileModal.style.display = 'none';
           });
       }
 
-      // Modal bezárás overlay-re kattintva
-      if(profileModal) {
-          profileModal.addEventListener('click', (e) => {
-              if(e.target === profileModal) profileModal.style.display = 'none';
-          });
-      }
+      window.addEventListener('click', (e) => {
+          if (e.target === profileModal) {
+              profileModal.style.display = 'none';
+          }
+      });
 
-      // Kijelentkezés modalból
-      if(logoutBtnModal) {
+      if (logoutBtnModal) {
           logoutBtnModal.addEventListener('click', () => {
               localStorage.removeItem('loggedInUser');
-              // egyszerűbb: újratöltés helyett nav frissítés
-              profileNavItem.style.display = 'none';
-              if(loginNavItem) loginNavItem.style.display = 'list-item';
-              if(profileModal) profileModal.style.display = 'none';
+              location.href = 'index.html';
           });
       }
   }
