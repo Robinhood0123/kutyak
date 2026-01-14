@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Jan 12. 11:55
+-- Létrehozás ideje: 2026. Jan 14. 13:18
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -80,16 +80,18 @@ CREATE TABLE `felhasznalok` (
   `email` varchar(100) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
   `szerepkor` enum('admin','dolgozo','onkentes') DEFAULT 'dolgozo',
-  `dolgozo_id` int(11) DEFAULT NULL
+  `dolgozo_id` int(11) DEFAULT NULL,
+  `kep_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- A tábla adatainak kiíratása `felhasznalok`
 --
 
-INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `dolgozo_id`) VALUES
-(1, 'Robi', 'kispista123@gmail.com', '$2b$10$.iWvyoWxv.D20KYAQRoEQOzzNMjEm8pKZ6/s2jOfjSIc54UCwRW9G', 'onkentes', NULL),
-(2, 'Ricsi', 'Ricsivok@gmail.com', '$2b$10$PEZtKeEZP.vLS4UtlMCPO.JWyEPkvWgq9cCtsTTdvvqIiEj0r7oSC', 'onkentes', NULL);
+INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `dolgozo_id`, `kep_url`) VALUES
+(1, 'Robi', 'kispista123@gmail.com', '$2b$10$.iWvyoWxv.D20KYAQRoEQOzzNMjEm8pKZ6/s2jOfjSIc54UCwRW9G', 'onkentes', NULL, NULL),
+(3, 'Ricsi', 'Ricsivok@gmail.com', '$2b$10$mdY4ba5gsG3A.wnhuGggPO4AlkNF0y1yR4iwC1WvpT31pk6jXNTGq', 'onkentes', NULL, '/img/profilok/profile-1768388749136.jpg'),
+(4, 'admin', 'kirajok69@gmail.com', '$2b$10$9GG0WDAxbltus6R3cIXIrOJ97R8CHAx07cb8f8s69OVQRIcdch4he', 'admin', NULL, '/img/profilok/profile-1768392893743.jpg');
 
 -- --------------------------------------------------------
 
@@ -259,7 +261,7 @@ ALTER TABLE `fajtak`
 -- AUTO_INCREMENT a táblához `felhasznalok`
 --
 ALTER TABLE `felhasznalok`
-  MODIFY `felhasznalo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `felhasznalo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT a táblához `kennelek`
