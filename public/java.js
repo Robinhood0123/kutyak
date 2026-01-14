@@ -227,11 +227,26 @@ if (loginForm) {
             const data = await res.json();
 
             if (res.ok) {
-                // --- Mentés localStorage-ba ---
-                localStorage.setItem('loggedInUser', JSON.stringify({ nev: data.nev, email: data.email }));
+                // 1. Mentés localStorage-ba
+                localStorage.setItem('loggedInUser', JSON.stringify({ 
+                    nev: data.user.nev, 
+                    email: data.user.email 
+                }));
                 
-                // NE átirányítunk → csak frissítjük a nav-ot
-                location.reload(); // vagy hívhatunk egy függvényt, ami frissíti a profil ikont
+                // 2. SZÉP ÉRTESÍTÉS MEGJELENÍTÉSE
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sikeres belépés',
+                    text: 'Üdvözlünk újra, ' + data.user.nev + '!',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    iconColor: '#28a745'
+                }).then(() => {
+                    // 3. Frissítés csak az üzenet lefutása után
+                    window.location.href = 'index.html';
+                });
+
             } else {
                 if (loginError) loginError.textContent = data.error || 'Hibás email vagy jelszó!';
             }
@@ -292,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
               localStorage.removeItem('loggedInUser');
               // egyszerűbb: újratöltés helyett nav frissítés
               profileNavItem.style.display = 'none';
-              if(loginNavItem) loginNavItem.style.display = 'block';
+              if(loginNavItem) loginNavItem.style.display = 'list-item';
               if(profileModal) profileModal.style.display = 'none';
           });
       }

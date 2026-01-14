@@ -689,8 +689,9 @@ button:hover {
     text-transform: uppercase;
 }
 
-#profileNavItem {
-    display: none; /* alapból el van rejtve */
+#loginNavItem #profileNavItem {
+    display: inline-block; /* alapból el van rejtve */
+    vertical-align: middle;
 }
 
 #profileNavItem img {
@@ -698,5 +699,6 @@ button:hover {
     height: 35px;
     border-radius: 50%;
     cursor: pointer;
+    display: inline-block;
     vertical-align: middle; /* inline-block elemekhez */
 }
