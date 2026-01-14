@@ -261,68 +261,53 @@ if (loginForm) {
 
 
 
-// --- Profil modal kezelése (SweetAlert nélkül) ---
+// --- Profil és Navigáció kezelése ---
 document.addEventListener('DOMContentLoaded', () => {
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
-  const serverUrl = "http://localhost:3000"; // A szervered címe
+  const serverUrl = "http://localhost:3000";
 
-if (user) {
-    // ...
-    const navIcon = document.getElementById('profileIcon');
-    if (navIcon) {
-        // Ha a kep_url per jellel kezdődik (relatív), rakjuk elé a szerver címet
-        const kepUtvonal = user.kep && user.kep.startsWith('http') 
-                           ? user.kep 
-                           : (user.kep ? serverUrl + user.kep : 'img/default-profile.png');
-        navIcon.src = kepUtvonal;
-    }
-}
+  // Navigációs elemek
   const loginNavItem = document.getElementById('loginNavItem');
   const profileNavItem = document.getElementById('profileNavItem');
-  const profileModal = document.getElementById('profileModal');
+  const adminNavItem = document.getElementById('adminNavItem'); 
+  const navIcon = document.getElementById('profileIcon');
   
+  // Modal elemek
+  const profileModal = document.getElementById('profileModal');
   const profileModalImg = document.getElementById('profileModalImg');
   const profileModalEmail = document.getElementById('profileModalEmail');
   const editNameInput = document.getElementById('editNameInput');
   const editPasswordInput = document.getElementById('editPasswordInput');
   const profileImageInput = document.getElementById('profileImageInput');
-  if (profileModalImg && profileImageInput) {
-    // 1. Ha a képre kattintunk, nyissa meg a fájlválasztót
-    profileModalImg.addEventListener('click', () => {
-        profileImageInput.click();
-    });
-
-    // 2. Kép előnézet (Preview): ha választott fájlt, azonnal jelenjen meg a modalban
-    profileImageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                profileModalImg.src = event.target.result; // Lecseréli a modalban a képet az újra
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
-  
   const closeProfileModal = document.getElementById('closeProfileModal');
   const logoutBtnModal = document.getElementById('logoutBtnModal');
   const saveProfileBtn = document.getElementById('saveProfileBtn');
 
   if (user) {
+      // 1. Menüpontok láthatósága
       if (loginNavItem) loginNavItem.style.display = 'none';
-      if (profileNavItem) {
-          profileNavItem.style.display = 'inline-block';
-          const navIcon = document.getElementById('profileIcon');
-          if (navIcon) navIcon.src = user.kep || 'img/default-profile.png';
+      if (profileNavItem) profileNavItem.style.display = 'inline-block';
+
+      // 2. ADMIN ELLENŐRZÉS
+      if (user.szerepkor === 'admin') {
+          if (adminNavItem) adminNavItem.style.display = 'inline-block';
+      } else {
+          if (adminNavItem) adminNavItem.style.display = 'none';
       }
 
-      const profileIcon = document.getElementById('profileIcon');
-      if (profileIcon) {
-          profileIcon.addEventListener('click', () => {
+      // 3. Profilkép útvonalának kiszámítása
+      const kepUtvonal = user.kep 
+          ? (user.kep.startsWith('http') ? user.kep : serverUrl + user.kep) 
+          : 'img/default-profile.png';
+          
+      if (navIcon) navIcon.src = kepUtvonal;
+
+      // 4. Profil Modal megnyitása
+      if (navIcon) {
+          navIcon.addEventListener('click', () => {
               if (profileModal) {
                   profileModal.style.display = 'flex';
-                  if (profileModalImg) profileModalImg.src = user.kep || 'img/default-profile.png';
+                  if (profileModalImg) profileModalImg.src = kepUtvonal;
                   if (profileModalEmail) profileModalEmail.innerText = user.email;
                   if (editNameInput) editNameInput.value = user.nev;
                   if (editPasswordInput) editPasswordInput.value = ''; 
@@ -330,20 +315,17 @@ if (user) {
           });
       }
 
+      // 5. Adatok mentése
       if (saveProfileBtn) {
           saveProfileBtn.addEventListener('click', async () => {
-              const ujNev = editNameInput.value;
-              const ujJelszo = editPasswordInput.value;
-              const kepFile = profileImageInput.files[0];
-
               const formData = new FormData();
               formData.append('email', user.email);
-              if (ujNev) formData.append('nev', ujNev);
-              if (ujJelszo) formData.append('jelszo', ujJelszo);
-              if (kepFile) formData.append('profilkep', kepFile);
+              if (editNameInput.value) formData.append('nev', editNameInput.value);
+              if (editPasswordInput.value) formData.append('jelszo', editPasswordInput.value);
+              if (profileImageInput.files[0]) formData.append('profilkep', profileImageInput.files[0]);
 
               try {
-                  const res = await fetch('http://localhost:3000/user/update', {
+                  const res = await fetch(`${serverUrl}/user/update`, {
                       method: 'POST',
                       body: formData
                   });
@@ -351,51 +333,74 @@ if (user) {
                   const data = await res.json();
 
                   if (res.ok) {
+                      // LocalStorage frissítése az új adatokkal
                       localStorage.setItem('loggedInUser', JSON.stringify({
                           id: user.id,
                           nev: data.user.nev,
                           email: data.user.email,
                           kep: data.user.kep,
-                          szerepkor: user.szerepkor
+                          szerepkor: user.szerepkor // A szerepkört megőrizzük
                       }));
 
-                      // Itt az egyszerűsítés:
                       alert('Sikeres mentés! A profilod frissült.');
                       location.reload();
-
                   } else {
-                      alert('Hiba: ' + (data.error || 'Ismeretlen hiba történt.'));
+                      alert('Hiba: ' + (data.error || 'Sikertelen mentés.'));
                   }
               } catch (err) {
                   console.error('Szerver hiba:', err);
-                  alert('Hálózati hiba történt a mentés során.');
+                  alert('Hálózati hiba történt.');
               }
           });
       }
 
-      if (closeProfileModal) {
-          closeProfileModal.addEventListener('click', () => {
-              profileModal.style.display = 'none';
-          });
-      }
-
-      window.addEventListener('click', (e) => {
-          if (e.target === profileModal) {
-              profileModal.style.display = 'none';
-          }
-      });
-
+      // 6. Kijelentkezés
       if (logoutBtnModal) {
           logoutBtnModal.addEventListener('click', () => {
               localStorage.removeItem('loggedInUser');
               location.href = 'index.html';
           });
       }
+
+  } else {
+      // Ha nincs bejelentkezve
+      if (adminNavItem) adminNavItem.style.display = 'none';
+      if (profileNavItem) profileNavItem.style.display = 'none';
+      if (loginNavItem) loginNavItem.style.display = 'inline-block';
   }
+
+  // --- Segédfunkciók (Kép választás és Modal bezárás) ---
+
+  // Kép előnézet a modalban
+  if (profileModalImg && profileImageInput) {
+      profileModalImg.addEventListener('click', () => profileImageInput.click());
+
+      profileImageInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                  profileModalImg.src = event.target.result;
+              };
+              reader.readAsDataURL(file);
+          }
+      });
+  }
+
+  // Modal bezárása X-szel
+  if (closeProfileModal) {
+      closeProfileModal.addEventListener('click', () => {
+          profileModal.style.display = 'none';
+      });
+  }
+
+  // Modal bezárása mellékattintással
+  window.addEventListener('click', (e) => {
+      if (e.target === profileModal) {
+          profileModal.style.display = 'none';
+      }
+  });
 });
-
-
-
 
 
 // --- Feedback Form ---

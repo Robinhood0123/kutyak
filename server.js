@@ -253,53 +253,53 @@ app.post('/login', (req, res) => {
 
 // --- Profil frissítése endpoint módosítása ---
 app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => {
-  const { email, nev, jelszo } = req.body;
-  let updateFields = [];
-  let params = [];
+    const { email, nev, jelszo } = req.body;
+    let updateFields = [];
+    let params = [];
 
-  if (nev) {
-      updateFields.push("felhasznalonev = ?");
-      params.push(nev);
-  }
+    if (nev) {
+        updateFields.push("felhasznalonev = ?");
+        params.push(nev);
+    }
 
-  if (req.file) {
-      // A teljes URL helyett csak a relatív utat mentsük el!
-      // Így az adatbázisban csak ennyi lesz: /img/profilok/profile-123.jpg
-      const kepEleresiUt = `/img/profilok/${req.file.filename}`;
-      updateFields.push("kep_url = ?");
-      params.push(kepEleresiUt);
-  }
+    if (req.file) {
+        // A teljes URL helyett csak a relatív utat mentsük el!
+        // Így az adatbázisban csak ennyi lesz: /img/profilok/profile-123.jpg
+        const kepEleresiUt = `/img/profilok/${req.file.filename}`;
+        updateFields.push("kep_url = ?");
+        params.push(kepEleresiUt);
+    }
 
-  if (jelszo && jelszo.trim() !== "") {
-      const hash = await bcrypt.hash(jelszo, 10);
-      updateFields.push("jelszo = ?");
-      params.push(hash);
-  }
+    if (jelszo && jelszo.trim() !== "") {
+        const hash = await bcrypt.hash(jelszo, 10);
+        updateFields.push("jelszo = ?");
+        params.push(hash);
+    }
 
-  if (updateFields.length === 0) {
-      return res.status(400).json({ error: "Nincs módosítandó adat!" });
-  }
+    if (updateFields.length === 0) {
+        return res.status(400).json({ error: "Nincs módosítandó adat!" });
+    }
 
-  params.push(email);
-  const sql = `UPDATE felhasznalok SET ${updateFields.join(", ")} WHERE email = ?`;
+    params.push(email);
+    const sql = `UPDATE felhasznalok SET ${updateFields.join(", ")} WHERE email = ?`;
 
-  db.query(sql, params, (err, result) => {
-      if (err) return res.status(500).json({ error: "Adatbázis hiba!" });
-      
-      db.query("SELECT felhasznalonev, email, kep_url FROM felhasznalok WHERE email = ?", [email], (err2, results) => {
-          if (err2) return res.status(500).json({ error: "Hiba lekéréskor!" });
-          
-          // Itt visszaadjuk az új adatokat a frontendnek
-          res.json({ 
-              message: "Profil sikeresen frissítve!", 
-              user: {
-                  nev: results[0].felhasznalonev,
-                  email: results[0].email,
-                  kep: results[0].kep_url // Ez most már a relatív út lesz
-              }
-          });
-      });
-  });
+    db.query(sql, params, (err, result) => {
+        if (err) return res.status(500).json({ error: "Adatbázis hiba!" });
+        
+        db.query("SELECT felhasznalonev, email, kep_url FROM felhasznalok WHERE email = ?", [email], (err2, results) => {
+            if (err2) return res.status(500).json({ error: "Hiba lekéréskor!" });
+            
+            // Itt visszaadjuk az új adatokat a frontendnek
+            res.json({ 
+                message: "Profil sikeresen frissítve!", 
+                user: {
+                    nev: results[0].felhasznalonev,
+                    email: results[0].email,
+                    kep: results[0].kep_url // Ez most már a relatív út lesz
+                }
+            });
+        });
+    });
 });
 
 
