@@ -464,3 +464,27 @@ function megnyitKutyaModalt(kutya) {
   $('#dogModal').modal('show');
   setupOrkbeBtn();
 }
+
+let currentAmount = 5000;
+function selectAmount(element, value) {
+    document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+    currentAmount = value;
+    document.getElementById('customInput').value = '';
+    updateDisplay();
+}
+function clearButtons() {
+    document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+    currentAmount = document.getElementById('customInput').value;
+    updateDisplay();
+}
+function updateDisplay() {
+    document.getElementById('selected-sum').innerText = currentAmount || 0;
+}
+function redirectToSimplePay() {
+    if (currentAmount < 100) {
+        alert("Minimális adomány: 100 Ft");
+        return;
+    }
+    alert("Átirányítás a SimplePay oldalára: " + currentAmount + " Ft");
+}

@@ -174,7 +174,7 @@ section{
     font-weight: 500;
     text-transform: capitalize;
     border: 2px solid black;
-    padding: 12px 25px;
+    padding: 12px 15px;
     transition: all .42s ease;
 }
 .main-btn:hover{
@@ -188,6 +188,129 @@ section{
     position: absolute;
     top: 85%;
     right: 11%;
+}
+.main-btn {
+    display: inline-block;
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: capitalize;
+    border: 2px solid black;
+    padding: 12px 20px;
+    transition: all .42s ease;
+    text-decoration: none;
+    margin: 5px;
+    vertical-align: middle;
+}
+.main-btn:hover {
+    background-color: black;
+    color: white;
+}
+.main-btn i {
+    vertical-align: middle;
+}
+.donate-btn-pro {
+    background-color: #a31d1d;
+    color: white !important;
+    border: 2px solid #8b1a1a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.donate-btn-pro:hover {
+    background-color: #c41e1e;
+    border-color: #c41e1e;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+.donate-btn-pro i {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+.donation-section {
+    padding: 60px 20px;
+    background-color: #f4f4f4;
+    text-align: center;
+    font-family: sans-serif;
+}
+.donation-box {
+    max-width: 450px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+.amount-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.amount-btn {
+    padding: 15px 5px;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid #e0e0e0;
+    background-color: #ffffff;
+    color: #333333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+.amount-btn.active {
+    background-color: #004a99 !important;
+    color: white !important;
+    border-color: #004a99 !important;
+}
+.amount-btn:hover {
+    border-color: #004a99;
+}
+.custom-amount input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    text-align: center;
+}
+.custom-amount input:focus {
+    border-color: #004a99;
+}
+.simplepay-footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+.simplepay-footer p {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+.simplepay-btn {
+    width: 100%;
+    padding: 18px;
+    background-color: #ff8000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    text-transform: uppercase;
+}
+.simplepay-btn:hover {
+    background-color: #e67300;
+    transform: translateY(-1px);
+}
+.payment-logos {
+    margin-top: 20px;
+    opacity: 0.8;
 }
 .down i{
     font-size: 30px;

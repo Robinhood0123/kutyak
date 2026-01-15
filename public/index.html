@@ -46,6 +46,9 @@
             <p>Biztonságosan, precízen és gyorsan</p>
 
             <a href="#kutyaink" class="main-btn">Fogadj örökbe most! <i class="bx bx-right-arrow-alt"></i></a>
+            <a href="#adomany" class="main-btn donate-btn-pro">
+              <i class="bx bxs-heart-circle"></i> ADOMÁNYOZÁS
+          </a>
         </div>
     </section>
 
@@ -87,6 +90,29 @@
           <button type="submit" class="btn-primary">Küldés</button>
         </form>
       </div>
+    </section>
+    
+    <section id="adomany" class="donation-section">
+        <div class="donation-container">
+            <h2>Támogasd a védenceinket!</h2>
+            <div class="donation-box">
+                <div class="amount-options">
+                    <button type="button" class="amount-btn" onclick="selectAmount(this, 2000)">2 000 Ft</button>
+                    <button type="button" class="amount-btn active" onclick="selectAmount(this, 5000)">5 000 Ft</button>
+                    <button type="button" class="amount-btn" onclick="selectAmount(this, 10000)">10 000 Ft</button>
+                </div>
+                <div class="custom-amount">
+                    <input type="number" id="customInput" placeholder="Egyedi összeg (Ft)" oninput="clearButtons()">
+                </div>
+                <div class="simplepay-footer">
+                    <p>Választott összeg: <span id="selected-sum">5 000</span> Ft</p>
+                    <button class="simplepay-btn" onclick="redirectToSimplePay()">Fizetés SimplePay-el</button>
+                    <div class="payment-logos">
+                        <img src="img/simple.png" alt="SimplePay" width="120">
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
     
    
