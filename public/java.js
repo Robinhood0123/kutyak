@@ -446,17 +446,20 @@ function megnyitKutyaModalt(kutya) {
   const mEletkor = document.getElementById('kutyaModalEletkor');
   const mNem = document.getElementById('kutyaModalNem');
   const mFajta = document.getElementById('kutyaModalFajta');
-  const mLeiras = document.getElementById('kutyaModalLeiras');
+  const mLeiras = document.getElementById('kutyaModalLeiras'); // Az index.html modaljában lévő <p>
   const mKutyaId = document.getElementById('kutya_id');
 
   if (mKep) mKep.src = kutya.kep_url || 'img/alap.png';
   if (mNev) mNev.innerText = kutya.nev;
-  if (mEletkor) mEletkor.innerText = kutya.eletkor;
+  if (mEletkor) mEletkor.innerText = kutya.eletkor + " év";
   if (mNem) mNem.innerText = kutya.nem;
   if (mFajta) mFajta.innerText = kutya.fajta;
   
   if (mLeiras) {
-      mLeiras.innerText = kutya.leiras || "Sajnos ehhez a kutyushoz még nem tartozik leírás, de érdeklődj telefonon!";
+      // Ha az adatbázisból null jön vagy üres, adjunk meg alapértelmezett szöveget
+      mLeiras.innerText = (kutya.leiras && kutya.leiras !== "null") 
+          ? kutya.leiras 
+          : "Sajnos ehhez a kutyushoz még nem tartozik leírás.";
   }
 
   if (mKutyaId) mKutyaId.value = kutya.kutya_id;

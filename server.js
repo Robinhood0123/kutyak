@@ -132,32 +132,42 @@ app.post('/api/feedback', async (req, res) => {
   }
 });
 
-// --- Kutya hozzáadás ---
 app.post('/kutyak', upload.single('kep'), (req, res) => {
-  const { nev, eletkor, nem, fajta } = req.body;
+  const { nev, eletkor, nem, fajta, leiras } = req.body; 
   if (!nev || !fajta) return res.status(400).json({ error: 'Hiányzó adatok!' });
 
   const kepUrl = req.file ? `${req.protocol}://${req.get('host')}/img/kutyak/${req.file.filename}` : null;
 
   const checkFajta = 'SELECT fajta_id FROM fajtak WHERE nev = ? LIMIT 1';
   db.query(checkFajta, [fajta], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Adatbázis hiba fajta ellenőrzésnél!' });
+      if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
 
-    if (results.length > 0) {
-      insertKutya(nev, eletkor, nem, results[0].fajta_id, kepUrl, res);
-    } else {
-      const insertFajta = 'INSERT INTO fajtak (nev) VALUES (?)';
-      db.query(insertFajta, [fajta], (err2, result2) => {
-        if (err2) return res.status(500).json({ error: 'Adatbázis hiba fajta beszúrásnál!' });
-        insertKutya(nev, eletkor, nem, result2.insertId, kepUrl, res);
-      });
-    }
+      if (results.length > 0) {
+          // 1. HA LÉTEZIK A FAJTA: Mentés közvetlenül
+          const sql = 'INSERT INTO kutyak (nev, eletkor, nem, fajta_id, kep_url, leiras) VALUES (?, ?, ?, ?, ?, ?)';
+          db.query(sql, [nev, eletkor || null, nem || null, results[0].fajta_id, kepUrl, leiras || null], err3 => {
+              if (err3) return res.status(500).json({ error: 'Adatbázis hiba mentésnél!' });
+              res.json({ message: 'Kutya sikeresen hozzáadva!' });
+          });
+      } else {
+          // 2. HA NEM LÉTEZIK A FAJTA: Előbb fajta mentés, utána kutya mentés
+          const insertFajta = 'INSERT INTO fajtak (nev) VALUES (?)';
+          db.query(insertFajta, [fajta], (err2, result2) => {
+              if (err2) return res.status(500).json({ error: 'Adatbázis hiba fajta mentésnél!' });
+
+              const sql = 'INSERT INTO kutyak (nev, eletkor, nem, fajta_id, kep_url, leiras) VALUES (?, ?, ?, ?, ?, ?)';
+              db.query(sql, [nev, eletkor || null, nem || null, result2.insertId, kepUrl, leiras || null], err4 => {
+                  if (err4) return res.status(500).json({ error: 'Adatbázis hiba kutya mentésnél!' });
+                  res.json({ message: 'Kutya sikeresen hozzáadva!' });
+              });
+          });
+      }
   });
 });
 
 app.get('/kutyak', (req, res) => {
   const sql = `
-    SELECT k.kutya_id, k.nev, k.eletkor, k.nem, k.kep_url, f.nev AS fajta
+    SELECT k.kutya_id, k.nev, k.eletkor, k.nem, k.kep_url, k.leiras, f.nev AS fajta
     FROM kutyak k
     JOIN fajtak f ON k.fajta_id = f.fajta_id
     ORDER BY k.kutya_id DESC
