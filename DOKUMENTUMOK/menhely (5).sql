@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Jan 21. 11:39
+-- Létrehozás ideje: 2026. Jan 21. 11:59
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -33,20 +33,6 @@ CREATE TABLE `adomanyok` (
   `datum` date NOT NULL,
   `osszeg` decimal(10,2) DEFAULT NULL,
   `targy` varchar(200) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Tábla szerkezet ehhez a táblához `dolgozok`
---
-
-CREATE TABLE `dolgozok` (
-  `dolgozo_id` int(11) NOT NULL,
-  `nev` varchar(100) NOT NULL,
-  `beosztas` varchar(50) DEFAULT NULL,
-  `telefonszam` varchar(20) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -91,7 +77,6 @@ CREATE TABLE `felhasznalok` (
   `email` varchar(100) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
   `szerepkor` enum('admin','dolgozo','onkentes') DEFAULT 'dolgozo',
-  `dolgozo_id` int(11) DEFAULT NULL,
   `kep_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -99,9 +84,9 @@ CREATE TABLE `felhasznalok` (
 -- A tábla adatainak kiíratása `felhasznalok`
 --
 
-INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `dolgozo_id`, `kep_url`) VALUES
-(4, 'admin', 'kirajok69@gmail.com', '$2b$10$9GG0WDAxbltus6R3cIXIrOJ97R8CHAx07cb8f8s69OVQRIcdch4he', 'admin', NULL, '/img/profilok/profile-1768392893743.jpg'),
-(5, 'Norbi', 'acsnor055@hengersor.hu', '$2b$10$8T9HW.rA6/7ihwdWAUm2lun2yxUp9.Yr05IkMdnvtb/okJaCQxhs6', 'onkentes', NULL, NULL);
+INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `kep_url`) VALUES
+(4, 'admin', 'kirajok69@gmail.com', '$2b$10$9GG0WDAxbltus6R3cIXIrOJ97R8CHAx07cb8f8s69OVQRIcdch4he', 'admin', '/img/profilok/profile-1768392893743.jpg'),
+(5, 'Norbi', 'acsnor055@hengersor.hu', '$2b$10$8T9HW.rA6/7ihwdWAUm2lun2yxUp9.Yr05IkMdnvtb/okJaCQxhs6', 'onkentes', NULL);
 
 -- --------------------------------------------------------
 
@@ -199,12 +184,6 @@ ALTER TABLE `adomanyok`
   ADD KEY `orokbefogado_id` (`orokbefogado_id`);
 
 --
--- A tábla indexei `dolgozok`
---
-ALTER TABLE `dolgozok`
-  ADD PRIMARY KEY (`dolgozo_id`);
-
---
 -- A tábla indexei `fajtak`
 --
 ALTER TABLE `fajtak`
@@ -215,8 +194,7 @@ ALTER TABLE `fajtak`
 --
 ALTER TABLE `felhasznalok`
   ADD PRIMARY KEY (`felhasznalo_id`),
-  ADD UNIQUE KEY `felhasznalonev` (`felhasznalonev`),
-  ADD KEY `dolgozo_id` (`dolgozo_id`);
+  ADD UNIQUE KEY `felhasznalonev` (`felhasznalonev`);
 
 --
 -- A tábla indexei `kutyak`
@@ -255,12 +233,6 @@ ALTER TABLE `orvosi_vizsgalatok`
 --
 ALTER TABLE `adomanyok`
   MODIFY `adomany_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT a táblához `dolgozok`
---
-ALTER TABLE `dolgozok`
-  MODIFY `dolgozo_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT a táblához `fajtak`
@@ -307,12 +279,6 @@ ALTER TABLE `orvosi_vizsgalatok`
 --
 ALTER TABLE `adomanyok`
   ADD CONSTRAINT `adomanyok_ibfk_1` FOREIGN KEY (`orokbefogado_id`) REFERENCES `orokbefogadok` (`orokbefogado_id`);
-
---
--- Megkötések a táblához `felhasznalok`
---
-ALTER TABLE `felhasznalok`
-  ADD CONSTRAINT `felhasznalok_ibfk_1` FOREIGN KEY (`dolgozo_id`) REFERENCES `dolgozok` (`dolgozo_id`);
 
 --
 -- Megkötések a táblához `kutyak`
