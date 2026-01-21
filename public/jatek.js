@@ -171,3 +171,24 @@ function gameLoop() {
 
 startBtn.addEventListener('click', initGame);
 window.addEventListener('resize', resizeCanvas);
+
+window.addEventListener('scroll', () => {
+
+    const gameBtn = document.getElementById('game-button');
+
+    // Ha több mint 100 pixelt görgetett lefelé, elrejtjük
+
+    if (window.scrollY > 100) {
+
+        gameBtn.classList.add('btn-hidden');
+
+    } else {
+
+        // Ha visszaugrik a tetejére, újra megjelenik
+
+        gameBtn.classList.remove('btn-hidden');
+
+    }
+
+});
+ 
