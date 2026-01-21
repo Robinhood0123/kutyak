@@ -957,3 +957,31 @@ nav ul, .navbar-nav {
     text-decoration: underline;
     font-weight: bold;
 }
+/* Főoldal játék */
+#game-button {
+    background-color: black;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s, visibility 0.4s;
+}
+#game-button:hover {
+    transform: scale(1.1);
+    background-color: #007bff;
+}
+.btn-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.modal-active { display: flex !important; animation: bounceIn 0.4s ease; }
+@keyframes bounceIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+/* Kék gomb stílusa a felugró ablakban */
+.btn-game-primary {
+    background-color: #007bff;
+    box-shadow: 0 5px 0 #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+.btn-game-primary:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #007bff;
+}
