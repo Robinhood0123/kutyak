@@ -341,33 +341,47 @@ section{
 .kutyak {
     display: grid !important; /* Kényszerítjük a rács elrendezést */
     /* Ez mondja meg, hogy a kártyák min. 250px, max 300px szélesek legyenek: */
-    grid-template-columns: repeat(auto-fill, minmax(250px, 300px)); 
-    gap: 20px; /* Távolság a kártyák között */
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+    gap: 30px; /* Távolság a kártyák között */
     justify-content: center; /* Középre rendezi a kártyákat */
     padding: 20px;
-    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+    .kutyak {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .kutya-card {
-    width: 100%; /* A grid szabályozza a szélességet, itt maradjon 100% */
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s;
+    height: 100%; /* Egységes magasság */
+}
+
+.kutya-card:hover {
+    transform: translateY(-10px);
 }
 
 .kutya-card-img-wrapper {
     width: 100%;
-    height: 200px; /* Itt állítsd be, milyen magas legyen a kiskép */
+    height: 250px; /* Itt állítsd be, milyen magas legyen a kiskép */
+    overflow: hidden;
 }
 
 .kutya-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Ez vágja méretre a képet torzítás nélkül */
+    transition: transform 0.5s ease;
 }
 
 .kutya-card:hover .kutya-card-img {
@@ -384,7 +398,7 @@ section{
 .kutya-card-body h3 {
     font-size: 1.5rem;
     color: #2c3e50;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
 }
 
@@ -398,9 +412,10 @@ section{
     background-color: #007bff;
     color: white;
     padding: 10px 25px;
-    border-radius: 5px;
+    border-radius: 25px;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 500;
+    margin-top: 15px;
     display: inline-block;
     transition: background 0.3s ease;
 }
@@ -874,4 +889,71 @@ nav ul, .navbar-nav {
     cursor: pointer;
 }
 
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
 
+.page-btn {
+    padding: 10px 18px;
+    border: 2px solid #007bff;
+    background: white;
+    color: #007bff;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.page-btn:hover {
+    background: #007bff;
+    color: white;
+}
+
+.page-btn.active {
+    background: #007bff;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.nav-btn:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.nav-btn:not(:disabled):hover {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+/* Ha nincs belépve, a kurzor ne legyen mutatóujj, csak egy tiltó jel */
+.not-logged-in .kutya-card {
+    cursor: not-allowed;
+}
+
+/* Egy kis extra: ha nincs belépve, a részletek gomb legyen szürke */
+.not-logged-in .btn-reszletek-custom {
+    background-color: #ccc;
+}
+
+/* Figyelmeztető sáv a lista felett */
+.login-warning-bar {
+    background-color: #ffffff;
+    color: black;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid #ffffff;
+    font-weight: 500;
+}
+
+.login-warning-bar a {
+    color: #007bff;
+    text-decoration: underline;
+    font-weight: bold;
+}

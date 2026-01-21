@@ -12,46 +12,139 @@ function scrollFunction() {
   }
 }
 
-// --- Kutyák betöltése (MODERN VERZIÓ) ---
+// --- Kutyák betöltése (MODERN, LAPOZHATÓ ÉS BIZTONSÁGOS VERZIÓ) ---
+let osszesKutya = []; 
+let jelenlegiOldal = 1;
+const kutyakPerOldal = 9;
+
 window.addEventListener('DOMContentLoaded', () => {
-  const lista = document.getElementById('kutyaLista');
-  if (lista) { // CSAK AKKOR FUT HA VAN LISTA ELEM
-    lista.innerHTML = ''; 
+    const lista = document.getElementById('kutyaLista');
+    const bejelentkezve = localStorage.getItem('loggedInUser');
 
-    fetch('http://localhost:3000/kutyak')
-      .then(res => res.json())
-      .then(data => {
-        if (!data || data.length === 0) {
-          lista.innerHTML = '<p style="text-align:center;color:red;">Jelenleg nincsenek kutyák az adatbázisban.</p>';
-          return;
-        }
+    // Ha nincs belépve, vizuális jelzést adunk (opcionális CSS-hez)
+    if (lista && !bejelentkezve) {
+      lista.classList.add('not-logged-in');
+      
+      // Beszúrunk egy figyelmeztető üzenetet a lista elé
+      const infoSáv = document.createElement('div');
+      infoSáv.className = 'login-warning-bar';
+      infoSáv.innerHTML = '<i class="fas fa-info-circle"></i> A kutyusok részletes adatainak megtekintéséhez kérjük, <a href="bejelentkezes.html">jelentkezz be</a>!';
+      lista.parentNode.insertBefore(infoSáv, lista);
+  }
 
-        data.forEach(kutya => {
-          const card = document.createElement('div');
-          card.className = 'kutya-card'; 
-          
-          card.innerHTML = `
+    if (lista) {
+        fetch('http://localhost:3000/kutyak')
+            .then(res => res.json())
+            .then(data => {
+                osszesKutya = data;
+                megjelenitOldalt(1); 
+            })
+            .catch(() => {
+                lista.innerHTML = '<p style="text-align:center;color:red;">Hiba a betöltéskor. Ellenőrizd a szerver futását!</p>';
+            });
+    }
+});
+
+function megjelenitOldalt(oldal) {
+    const osszesOldalSzama = Math.ceil(osszesKutya.length / kutyakPerOldal);
+    
+    // Határértékek kezelése
+    if (oldal < 1) oldal = 1;
+    if (oldal > osszesOldalSzama) oldal = osszesOldalSzama;
+    
+    jelenlegiOldal = oldal;
+    const lista = document.getElementById('kutyaLista');
+    if (!lista) return;
+    
+    lista.innerHTML = '';
+
+    const start = (oldal - 1) * kutyakPerOldal;
+    const end = start + kutyakPerOldal;
+    const aktualisKutyak = osszesKutya.slice(start, end);
+
+    if (aktualisKutyak.length === 0) {
+        lista.innerHTML = '<p style="text-align:center;">Jelenleg nincsenek kutyák az adatbázisban.</p>';
+        return;
+    }
+
+    aktualisKutyak.forEach(kutya => {
+        const card = document.createElement('div');
+        card.className = 'kutya-card';
+        card.innerHTML = `
             <div class="kutya-card-img-wrapper">
-              <img class="kutya-card-img" src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev}">
+                <img class="kutya-card-img" src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev}">
             </div>
             <div class="kutya-card-body">
-              <h3>${kutya.nev}</h3>
-              <p>${kutya.fajta} <br> ${kutya.eletkor} éves • ${kutya.nem}</p>
-              <span class="btn-reszletek-custom">Részletek</span>
+                <h3>${kutya.nev}</h3>
+                <p>${kutya.fajta} <br> ${kutya.eletkor} éves • ${kutya.nem}</p>
+                <span class="btn-reszletek-custom">Részletek</span>
             </div>`;
-          
-          card.addEventListener('click', () => {
-            megnyitKutyaModalt(kutya);
-          });
         
-          lista.appendChild(card);
+        // --- KATTINTÁS ELLENŐRZÉSE ---
+        card.addEventListener('click', () => {
+            const bejelentkezve = localStorage.getItem('loggedInUser');
+            if (bejelentkezve) {
+                // Ha be van jelentkezve, megnyitjuk a részleteket
+                megnyitKutyaModalt(kutya);
+            } else {
+                // Ha nincs bejelentkezve, hibaüzenet
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Bejelentkezés szükséges',
+                    text: 'A kutyusok részleteit csak regisztrált tagok láthatják!',
+                    confirmButtonText: 'Értem',
+                    confirmButtonColor: '#007bff'
+                });
+            }
         });
-      })
-      .catch(() => {
-        lista.innerHTML = '<p style="text-align:center;color:red;">Nem sikerült betölteni a kutyák adatait.</p>';
-      });
-  }
-});
+
+        lista.appendChild(card);
+    });
+
+    frissitPagination(osszesOldalSzama);
+}
+
+function frissitPagination(osszesOldalSzama) {
+    const pagination = document.getElementById('pagination');
+    if (!pagination) return;
+    
+    pagination.innerHTML = '';
+    if (osszesOldalSzama <= 1) return;
+
+    // "Előző" nyíl
+    const prevBtn = document.createElement('button');
+    prevBtn.innerHTML = '←'; 
+    prevBtn.className = 'page-btn nav-btn';
+    prevBtn.disabled = jelenlegiOldal === 1;
+    prevBtn.onclick = () => {
+        megjelenitOldalt(jelenlegiOldal - 1);
+        document.getElementById('kutyaink').scrollIntoView({ behavior: 'smooth' });
+    };
+    pagination.appendChild(prevBtn);
+
+    // Számozott gombok
+    for (let i = 1; i <= osszesOldalSzama; i++) {
+        const btn = document.createElement('button');
+        btn.innerText = i;
+        btn.className = `page-btn ${i === jelenlegiOldal ? 'active' : ''}`;
+        btn.onclick = () => {
+            megjelenitOldalt(i);
+            document.getElementById('kutyaink').scrollIntoView({ behavior: 'smooth' });
+        };
+        pagination.appendChild(btn);
+    }
+
+    // "Következő" nyíl
+    const nextBtn = document.createElement('button');
+    nextBtn.innerHTML = '→'; 
+    nextBtn.className = 'page-btn nav-btn';
+    nextBtn.disabled = jelenlegiOldal === osszesOldalSzama;
+    nextBtn.onclick = () => {
+        megjelenitOldalt(jelenlegiOldal + 1);
+        document.getElementById('kutyaink').scrollIntoView({ behavior: 'smooth' });
+    };
+    pagination.appendChild(nextBtn);
+}
 
 // --- Visszajelzés küldése ---
 function validateForm() {
@@ -469,25 +562,31 @@ function megnyitKutyaModalt(kutya) {
 }
 
 let currentAmount = 5000;
-function selectAmount(element, value) {
-    document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
-    element.classList.add('active');
-    currentAmount = value;
-    document.getElementById('customInput').value = '';
-    updateDisplay();
+
+function selectAmount(btn, amount) {
+    // Gombok stílusának kezelése
+    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    currentAmount = amount;
+    document.getElementById('selected-sum').innerText = amount.toLocaleString();
+    document.getElementById('customInput').value = ""; // Törli az egyedi mezőt
 }
-function clearButtons() {
-    document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
-    currentAmount = document.getElementById('customInput').value;
-    updateDisplay();
-}
-function updateDisplay() {
-    document.getElementById('selected-sum').innerText = currentAmount || 0;
-}
-function redirectToSimplePay() {
-    if (currentAmount < 100) {
-        alert("Minimális adomány: 100 Ft");
-        return;
+
+function updateSelectedSum() {
+    let customVal = document.getElementById('customInput').value;
+    if (customVal > 0) {
+        currentAmount = customVal;
+        document.getElementById('selected-sum').innerText = parseInt(customVal).toLocaleString();
+        // Leveszi a kijelölést a fix gombokról
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
     }
-    alert("Átirányítás a SimplePay oldalára: " + currentAmount + " Ft");
+}
+
+function payWithRevolut() {
+    // IDE ÍRD A SAJÁT REVOLUT ME LINKEDET!
+    // Példa: https://revolut.me/ricsiandnorbi/
+    const url = `https://revolut.me/szentpalir`;
+    
+    window.open(url, '_blank');
 }

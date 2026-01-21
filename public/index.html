@@ -59,6 +59,7 @@
         <div class="kutyak" id="kutyaLista">
             <p style="text-align:center;">Betöltés folyamatban...</p>
         </div>
+        <div id="pagination" class="pagination-container"></div>
     </section>
 
     <section id="ricsirobinorbi">
@@ -93,27 +94,29 @@
     </section>
     
     <section id="adomany" class="donation-section">
-        <div class="donation-container">
-            <h2>Támogasd a védenceinket!</h2>
-            <div class="donation-box">
-                <div class="amount-options">
-                    <button type="button" class="amount-btn" onclick="selectAmount(this, 2000)">2 000 Ft</button>
-                    <button type="button" class="amount-btn active" onclick="selectAmount(this, 5000)">5 000 Ft</button>
-                    <button type="button" class="amount-btn" onclick="selectAmount(this, 10000)">10 000 Ft</button>
-                </div>
-                <div class="custom-amount">
-                    <input type="number" id="customInput" placeholder="Egyedi összeg (Ft)" oninput="clearButtons()">
-                </div>
-                <div class="simplepay-footer">
-                    <p>Választott összeg: <span id="selected-sum">5 000</span> Ft</p>
-                    <button class="simplepay-btn" onclick="redirectToSimplePay()">Fizetés SimplePay-el</button>
-                    <div class="payment-logos">
-                        <img src="img/simple.png" alt="SimplePay" width="120">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+      <div class="donation-container">
+          <h2>Támogasd a védenceinket!</h2>
+          <div class="donation-box">
+              <div class="amount-options">
+                  <button type="button" class="amount-btn" onclick="selectAmount(this, 2000)">2 000 Ft</button>
+                  <button type="button" class="amount-btn active" onclick="selectAmount(this, 5000)">5 000 Ft</button>
+                  <button type="button" class="amount-btn" onclick="selectAmount(this, 10000)">10 000 Ft</button>
+              </div>
+              <div class="custom-amount">
+                  <input type="number" id="customInput" placeholder="Egyedi összeg (Ft)" oninput="updateSelectedSum()">
+              </div>
+              <div class="payment-footer">
+                  <p>Választott összeg: <span id="selected-sum">5000</span> Ft</p>
+                  
+                  <button class="revolut-btn" onclick="payWithRevolut()" style="background: #fff; color: #000; border: 2px solid #000; padding: 10px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 10px;">
+                      Fizetés Revoluton
+                  </button>
+  
+                  <p style="font-size: 12px; color: #666;">Vagy közvetlen utalás: <b>11700000-00000000</b> (OTP)</p>
+              </div>
+          </div>
+      </div>
+  </section>
     
    
 
@@ -199,7 +202,7 @@
             <div class="col-md-6 modern-modal-details">
               <div class="info-grid">
                 <p><strong>Fajta:</strong> <span id="kutyaModalFajta"></span></p>
-                <p><strong>Kor:</strong> <span id="kutyaModalEletkor"></span> év</p>
+                <p><strong>Kor:</strong> <span id="kutyaModalEletkor"></span></p>
                 <p><strong>Nem:</strong> <span id="kutyaModalNem"></span></p>
               </div>
               <hr>
