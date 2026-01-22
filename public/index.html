@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kutyamenhely</title>
     <link rel="icon" type="image/x-icon" href="img/logo2.png">
     <link rel="stylesheet" href="style.css">
@@ -28,7 +28,7 @@
             <label for="check" class="checkbtn">
               <i class="fas fa-bars"></i>
             </label>
-            <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
+            <label class="logo"><img src="img/logo2.png" style="margin-top: 12.3px" alt=""></label>
             <ul>
               <li><a class="active" href="index.html">Főoldal</a></li>
               <li><a href="#kutyaink">Kutyáink</a></li>
@@ -38,7 +38,7 @@
               <li id="adminNavItem"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
           
               <!-- Bejelentkezés gomb, ami eltűnik ha bejelentkezve -->
-              <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
+              <li><a href="bejelentkezes.html">Bejelentkezés</a></li>
               <li id="profileNavItem" style="display:none; vertical-align: middle;">
                 <img id="profileIcon" src="img/default-profile.png" style="width:50px; height:50px; border-radius:50%; cursor:pointer;border: 2px solid #f0f0f0; object-fit: cover; margin-left: 15px;">
             </li>
@@ -105,22 +105,20 @@
       <div class="donation-container">
           <h2>Támogasd a védenceinket!</h2>
           <div class="donation-box">
-              <div class="amount-options">
-                  <button type="button" class="amount-btn" onclick="selectAmount(this, 2000)">2 000 Ft</button>
-                  <button type="button" class="amount-btn active" onclick="selectAmount(this, 5000)">5 000 Ft</button>
-                  <button type="button" class="amount-btn" onclick="selectAmount(this, 10000)">10 000 Ft</button>
-              </div>
-              <div class="custom-amount">
-                  <input type="number" id="customInput" placeholder="Egyedi összeg (Ft)" oninput="updateSelectedSum()">
-              </div>
               <div class="payment-footer">
-                  <p>Választott összeg: <span id="selected-sum">5000</span> Ft</p>
                   
-                  <button class="revolut-btn" onclick="payWithRevolut()" style="background: #fff; color: #000; border: 2px solid #000; padding: 10px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 10px;">
+                  <button class="revolut-btn" onclick="payWithRevolut()" style="background: #fff; color: #000; border: 2px solid #000; padding: 15px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 10px; cursor: pointer; font-family: sans-serif;">
                       Fizetés Revoluton
                   </button>
   
-                  <p style="font-size: 12px; color: #666;">Vagy közvetlen utalás: <b>10701599-72908547-51100005</b> (CIB)</p>
+                  <button class="paypal-btn" onclick="payWithPaypal()" style="background: #007bff; color: #000; border: 2px solid #000; padding: 15px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 15px; cursor: pointer; font-family: sans-serif;">
+                      Fizetés PayPal-lal
+                  </button>
+  
+                  <p style="font-size: 14px; color: #666; text-align: center;">
+                      Vagy közvetlen utalás: <br>
+                      <b>10701599-72908547-51100005</b> (CIB)
+                  </p>
               </div>
           </div>
       </div>

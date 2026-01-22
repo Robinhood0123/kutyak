@@ -258,3 +258,4 @@ main {
     .footer-col { width: 100%; text-align: center; }
     .footer-col h4::before { left: 50%; transform: translateX(-50%); }
 }
+

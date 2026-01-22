@@ -590,3 +590,10 @@ function payWithRevolut() {
     
     window.open(url, '_blank');
 }
+
+function payWithPaypal() {
+  const url = `https://www.paypal.com/paypalme/TothRobert00`;
+  
+  window.open(url, '_blank');
+}
+

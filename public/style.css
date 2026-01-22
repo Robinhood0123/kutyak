@@ -9,120 +9,104 @@
     list-style: none;
     text-decoration: none;
 }
-header{
+
+header {
     position: fixed;
     width: 100%;
     top: 0;
     right: 0;
     z-index: 1000;
+    background: #ffffff; /* háttérszín */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0px; 
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* kis árnyék */
 }
 
 
 
-.logo img{
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+    background: white;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+.logo img {
     width: 80px;
     height: auto;
 }
-nav{
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-  }
-  label.logo{
-    color: white;
-    font-size: 35px;
-    line-height: 50px;
-    padding: 0 100px;
-    font-weight: bold;
-  }
-  nav ul{
-    float: right;
-    margin-right: 20px;
-    padding-top: 20px;
-  }
-  nav ul li{
-    display: inline-block;
-    line-height: 80px;
-    margin: 0 5px;
-    vertical-align: middle;
-  }
-  nav ul li a{
+
+nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 10px;
+}
+
+nav ul li a {
     color: black;
     font-size: 17px;
-    padding: 7px 13px;
-    border-radius: 3px;
+    text-decoration: none;
     text-transform: uppercase;
-  }
-  a.active,a:hover{
-    
     transition: .5s;
-  }
-  .checkbtn{
+}
+
+.checkbtn {
     font-size: 30px;
     color: black;
-    float: right;
-    line-height: 80px;
-    margin-right: 40px;
     cursor: pointer;
     display: none;
-  }
-  #check{
+}
+
+#check {
     display: none;
-  }
-  @media (max-width: 952px){
-    label.logo{
-      font-size: 30px;
-      padding-left: 50px;
-    }
-    nav ul li a{
-      font-size: 16px;
-    }
-  }
-  @media (max-width: 858px){
-    .checkbtn{
-      display: block;
-    }
-    ul{
-      position: fixed;
-      width: 100%;
-      height: 100vh;
-      background: #2c3e50;
-      top: 100px;
-      left: -100%;
-      text-align: center;
-      transition: all .5s;
-    }
-    nav ul li{
-      display: block;
-      margin: 50px 0;
-      line-height: 30px;
-    }
-    nav ul li a{
-      font-size: 20px;
-    }
-    a:hover,a.active{
-      background: none;
-      color: #0082e6;
-    }
-    #check:checked ~ ul{
-      left: 0;
-    }
-  }
-  @media (max-width: 858px) {
-    #profileNavItem {
-        justify-content: center;
-        margin-top: 20px;
+}
+
+@media (max-width: 858px) {
+    .checkbtn {
+        display: block;
+        order: 2;
     }
     
-    #profileNavItem img {
-        width: 70px;
-        height: 70px;
-        margin-left: 0;
+    .logo {
+        order: 1;
+    }
+
+    nav ul {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        background: #2c3e50;
+        top: 100px;
+        left: -100%;
+        flex-direction: column;
+        align-items: center;
+        transition: all .5s;
+    }
+
+    nav ul li {
+        margin: 30px 0;
+    }
+
+    nav ul li a {
+        font-size: 20px;
+        color: white;
+    }
+
+    #check:checked ~ ul {
+        left: 0;
     }
 }
 
@@ -984,4 +968,12 @@ nav ul, .navbar-nav {
 .btn-game-primary:active {
     transform: translateY(3px);
     box-shadow: 0 2px 0 #007bff;
+}
+
+#adomany {
+    scroll-margin-top: 150px;
+}
+
+#visszajelzesek {
+    scroll-margin-top: 90px;
 }
