@@ -14,6 +14,7 @@ function scrollFunction() {
 
 // --- Kutyák betöltése (MODERN, LAPOZHATÓ ÉS BIZTONSÁGOS VERZIÓ) ---
 let osszesKutya = []; 
+let szurtKutyak = []; // Szűrt kutyák tárolása
 let jelenlegiOldal = 1;
 const kutyakPerOldal = 9;
 
@@ -37,7 +38,11 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 osszesKutya = data;
+                szurtKutyak = [...data]; // Kezdetben a szűrt lista megegyezik az eredetivel
+                betoltFajtak(); // Fajták betöltése a szűrőbe
                 megjelenitOldalt(1); 
+                // Szűrő eseménykezelők beállítása
+                beallitSzuroEsemenykezeloket();
             })
             .catch(() => {
                 lista.innerHTML = '<p style="text-align:center;color:red;">Hiba a betöltéskor. Ellenőrizd a szerver futását!</p>';
@@ -45,8 +50,114 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// --- Fajták betöltése a szűrőbe ---
+function betoltFajtak() {
+    const fajtak = [...new Set(osszesKutya.map(kutya => kutya.fajta))].sort();
+    const fajtaFilter = document.getElementById('fajtaFilter');
+    
+    if (fajtaFilter) {
+        fajtak.forEach(fajta => {
+            const option = document.createElement('option');
+            option.value = fajta;
+            option.textContent = fajta;
+            fajtaFilter.appendChild(option);
+        });
+    }
+}
+
+// --- Szűrő eseménykezelők beállítása ---
+function beallitSzuroEsemenykezeloket() {
+    const filterBtn = document.getElementById('filterBtn');
+    const resetFilterBtn = document.getElementById('resetFilterBtn');
+    
+    if (filterBtn) {
+        filterBtn.addEventListener('click', szures);
+    }
+    
+    if (resetFilterBtn) {
+        resetFilterBtn.addEventListener('click', szuroReset);
+    }
+    
+    // Enter billentyű a kereső mezőben
+    const kereso = document.getElementById('kereso');
+    if (kereso) {
+        kereso.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                szures();
+            }
+        });
+    }
+}
+
+// --- Szűrés funkció ---
+function szures() {
+    const fajtaFilter = document.getElementById('fajtaFilter').value.toLowerCase();
+    const nemFilter = document.getElementById('nemFilter').value.toLowerCase();
+    const korFilter = document.getElementById('korFilter').value.toLowerCase();
+    const kereso = document.getElementById('kereso').value.toLowerCase();
+    
+    szurtKutyak = osszesKutya.filter(kutya => {
+        // Fajta szűrés
+        if (fajtaFilter && kutya.fajta.toLowerCase() !== fajtaFilter) {
+            return false;
+        }
+        
+        // Nem szűrés
+        if (nemFilter && kutya.nem.toLowerCase() !== nemFilter) {
+            return false;
+        }
+        
+        // Kor szűrés
+        if (korFilter) {
+            const kutyaKor = parseInt(kutya.eletkor) || 0;
+            switch(korFilter) {
+                case 'kölyök':
+                    if (kutyaKor > 1) return false;
+                    break;
+                case 'fiatal':
+                    if (kutyaKor < 1 || kutyaKor > 3) return false;
+                    break;
+                case 'felnőtt':
+                    if (kutyaKor < 3 || kutyaKor > 8) return false;
+                    break;
+                case 'idős':
+                    if (kutyaKor < 8) return false;
+                    break;
+            }
+        }
+        
+        // Név szerinti keresés
+        if (kereso && kutya.nev.toLowerCase().indexOf(kereso) === -1) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    jelenlegiOldal = 1; // Vissza az első oldalra
+    megjelenitOldalt(1);
+    
+    // Státusz üzenet
+    const lista = document.getElementById('kutyaLista');
+    if (szurtKutyak.length === 0) {
+        lista.innerHTML = '<p style="text-align:center; color: #666; font-size: 18px; margin-top: 50px;">A megadott szűrőkkel nem található kutya. <br><small>Próbáld meg módosítani a szűrőfeltételeket!</small></p>';
+    }
+}
+
+// --- Szűrők törlése ---
+function szuroReset() {
+    document.getElementById('fajtaFilter').value = '';
+    document.getElementById('nemFilter').value = '';
+    document.getElementById('korFilter').value = '';
+    document.getElementById('kereso').value = '';
+    
+    szurtKutyak = [...osszesKutya];
+    jelenlegiOldal = 1;
+    megjelenitOldalt(1);
+}
+
 function megjelenitOldalt(oldal) {
-    const osszesOldalSzama = Math.ceil(osszesKutya.length / kutyakPerOldal);
+    const osszesOldalSzama = Math.ceil(szurtKutyak.length / kutyakPerOldal);
     
     // Határértékek kezelése
     if (oldal < 1) oldal = 1;
@@ -60,7 +171,7 @@ function megjelenitOldalt(oldal) {
 
     const start = (oldal - 1) * kutyakPerOldal;
     const end = start + kutyakPerOldal;
-    const aktualisKutyak = osszesKutya.slice(start, end);
+    const aktualisKutyak = szurtKutyak.slice(start, end);
 
     if (aktualisKutyak.length === 0) {
         lista.innerHTML = '<p style="text-align:center;">Jelenleg nincsenek kutyák az adatbázisban.</p>';
@@ -102,6 +213,90 @@ function megjelenitOldalt(oldal) {
     });
 
     frissitPagination(osszesOldalSzama);
+}
+
+// --- Kutya modal megnyitása ---
+function megnyitKutyaModalt(kutya) {
+    $('#kutyaModalNev').text(kutya.nev);
+    $('#kutyaModalKep').attr('src', kutya.kep_url || 'img/alap.png');
+    $('#kutyaModalFajta').text(kutya.fajta);
+    $('#kutyaModalEletkor').text(kutya.eletkor + ' éves');
+    $('#kutyaModalNem').text(kutya.nem);
+    
+    // Leírás kezelése - ha van, azt mutatja, ha nincs, alapértelmezett szöveget
+    if (kutya.leiras && kutya.leiras.trim() !== '') {
+        $('#kutyaModalLeiras').text(kutya.leiras);
+    } else {
+        $('#kutyaModalLeiras').text('Nincs megadott leírás ennél a kutyánál.');
+    }
+    
+    // Örökbefogadás gomb eseménykezelője
+    $('#orokbeBtn').off('click').on('click', function() {
+        // Bezárjuk a kutya modalt
+        $('#dogModal').modal('hide');
+        
+        // Kitöltjük a rejtett mezőket a kutya adataival
+        $('#adoptKutyaId').val(kutya.kutya_id);
+        $('#adoptKutyaNev').val(kutya.nev);
+        
+        // Megnyitjuk az örökbefogadási modalt
+        setTimeout(() => {
+            $('#adoptModal').modal('show');
+        }, 300);
+    });
+    
+    $('#dogModal').modal('show');
+}
+
+// --- Örökbefogadási űrlap kezelése ---
+$(document).ready(function() {
+    // Űrlap küldése
+    $('#adoptForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        
+        // Validáció
+        if (!data.elfogadom) {
+            showAdoptError('Kérlek, fogadd el az örökbefogadási feltételeket!');
+            return;
+        }
+        
+        // Adatok küldése a szervernek
+        $.ajax({
+            url: '/api/adoption',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    $('#adoptForm').hide();
+                    $('#adoptSuccessMessage').show();
+                    // Modal bezárása 3 másodperc után
+                    setTimeout(() => {
+                        $('#adoptModal').modal('hide');
+                        // Reset form
+                        $('#adoptForm')[0].reset();
+                        $('#adoptForm').show();
+                        $('#adoptSuccessMessage').hide();
+                    }, 3000);
+                } else {
+                    showAdoptError(response.error || 'Hiba történt a jelentkezés feldolgozása során.');
+                }
+            },
+            error: function() {
+                showAdoptError('Hálózati hiba történt. Kérlek, próbáld újra később.');
+            }
+        });
+    });
+});
+
+function showAdoptError(message) {
+    $('#adoptErrorMessage').text(message).show();
+    setTimeout(() => {
+        $('#adoptErrorMessage').fadeOut();
+    }, 5000);
 }
 
 function frissitPagination(osszesOldalSzama) {
@@ -237,33 +432,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Form feldolgozása (Örökbefogadás)
-const adoptForm = document.getElementById("adoptForm");
-if (adoptForm) {
-    adoptForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const nev = document.getElementById("nev").value;
-      const telefonszam = document.getElementById("telefonszam").value;
-      const cim = document.getElementById("cim").value;
-      const kutya_id = document.getElementById("kutya_id").value;
-
-      fetch('http://localhost:3000/orokbefogadas', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ nev, telefonszam, cim, kutya_id })
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message || "Sikeres örökbefogadási jelentkezés!");
-        $('#adoptModal').modal('hide');
-        this.reset();
-      })
-      .catch(() => {
-        alert("Hiba történt a mentés közben.");
-      });
-    });
-}
-
 // --- Regisztráció Form ---
 const regForm = document.getElementById('regForm');
 if (regForm) {
@@ -302,55 +470,69 @@ if (regForm) {
 }
 
 // --- Bejelentkezés Form ---
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const jelszo = document.getElementById('loginJelszo').value;
-        const loginError = document.getElementById('loginError');
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Bejelentkezési oldal betöltve');
+    const loginForm = document.getElementById('loginForm');
+    console.log('Login form elem:', loginForm);
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            console.log('Bejelentkezési űrlap elküldve');
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const jelszo = document.getElementById('loginJelszo').value;
+            const loginError = document.getElementById('loginError');
+            console.log('Bejelentkezési adatok:', { email, jelszo: jelszo ? '***' : '' });
 
-        try {
-            const res = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, jelszo })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                // 1. Mentés localStorage-ba
-                localStorage.setItem('loggedInUser', JSON.stringify({ 
-                    id: data.user.id,
-                    nev: data.user.nev, 
-                    email: data.user.email,
-                    szerepkor: data.user.szerepkor,
-                    kep: data.user.kep
-                }));
-                
-                // 2. SZÉP ÉRTESÍTÉS MEGJELENÍTÉSE
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sikeres belépés',
-                    text: 'Üdvözlünk újra, ' + data.user.nev + '!',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    background: '#ffffff',
-                    iconColor: '#28a745'
-                }).then(() => {
-                    // 3. Frissítés csak az üzenet lefutása után
-                    window.location.href = 'index.html';
+            try {
+                const res = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, jelszo })
                 });
+                console.log('Válasz státusz:', res.status);
 
-            } else {
-                if (loginError) loginError.textContent = data.error || 'Hibás email vagy jelszó!';
+                const data = await res.json();
+                console.log('Válasz adatok:', data);
+
+                if (res.ok) {
+                    console.log('Bejelentkezés sikeres, adatok mentése...');
+                    // 1. Mentés localStorage-ba
+                    localStorage.setItem('loggedInUser', JSON.stringify({ 
+                        id: data.user.id,
+                        nev: data.user.nev, 
+                        email: data.user.email,
+                        szerepkor: data.user.szerepkor,
+                        kep: data.user.kep
+                    }));
+                    console.log('Felhasználói adatok elmentve a localStorage-ba');
+                    
+                    // 2. SZÉP ÉRTESÍTÉS MEGJELENÍTÉSE
+                    console.log('Sikeres bejelentkezés üzenet megjelenítése');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sikeres belépés',
+                        text: 'Üdvözlünk újra, ' + data.user.nev + '!',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#ffffff',
+                        iconColor: '#28a745'
+                    }).then(() => {
+                        console.log('Átirányítás az index.html-re');
+                        // 3. Frissítés csak az üzenet lefutása után
+                        window.location.href = 'index.html';
+                    });
+
+                } else {
+                    console.log('Bejelentkezés sikertelen:', data.error);
+                    if (loginError) loginError.textContent = data.error || 'Hibás email vagy jelszó!';
+                }
+            } catch (err) {
+                console.log('Bejelentkezés közben hiba történt:', err);
+                if (loginError) loginError.textContent = 'Szerverhiba: ' + err.message;
             }
-        } catch (err) {
-            if (loginError) loginError.textContent = 'Szerverhiba: ' + err.message;
-        }
-    });
-}
+        });
+    }
+});
 
 
 

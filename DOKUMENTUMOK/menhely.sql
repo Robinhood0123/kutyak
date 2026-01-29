@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Jan 21. 11:59
+-- Létrehozás ideje: 2026. Jan 29. 10:15
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -86,7 +86,8 @@ CREATE TABLE `felhasznalok` (
 
 INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `kep_url`) VALUES
 (4, 'admin', 'kirajok69@gmail.com', '$2b$10$9GG0WDAxbltus6R3cIXIrOJ97R8CHAx07cb8f8s69OVQRIcdch4he', 'admin', '/img/profilok/profile-1768392893743.jpg'),
-(5, 'Norbi', 'acsnor055@hengersor.hu', '$2b$10$8T9HW.rA6/7ihwdWAUm2lun2yxUp9.Yr05IkMdnvtb/okJaCQxhs6', 'onkentes', NULL);
+(5, 'Norbi', 'acsnor055@hengersor.hu', '$2b$10$8T9HW.rA6/7ihwdWAUm2lun2yxUp9.Yr05IkMdnvtb/okJaCQxhs6', 'onkentes', NULL),
+(6, 'Ricsi', 'szentpalirichard9@gmail.com', '$2b$10$fnFMju1gdT7UXayvse7J.OgEBhpRCaL4H8rSHB7CQfax0wCSPle2K', 'onkentes', '/img/profilok/profile-1769678038133.png');
 
 -- --------------------------------------------------------
 
@@ -139,11 +140,34 @@ INSERT INTO `kutyak` (`kutya_id`, `nev`, `eletkor`, `nem`, `erkezes_datum`, `faj
 --
 
 CREATE TABLE `orokbefogadasok` (
-  `orokbefogadas_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `nev` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `telefonszam` varchar(20) DEFAULT NULL,
+  `szuletesi_datum` date DEFAULT NULL,
+  `iranyitoszam` varchar(10) DEFAULT NULL,
+  `varos` varchar(100) DEFAULT NULL,
+  `utca_hazszam` varchar(255) DEFAULT NULL,
+  `lakas_tipus` varchar(50) DEFAULT NULL,
+  `ingatlan_tipus` varchar(50) DEFAULT NULL,
+  `kert` varchar(10) DEFAULT NULL,
+  `kutya_tapasztalat` varchar(10) DEFAULT NULL,
+  `allatok` text DEFAULT NULL,
+  `csalad_tagok` int(11) DEFAULT NULL,
+  `csalad_egyetert` varchar(10) DEFAULT NULL,
+  `kutya_neve` varchar(100) DEFAULT NULL,
   `kutya_id` int(11) DEFAULT NULL,
-  `orokbefogado_id` int(11) DEFAULT NULL,
-  `datum` date DEFAULT NULL
+  `megjegyzes` text DEFAULT NULL,
+  `elfogadom` tinyint(1) DEFAULT NULL,
+  `letrehozva` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `orokbefogadasok`
+--
+
+INSERT INTO `orokbefogadasok` (`id`, `nev`, `email`, `telefonszam`, `szuletesi_datum`, `iranyitoszam`, `varos`, `utca_hazszam`, `lakas_tipus`, `ingatlan_tipus`, `kert`, `kutya_tapasztalat`, `allatok`, `csalad_tagok`, `csalad_egyetert`, `kutya_neve`, `kutya_id`, `megjegyzes`, `elfogadom`, `letrehozva`) VALUES
+(1, 'asdasd', 'admin@menhely.hu', '06301869749', '2006-08-06', '2367', 'Újhartyán', 'Malom utca, 60', 'panel', 'sajat', 'van', 'igen', NULL, NULL, 'igen', NULL, NULL, 'dasdadasdas', 1, '2026-01-29 09:11:55');
 
 -- --------------------------------------------------------
 
@@ -207,9 +231,7 @@ ALTER TABLE `kutyak`
 -- A tábla indexei `orokbefogadasok`
 --
 ALTER TABLE `orokbefogadasok`
-  ADD PRIMARY KEY (`orokbefogadas_id`),
-  ADD KEY `kutya_id` (`kutya_id`),
-  ADD KEY `orokbefogado_id` (`orokbefogado_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- A tábla indexei `orokbefogadok`
@@ -244,7 +266,7 @@ ALTER TABLE `fajtak`
 -- AUTO_INCREMENT a táblához `felhasznalok`
 --
 ALTER TABLE `felhasznalok`
-  MODIFY `felhasznalo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `felhasznalo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT a táblához `kutyak`
@@ -256,7 +278,7 @@ ALTER TABLE `kutyak`
 -- AUTO_INCREMENT a táblához `orokbefogadasok`
 --
 ALTER TABLE `orokbefogadasok`
-  MODIFY `orokbefogadas_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT a táblához `orokbefogadok`
@@ -285,13 +307,6 @@ ALTER TABLE `adomanyok`
 --
 ALTER TABLE `kutyak`
   ADD CONSTRAINT `kutyak_ibfk_1` FOREIGN KEY (`fajta_id`) REFERENCES `fajtak` (`fajta_id`);
-
---
--- Megkötések a táblához `orokbefogadasok`
---
-ALTER TABLE `orokbefogadasok`
-  ADD CONSTRAINT `orokbefogadasok_ibfk_1` FOREIGN KEY (`kutya_id`) REFERENCES `kutyak` (`kutya_id`),
-  ADD CONSTRAINT `orokbefogadasok_ibfk_2` FOREIGN KEY (`orokbefogado_id`) REFERENCES `orokbefogadok` (`orokbefogado_id`);
 
 --
 -- Megkötések a táblához `orvosi_vizsgalatok`

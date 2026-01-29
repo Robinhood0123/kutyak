@@ -725,6 +725,250 @@ button:hover {
     background: #0056b3;
   }
 
+/* Örökbefogadási modal stílusok */
+#adoptModal .modal-dialog {
+    max-width: 800px;
+}
+
+#adoptModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#adoptModal .form-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+#adoptModal .form-section:last-child {
+    border-bottom: none;
+}
+
+#adoptModal .form-section h6 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+#adoptModal .form-group label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+#adoptModal .required-star {
+    color: #e74c3c;
+}
+
+#adoptModal .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+#adoptModal .checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+#adoptModal .btn-submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#adoptModal .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+#adoptModal .success-message,
+#adoptModal .error-message {
+    display: none;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#adoptModal .success-message {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#adoptModal .error-message {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive a modalnak */
+@media (max-width: 768px) {
+    #adoptModal .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    #adoptModal .form-row {
+        flex-direction: column;
+    }
+    
+    #adoptModal .form-row .form-group {
+        margin-bottom: 15px;
+    }
+}
+.kutyak-container {
+    display: flex;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.filter-sidebar {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    width: 280px;
+    flex-shrink: 0;
+    height: fit-content;
+    position: sticky;
+    top: 120px;
+}
+
+.filter-sidebar h3 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 14px;
+    display: block;
+}
+
+.filter-select,
+.filter-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.filter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.filter-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.filter-btn.reset {
+    background: #6c757d;
+}
+
+.filter-btn.reset:hover {
+    background: #5a6268;
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+
+.kutyak-content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Responsive design */
+@media(max-width:1024px) {
+    .kutyak-container {
+        flex-direction: column;
+    }
+    
+    .filter-sidebar {
+        width: 100%;
+        position: static;
+        order: -1;
+    }
+    
+    .filter-actions {
+        flex-direction: row;
+    }
+    
+    .filter-btn {
+        flex: 1;
+    }
+}
+
+@media(max-width:768px) {
+    .kutyak-container {
+        padding: 10px;
+        gap: 20px;
+    }
+    
+    .filter-sidebar {
+        padding: 20px;
+    }
+    
+    .filter-sidebar h3 {
+        font-size: 16px;
+    }
+}
+
 /* --- Admin Oldal Egyedi Stílusai --- */
 
 .admin-body {

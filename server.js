@@ -191,26 +191,64 @@ function insertKutya(nev, eletkor, nem, fajta_id, kepUrl, res) {
 }
 
 // --- Regisztráció ---
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const { nev, email, jelszo } = req.body;
   if (!nev || !email || !jelszo) return res.status(400).json({ error: 'Minden mezőt ki kell tölteni!' });
 
   const checkSql = 'SELECT * FROM felhasznalok WHERE email = ?';
-  db.query(checkSql, [email], (err, results) => {
+  db.query(checkSql, [email], async (err, results) => {
       if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
       if (results.length > 0) return res.status(400).json({ error: 'Ez az email már regisztrálva van!' });
 
-      bcrypt.hash(jelszo, 10, (err, hash) => {
+      bcrypt.hash(jelszo, 10, async (err, hash) => {
           if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
 
           // Hozzáadtuk a kep_url-t az INSERT-hez (alapértelmezett értéke null)
-          const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, dolgozo_id, kep_url) VALUES (?, ?, ?, ?, ?, ?)';
+          const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, kep_url) VALUES (?, ?, ?, ?, ?)';
           
-          db.query(insertSql, [nev, email, hash, 'onkentes', null, null], (err2) => {
+          db.query(insertSql, [nev, email, hash, 'onkentes', null], async (err2) => {
               if (err2) {
                   return res.status(500).json({ error: 'Adatbázis mentési hiba: ' + err2.sqlMessage });
               }
-              res.json({ message: 'Sikeres regisztráció!' });
+
+              // Email küldése a sikeres regisztrációról
+              try {
+                  const welcomeMail = {
+                      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+                      to: email,
+                      subject: 'Sikeres regisztráció - Robi&Ricsi&Norbi Kutyamenhely',
+                      html: `
+                          <h2>Köszönjük a regisztrációt, ${nev}!</h2>
+                          <p>Sikeresen regisztráltál a kutyamenhelyünk weboldalán!</p>
+                          <p>Mostantól:</p>
+                          <ul>
+                              <li>Bejelentkezhetsz a fiókodba</li>
+                              <li>Részletesen megtekintheted a kutyusainkat</li>
+                              <li>Örökbefogadási jelentkezést nyújthatsz be</li>
+                              <li>Értesítést kaphatsz újdonságainkról</li>
+                          </ul>
+                          <p><strong>Bejelentkezési adataid:</strong></p>
+                          <ul>
+                              <li>Email: ${email}</li>
+                          </ul>
+                          <p>Ha bármilyen kérdésed van, keress minket bizalommal!</p>
+                          <hr>
+                          <p><strong>Robi&Ricsi&Norbi Kutyamenhely</strong></p>
+                          <p>Telefon: +36 30 324 9866</p>
+                          <p>Email: kirajok69@gmail.com</p>
+                          <p>Web: <a href="http://localhost:3000">kutyamenhely.hu</a></p>
+                      `
+                  };
+
+                  await transporter.sendMail(welcomeMail);
+                  console.log('Regisztrációs email sikeresen elküldve:', email);
+                  
+              } catch (emailError) {
+                  console.error('Regisztrációs email küldési hiba:', emailError);
+                  // Ha az email hiba, de a regisztráció sikeres, akkor is jelezzük a sikert
+              }
+
+              res.json({ message: 'Sikeres regisztráció! Ellenőrizd az emailedet a megerősítő üzenetért.' });
           });
       });
   });
@@ -312,6 +350,139 @@ app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => 
     });
 });
 
+
+app.post('/api/adoption', async (req, res) => {
+  const {
+    nev, email, telefonszam, szuletesiDatum,
+    iranyitoszam, varos, utcaHazszam,
+    lakasTipus, ingatlanTipus, kert,
+    kutyaTapasztalat, csaladEgyetert,
+    kutyaNeve, kutyaId, megjegyzes, elfogadom
+  } = req.body;
+
+  // Kötelező mezők ellenőrzése
+  if (!nev || !email || !telefonszam || !iranyitoszam || !varos || !utcaHazszam || 
+      !lakasTipus || !ingatlanTipus || !kert || !kutyaTapasztalat || 
+      !csaladEgyetert || !elfogadom) {
+    return res.status(400).json({ 
+      success: false, 
+      error: 'Kérlek, töltsd ki az összes kötelező mezőt!' 
+    });
+  }
+
+  try {
+    // Örökbefogadási jelentkezés mentése az adatbázisba
+    const sql = `
+      INSERT INTO orokbefogadasok (
+        nev, email, telefonszam, szuletesi_datum,
+        iranyitoszam, varos, utca_hazszam,
+        lakas_tipus, ingatlan_tipus, kert,
+        kutya_tapasztalat, csalad_egyetert,
+        kutya_neve, kutya_id, megjegyzes, elfogadom,
+        letrehozva
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    `;
+
+    console.log('SQL oszlopok száma:', 16);
+    console.log('Values száma:', 16);
+    console.log('Values:', [
+      nev, email, telefonszam, szuletesiDatum || null,
+      iranyitoszam, varos, utcaHazszam,
+      lakasTipus, ingatlanTipus, kert,
+      kutyaTapasztalat, csaladEgyetert,
+      kutyaNeve || null, kutyaId || null, megjegyzes || null, elfogadom ? '1' : '0'
+    ]);
+
+    const values = [
+      nev, email, telefonszam, szuletesiDatum || null,
+      iranyitoszam, varos, utcaHazszam,
+      lakasTipus, ingatlanTipus, kert,
+      kutyaTapasztalat, csaladEgyetert,
+      kutyaNeve || null, kutyaId || null, megjegyzes || null, elfogadom ? '1' : '0'
+    ];
+
+    db.query(sql, values, async (err, result) => {
+      if (err) {
+        console.error('Hiba az örökbefogadás mentésekor:', err);
+        return res.status(500).json({ 
+          success: false, 
+          error: 'Adatbázis hiba történt!' 
+        });
+      }
+
+      // Email küldése az adminisztrátornak
+      try {
+        const adminMail = {
+          from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+          to: process.env.ADMIN_EMAIL,
+          subject: `[ÚJ ÖRÖKBEFOGADÁSI JELENTKEZÉS] ${nev}`,
+          html: `
+            <h2>Új örökbefogadási jelentkezés érkezett!</h2>
+            <p><strong>Jelentkező neve:</strong> ${nev}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Telefonszám:</strong> ${telefonszam}</p>
+            <p><strong>Lakcím:</strong> ${iranyitoszam} ${varos}, ${utcaHazszam}</p>
+            <p><strong>Lakás típusa:</strong> ${lakasTipus}</p>
+            <p><strong>Ingatlan:</strong> ${ingatlanTipus}</p>
+            <p><strong>Kert:</strong> ${kert}</p>
+            ${kutyaNeve ? `<p><strong>Kiválasztott kutya:</strong> ${kutyaNeve}</p>` : ''}
+            <p><strong>Kutya tapasztalat:</strong> ${kutyaTapasztalat}</p>
+            <p><strong>Családdal egyetért:</strong> ${csaladEgyetert}</p>
+            ${megjegyzes ? `<p><strong>Megjegyzés:</strong> ${megjegyzes}</p>` : ''}
+            <hr>
+            <p><small>Ez az email automatikusan generálódott a kutyamenhely weboldaláról.</small></p>
+          `
+        };
+
+        await transporter.sendMail(adminMail);
+
+        // Visszaigazoló email a jelentkezőnek
+        const userMail = {
+          from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+          to: email,
+          subject: 'Örökbefogadási jelentkezésedet megkaptuk',
+          html: `
+            <h2>Köszönjük a jelentkezésedet, ${nev}!</h2>
+            <p>Megtettük a szükséges lépéseket, és hamarosan felvesszük veled a kapcsolatot a további teendőkkel kapcsolatban.</p>
+            <p><strong>Kapcsolattartási adataid:</strong></p>
+            <ul>
+              <li>Email: ${email}</li>
+              <li>Telefonszám: ${telefonszam}</li>
+            </ul>
+            ${kutyaNeve ? `<p><strong>Kiválasztott kutya:</strong> ${kutyaNeve}</p>` : ''}
+            <p>Amennyiben kérdésed van, keress minket bizalommal!</p>
+            <hr>
+            <p><strong>Robi&Ricsi&Norbi Kutyamenhely</strong></p>
+            <p>Telefon: +36 30 324 9866</p>
+            <p>Email: kirajok69@gmail.com</p>
+          `
+        };
+
+        await transporter.sendMail(userMail);
+
+        res.json({ 
+          success: true, 
+          message: 'Jelentkezésedet sikeresen rögzítettük! Hamarosan felvesszük veled a kapcsolatot.' 
+        });
+
+      } catch (emailError) {
+        console.error('Email küldési hiba:', emailError);
+        // Ha az email hiba, de az adatbázis mentés sikeres, akkor is jelezzük a sikert
+        res.json({ 
+          success: true, 
+          message: 'Jelentkezésedet sikeresen rögzítettük! Hamarosan felvesszük veled a kapcsolatot.' 
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error('Váratlan hiba:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Váratlan hiba történt!' 
+    });
+  }
+});
 
 // --- Index oldal ---
 app.get('/', (req, res) => {

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -30,7 +31,7 @@
             </label>
             <label class="logo"><img src="img/logo2.png" style="margin-top: 12.3px" alt=""></label>
             <ul>
-              <li><a class="active" href="index.html">Főoldal</a></li>
+              <li><a href="index.html">Főoldal</a></li>
               <li><a href="#kutyaink">Kutyáink</a></li>
               <li><a href="#ricsirobinorbi">Rólunk</a></li>
               <li><a href="#visszajelzesek">Visszajelzések</a></li>
@@ -38,7 +39,7 @@
               <li id="adminNavItem"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
           
               <!-- Bejelentkezés gomb, ami eltűnik ha bejelentkezve -->
-              <li><a href="bejelentkezes.html">Bejelentkezés</a></li>
+              <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
               <li id="profileNavItem" style="display:none; vertical-align: middle;">
                 <img id="profileIcon" src="img/default-profile.png" style="width:50px; height:50px; border-radius:50%; cursor:pointer;border: 2px solid #f0f0f0; object-fit: cover; margin-left: 15px;">
             </li>
@@ -61,13 +62,63 @@
     </section>
 
     <section class="kutyaink" id="kutyaink">
-        <div class="center-text">
-            <h2><br>Örökbe fogadható <span>kutyáink</span></h2>
+        <div class="kutyak-container">
+            <!-- Szűrő rész -->
+            <div class="filter-sidebar">
+                <h3><i class="fas fa-filter"></i> Szűrés</h3>
+                <div class="filter-group">
+                    <label for="fajtaFilter">Fajta</label>
+                    <select id="fajtaFilter" class="filter-select">
+                        <option value="">Összes fajta</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="nemFilter">Nem</label>
+                    <select id="nemFilter" class="filter-select">
+                        <option value="">Összes</option>
+                        <option value="kan">Kan</option>
+                        <option value="szuka">Szuka</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="korFilter">Kor</label>
+                    <select id="korFilter" class="filter-select">
+                        <option value="">Összes kor</option>
+                        <option value="kölyök">Kölyök (0-1 év)</option>
+                        <option value="fiatal">Fiatal (1-3 év)</option>
+                        <option value="felnőtt">Felnőtt (3-8 év)</option>
+                        <option value="idős">Idős (8+ év)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="kereso">Keresés név szerint</label>
+                    <input type="text" id="kereso" class="filter-input" placeholder="Kutya neve...">
+                </div>
+                
+                <div class="filter-actions">
+                    <button id="filterBtn" class="filter-btn">
+                        <i class="fas fa-search"></i> Szűrés
+                    </button>
+                    <button id="resetFilterBtn" class="filter-btn reset">
+                        <i class="fas fa-times"></i> Törlés
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Kutyák listája -->
+            <div class="kutyak-content">
+                <div class="center-text">
+                    <h2>Örökbe fogadható <span>kutyáink</span></h2>
+                </div>
+                <div class="kutyak" id="kutyaLista">
+                    <p style="text-align:center;">Betöltés folyamatban...</p>
+                </div>
+                <div id="pagination" class="pagination-container"></div>
+            </div>
         </div>
-        <div class="kutyak" id="kutyaLista">
-            <p style="text-align:center;">Betöltés folyamatban...</p>
-        </div>
-        <div id="pagination" class="pagination-container"></div>
     </section>
 
     <section id="ricsirobinorbi">
@@ -158,35 +209,145 @@
 
    <!-- Örökbefogadási űrlap modal -->
 <div class="modal fade" id="adoptModal" tabindex="-1" role="dialog" aria-labelledby="adoptModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         
         <div class="modal-header">
-          <h5 class="modal-title" id="adoptModalLabel">Örökbefogadás</h5>
+          <h5 class="modal-title" id="adoptModalLabel">Örökbefogadási jelentkezés</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Bezárás">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         
         <div class="modal-body">
+          <div class="error-message" id="adoptErrorMessage"></div>
+          <div class="success-message" id="adoptSuccessMessage">
+            <i class="fas fa-check-circle"></i> <strong>Köszönjük a jelentkezésedet!</strong><br>
+            Hamarosan felvesszük veled a kapcsolatot.
+          </div>
+          
           <form id="adoptForm">
-            <div class="form-group">
-              <label for="nev">Név</label>
-              <input type="text" class="form-control" id="nev" name="nev" required>
+            <!-- Személyes adatok -->
+            <div class="form-section">
+                <h6><i class="fas fa-user"></i> Személyes adatok</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="adoptNev">Teljes név <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptNev" name="nev" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="adoptEmail">E-mail cím <span class="required-star">*</span></label>
+                        <input type="email" class="form-control" id="adoptEmail" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="adoptTelefon">Telefonszám <span class="required-star">*</span></label>
+                        <input type="tel" class="form-control" id="adoptTelefon" name="telefonszam" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="adoptSzuletesi">Születési dátum</label>
+                        <input type="date" class="form-control" id="adoptSzuletesi" name="szuletesiDatum">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="telefonszam">Telefonszám</label>
-              <input type="tel" class="form-control" id="telefonszam" name="telefonszam" required>
+
+            <!-- Lakcím -->
+            <div class="form-section">
+                <h6><i class="fas fa-home"></i> Lakcím</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="adoptIrsz">Irányítószám <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptIrsz" name="iranyitoszam" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="adoptVaros">Város <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptVaros" name="varos" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="adoptUtca">Utca, házszám <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptUtca" name="utcaHazszam" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="cim">Cím</label>
-              <input type="text" class="form-control" id="cim" name="cim" required>
+
+            <!-- Lakókörnyezet -->
+            <div class="form-section">
+                <h6><i class="fas fa-building"></i> Lakókörnyezet</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>Lakás típusa <span class="required-star">*</span></label>
+                        <select class="form-control" name="lakasTipus" required>
+                            <option value="">Válassz...</option>
+                            <option value="panel">Panel lakás</option>
+                            <option value="tegla">Tégla lakás</option>
+                            <option value="haz">Családi ház</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Birtokolt ingatlan <span class="required-star">*</span></label>
+                        <select class="form-control" name="ingatlanTipus" required>
+                            <option value="">Válassz...</option>
+                            <option value="sajat">Saját</option>
+                            <option value="berelt">Bérelt</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Kert megléte <span class="required-star">*</span></label>
+                        <select class="form-control" name="kert" required>
+                            <option value="">Válassz...</option>
+                            <option value="van">Van kert</option>
+                            <option value="nincs">Nincs kert</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-  
-            <!-- Rejtett mező a kutya azonosítójának -->
-            <input type="hidden" id="kutya_id" name="kutya_id">
-  
-            <button type="submit" class="btn btn-primary">Jelentkezés</button>
+
+            <!-- Állattartási tapasztalat -->
+            <div class="form-section">
+                <h6><i class="fas fa-paw"></i> Állattartási tapasztalat</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Korábban tartottál már kutyát? <span class="required-star">*</span></label>
+                        <select class="form-control" name="kutyaTapasztalat" required>
+                            <option value="">Válassz...</option>
+                            <option value="igen">Igen</option>
+                            <option value="nem">Nem</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Minden családtag egyetért örökbefogadással? <span class="required-star">*</span></label>
+                        <select class="form-control" name="csaladEgyetert" required>
+                            <option value="">Válassz...</option>
+                            <option value="igen">Igen</option>
+                            <option value="nem">Nem</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="adoptMegjegyzes">Megjegyzések, kérdések</label>
+                    <textarea class="form-control" id="adoptMegjegyzes" name="megjegyzes" rows="3" placeholder="Itt írhatod bármilyen kérdésedet vagy megjegyzésedet..."></textarea>
+                </div>
+            </div>
+
+            <!-- Rejtett mezők a kutya adatainak -->
+            <input type="hidden" id="adoptKutyaId" name="kutya_id">
+            <input type="hidden" id="adoptKutyaNev" name="kutya_neve">
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="adoptElfogadom" name="elfogadom" required>
+                <label for="adoptElfogadom">Elfogadom az örökbefogadási feltételeket <span class="required-star">*</span></label>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Jelentkezés elküldése
+            </button>
           </form>
         </div>
       </div>
