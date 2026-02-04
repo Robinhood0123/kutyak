@@ -32,11 +32,13 @@ nav {
     align-items: center;
     height: 100px;
     width: 100%;
-    background: white;
+    background-color: transparent; /* Alapértelmezett háttérszín */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Simább átmenet */
     position: fixed;
     top: 0;
     z-index: 1000;
     padding: 0 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0); /* Árnyék alapértelmezésként láthatatlan */
 }
 
 .logo img {
@@ -1220,4 +1222,8 @@ nav ul, .navbar-nav {
 
 #visszajelzesek {
     scroll-margin-top: 90px;
+}
+
+.scrolled nav {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Árnyék görgetéskor */
 }

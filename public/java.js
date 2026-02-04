@@ -5,12 +5,23 @@ function scrollFunction() {
   const nav = document.querySelector("nav");
   if (nav) {
     if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-      nav.style.backgroundColor = "#FFFFFF";
+      nav.style.backgroundColor = "#FFFFFF"; // Látható háttérszín görgetéskor
     } else {
-      nav.style.backgroundColor = "transparent";
+      nav.style.backgroundColor = "transparent"; // Átlátszó háttérszín az oldal tetején
     }
   }
 }
+
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (nav) {
+    if (window.scrollY > 0) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  }
+});
 
 // --- Kutyák betöltése (MODERN, LAPOZHATÓ ÉS BIZTONSÁGOS VERZIÓ) ---
 let osszesKutya = []; 
