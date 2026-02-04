@@ -790,3 +790,13 @@ function payWithPaypal() {
   window.open(url, '_blank');
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const menuLinks = document.querySelectorAll('nav ul li a');
+    const checkbox = document.getElementById('check');
+
+    menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            checkbox.checked = false; // Menü bezárása
+        });
+    });
+});
