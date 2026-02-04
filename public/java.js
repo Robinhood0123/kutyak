@@ -800,3 +800,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const menuLinks = document.querySelectorAll('nav ul li a');
+    const checkbox = document.getElementById('check');
+
+    menuLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            const targetId = link.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                event.preventDefault();
+                window.scrollTo({
+                    top: targetElement.offsetTop - 75, // Kicsit feljebb görget
+                    behavior: 'smooth'
+                });
+            }
+
+            checkbox.checked = false; // Menü bezárása
+        });
+    });
+});
