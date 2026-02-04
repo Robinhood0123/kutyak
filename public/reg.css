@@ -62,9 +62,6 @@ nav ul li a.active {
 .checkbtn {
     font-size: 30px;
     color: black;
-    float: right;
-    line-height: 80px;
-    margin-right: 40px;
     cursor: pointer;
     display: none;
 }
@@ -84,6 +81,11 @@ nav ul li a.active {
 @media (max-width: 858px) {
     .checkbtn {
         display: block;
+        order: 2;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1001;
     }
     nav ul {
         position: fixed;
