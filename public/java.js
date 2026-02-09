@@ -727,31 +727,62 @@ function setupOrkbeBtn() {
 
 // Minden kutya modal megnyitásakor futtasd:
 function megnyitKutyaModalt(kutya) {
-  const mKep = document.getElementById('kutyaModalKep');
-  const mNev = document.getElementById('kutyaModalNev');
-  const mEletkor = document.getElementById('kutyaModalEletkor');
-  const mNem = document.getElementById('kutyaModalNem');
-  const mFajta = document.getElementById('kutyaModalFajta');
-  const mLeiras = document.getElementById('kutyaModalLeiras'); // Az index.html modaljában lévő <p>
-  const mKutyaId = document.getElementById('kutya_id');
+    // Modal elemek feltöltése kutya adatokkal
+    const mKep = document.getElementById('kutyaModalKep');
+    const mNev = document.getElementById('kutyaModalNev');
+    const mEletkor = document.getElementById('kutyaModalEletkor');
+    const mNem = document.getElementById('kutyaModalNem');
+    const mFajta = document.getElementById('kutyaModalFajta');
+    const mLeiras = document.getElementById('kutyaModalLeiras');
 
-  if (mKep) mKep.src = kutya.kep_url || 'img/alap.png';
-  if (mNev) mNev.innerText = kutya.nev;
-  if (mEletkor) mEletkor.innerText = kutya.eletkor + " év";
-  if (mNem) mNem.innerText = kutya.nem;
-  if (mFajta) mFajta.innerText = kutya.fajta;
-  
-  if (mLeiras) {
-      // Ha az adatbázisból null jön vagy üres, adjunk meg alapértelmezett szöveget
-      mLeiras.innerText = (kutya.leiras && kutya.leiras !== "null") 
-          ? kutya.leiras 
-          : "Sajnos ehhez a kutyushoz még nem tartozik leírás.";
-  }
+    if (mKep) mKep.src = kutya.kep_url || 'img/alap.png';
+    if (mNev) mNev.innerText = kutya.nev;
+    if (mEletkor) mEletkor.innerText = kutya.eletkor + " év";
+    if (mNem) mNem.innerText = kutya.nem;
+    if (mFajta) mFajta.innerText = kutya.fajta;
+    
+    if (mLeiras) {
+        mLeiras.innerText = (kutya.leiras && kutya.leiras !== "null" && kutya.leiras.trim() !== "") 
+            ? kutya.leiras 
+            : "Sajnos ehhez a kutyushoz még nem tartozik leírás.";
+    }
 
-  if (mKutyaId) mKutyaId.value = kutya.kutya_id;
+    // --- Örökbefogadás gomb eseménykezelő ---
+    $('#orokbeBtn').off('click').on('click', function() {
+        // Bezárjuk a kutya részletek modalt
+        $('#dogModal').modal('hide');
+        
+        // Kiolvassuk a bejelentkezett felhasználót
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        console.log("Belépett felhasználó adatai:", user); // Ez segít a debuggolásban
 
-  $('#dogModal').modal('show');
-  setupOrkbeBtn();
+        if (user) {
+            // FONTOS: Az index.html alapján ezek a pontos ID-k!
+            // Az adatbázisodban 'felhasznalonev' van, az űrlapon pedig 'adoptNev'
+            $('#adoptNev').val(user.felhasznalonev || user.nev);
+            $('#adoptEmail').val(user.email);
+
+            // Opcionális: tegyük őket csak olvashatóvá, hogy ne gépeljék el
+            $('#adoptNev').attr('readonly', true);
+            $('#adoptEmail').attr('readonly', true);
+            
+            // Ha van felhasznalo_id a localStorage-ban, azt is mentsük el egy rejtett mezőbe (ha létezik ilyen az űrlapon)
+            if (user.felhasznalo_id) {
+                $('#adoptFelhasznaloId').val(user.felhasznalo_id);
+            }
+        }
+
+        // Kutya adatainak beállítása a rejtett mezőkbe
+        $('#adoptKutyaId').val(kutya.kutya_id);
+        $('#adoptKutyaNev').val(kutya.nev);
+
+        // Az örökbefogadó modal megnyitása
+        setTimeout(() => {
+            $('#adoptModal').modal('show');
+        }, 300);
+    });
+
+    $('#dogModal').modal('show');
 }
 
 let currentAmount = 5000;
