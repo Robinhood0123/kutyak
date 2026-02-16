@@ -43,9 +43,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="fajta-kereso">Kutyafajta kiválasztása:</label>
                     <select name="fajta" id="fajta-kereso" class="form-control" required style="width: 100%;">
-                        <option value="">Válassz fajtát</option>
-                        <optgroup label="Magyar kutyafajták">
+                        <option value="">Válassz fajtát...</option>
+                        
+                        <optgroup label="Magyar fajták">
                             <option value="Puli">Puli</option>
                             <option value="Pumi">Pumi</option>
                             <option value="Mudi">Mudi</option>
@@ -57,50 +59,167 @@
                             <option value="Magyar agár">Magyar agár</option>
                         </optgroup>
                 
-                        <optgroup label="Népszerű fajták">
-                            <option value="Akita">Akita</option>
-                            <option value="Alaszkai malamut">Alaszkai malamut</option>
-                            <option value="Amerikai staffordshire terrier">Amerikai staffordshire terrier</option>
-                            <option value="Angol bulldog">Angol bulldog</option>
+                        <optgroup label="Juhász- és pásztorkutyák">
                             <option value="Ausztrál juhászkutya">Ausztrál juhászkutya</option>
-                            <option value="Beagle">Beagle</option>
+                            <option value="Ausztrál pásztorkutya (Heeler)">Ausztrál pásztorkutya (Heeler)</option>
+                            <option value="Bearded Collie">Bearded Collie</option>
+                            <option value="Beauceron">Beauceron</option>
+                            <option value="Belga juhászkutya (Groenendael)">Belga juhászkutya (Groenendael)</option>
+                            <option value="Belga juhászkutya (Laekenois)">Belga juhászkutya (Laekenois)</option>
+                            <option value="Belga juhászkutya (Malinois)">Belga juhászkutya (Malinois)</option>
+                            <option value="Belga juhászkutya (Tervueren)">Belga juhászkutya (Tervueren)</option>
+                            <option value="Bergamasco">Bergamasco</option>
+                            <option value="Border Collie">Border Collie</option>
+                            <option value="Briard">Briard</option>
+                            <option value="Csehszlovák farkaskutya">Csehszlovák farkaskutya</option>
+                            <option value="Dél-orosz juhászkutya">Dél-orosz juhászkutya</option>
+                            <option value="Kaukázusi juhászkutya">Kaukázusi juhászkutya</option>
+                            <option value="Közép-ázsiai juhászkutya">Közép-ázsiai juhászkutya</option>
+                            <option value="Német juhászkutya">Német juhászkutya</option>
+                            <option value="Ónémet juhászkutya">Ónémet juhászkutya</option>
+                            <option value="Óangol juhászkutya (Bobtail)">Óangol juhászkutya (Bobtail)</option>
+                            <option value="Shetlandi juhászkutya (Sheltie)">Shetlandi juhászkutya (Sheltie)</option>
+                            <option value="Skót juhászkutya (Collie)">Skót juhászkutya (Collie)</option>
+                            <option value="Svájci fehér juhászkutya">Svájci fehér juhászkutya</option>
+                            <option value="Welsh Corgi Cardigan">Welsh Corgi Cardigan</option>
+                            <option value="Welsh Corgi Pembroke">Welsh Corgi Pembroke</option>
+                        </optgroup>
+                
+                        <optgroup label="Munka-, őr- és védőkutyák">
+                            <option value="Airedale terrier">Airedale terrier</option>
+                            <option value="Akita Inu">Akita Inu</option>
+                            <option value="Alaszkai malamut">Alaszkai malamut</option>
+                            <option value="Amerikai akita">Amerikai akita</option>
+                            <option value="Amerikai bulldog">Amerikai bulldog</option>
+                            <option value="Angol bulldog">Angol bulldog</option>
+                            <option value="Angol masztiff">Angol masztiff</option>
+                            <option value="Argentin dog">Argentin dog</option>
                             <option value="Bernáthegyi">Bernáthegyi</option>
                             <option value="Berni pásztorkutya">Berni pásztorkutya</option>
-                            <option value="Bichon frisé">Bichon frisé</option>
-                            <option value="Border Collie">Border Collie</option>
+                            <option value="Bordeaux-i dog">Bordeaux-i dog</option>
                             <option value="Boxer">Boxer</option>
+                            <option value="Bullmasztiff">Bullmasztiff</option>
                             <option value="Cane Corso">Cane Corso</option>
-                            <option value="Cocker spániel">Cocker spániel</option>
-                            <option value="Csivava">Csivava</option>
-                            <option value="Dachshund (Tacskó)">Dachshund (Tacskó)</option>
-                            <option value="Dalmata">Dalmata</option>
+                            <option value="Chow-chow">Chow-chow</option>
                             <option value="Dobermann">Dobermann</option>
-                            <option value="Francia bulldog">Francia bulldog</option>
-                            <option value="Golden Retriever">Golden Retriever</option>
-                            <option value="Havannai pincs (Havanese)">Havannai pincs (Havanese)</option>
-                            <option value="Husky">Husky</option>
-                            <option value="Ír szetter">Ír szetter</option>
-                            <option value="Jack Russell terrier">Jack Russell terrier</option>
-                            <option value="Labrador Retriever">Labrador Retriever</option>
-                            <option value="Máltai selyemkutya">Máltai selyemkutya</option>
+                            <option value="Entlebuchi havasikutya">Entlebuchi havasikutya</option>
+                            <option value="Fila Brasileiro">Fila Brasileiro</option>
+                            <option value="Hovawart">Hovawart</option>
+                            <option value="Kanári-szigeteki kutya (Presa Canario)">Kanári-szigeteki kutya (Presa Canario)</option>
+                            <option value="Landseer">Landseer</option>
+                            <option value="Leonbergi">Leonbergi</option>
+                            <option value="Moszkvai őrkutya">Moszkvai őrkutya</option>
+                            <option value="Nápolyi masztiff">Nápolyi masztiff</option>
                             <option value="Német dog">Német dog</option>
-                            <option value="Német juhász">Német juhász</option>
-                            <option value="Pomerániai törpespicc">Pomerániai törpespicc</option>
+                            <option value="Óriás schnauzer">Óriás schnauzer</option>
+                            <option value="Pireneusi hegyikutya">Pireneusi hegyikutya</option>
                             <option value="Rottweiler">Rottweiler</option>
                             <option value="Samoyed">Samoyed</option>
+                            <option value="Sarplaninac">Sarplaninac</option>
                             <option value="Shar pei">Shar pei</option>
+                            <option value="Sibériai husky">Sibériai husky</option>
+                            <option value="Tibeti masztiff">Tibeti masztiff</option>
+                            <option value="Tosa Inu">Tosa Inu</option>
+                            <option value="Újfundlandi">Újfundlandi</option>
+                        </optgroup>
+                
+                        <optgroup label="Terrierek">
+                            <option value="Amerikai staffordshire terrier">Amerikai staffordshire terrier</option>
+                            <option value="Angol szálkásszőrű foxterrier">Angol szálkásszőrű foxterrier</option>
+                            <option value="Bedlington terrier">Bedlington terrier</option>
+                            <option value="Border terrier">Border terrier</option>
+                            <option value="Bullterrier">Bullterrier</option>
+                            <option value="Cairn terrier">Cairn terrier</option>
+                            <option value="Foxterrier (Sima szőrű)">Foxterrier (Sima szőrű)</option>
+                            <option value="Ír terrier">Ír terrier</option>
+                            <option value="Jack Russell terrier">Jack Russell terrier</option>
+                            <option value="Kerry Blue terrier">Kerry Blue terrier</option>
+                            <option value="Lakeland terrier">Lakeland terrier</option>
+                            <option value="Manchester terrier">Manchester terrier</option>
+                            <option value="Norfolk terrier">Norfolk terrier</option>
+                            <option value="Parson Russell terrier">Parson Russell terrier</option>
+                            <option value="Skót terrier">Skót terrier</option>
+                            <option value="Staffordshire bullterrier">Staffordshire bullterrier</option>
+                            <option value="Welsh terrier">Welsh terrier</option>
+                            <option value="West Highland White Terrier (Westie)">West Highland White Terrier (Westie)</option>
+                        </optgroup>
+                
+                        <optgroup label="Vadászkutyák (Vizslák, Szetterek, Retrieverek)">
+                            <option value="Angol szetter">Angol szetter</option>
+                            <option value="Angol spániel (Cocker)">Angol spániel (Cocker)</option>
+                            <option value="Angol springer spániel">Angol springer spániel</option>
+                            <option value="Basset hound">Basset hound</option>
+                            <option value="Beagle">Beagle</option>
+                            <option value="Bloodhound">Bloodhound</option>
+                            <option value="Breton spániel">Breton spániel</option>
+                            <option value="Chesapeake Bay Retriever">Chesapeake Bay Retriever</option>
+                            <option value="Clumber spániel">Clumber spániel</option>
+                            <option value="Curly Coated Retriever">Curly Coated Retriever</option>
+                            <option value="Flat-Coated Retriever">Flat-Coated Retriever</option>
+                            <option value="Golden Retriever">Golden Retriever</option>
+                            <option value="Gordon szetter">Gordon szetter</option>
+                            <option value="Hannoveri véreb">Hannoveri véreb</option>
+                            <option value="Ír szetter">Ír szetter</option>
+                            <option value="Labrador Retriever">Labrador Retriever</option>
+                            <option value="Lagotto Romagnolo">Lagotto Romagnolo</option>
+                            <option value="Nova Scotia Duck Tolling Retriever">Nova Scotia Duck Tolling Retriever</option>
+                            <option value="Olasz vizsla (Bracco Italiano)">Olasz vizsla (Bracco Italiano)</option>
+                            <option value="Pointer">Pointer</option>
+                            <option value="Rhodesian Ridgeback">Rhodesian Ridgeback</option>
+                            <option value="Spániel (Amerikai cocker)">Spániel (Amerikai cocker)</option>
+                            <option value="Tacskó (Rövidszőrű)">Tacskó (Rövidszőrű)</option>
+                            <option value="Tacskó (Szálkásszőrű)">Tacskó (Szálkásszőrű)</option>
+                            <option value="Tacskó (Hosszúszőrű)">Tacskó (Hosszúszőrű)</option>
+                            <option value="Weimari vizsla">Weimari vizsla</option>
+                            <option value="Welsh springer spániel">Welsh springer spániel</option>
+                        </optgroup>
+                
+                        <optgroup label="Agarak">
+                            <option value="Afganisztáni agár">Afganisztáni agár</option>
+                            <option value="Angol agár (Greyhound)">Angol agár (Greyhound)</option>
+                            <option value="Azawakh">Azawakh</option>
+                            <option value="Ír farkaskutya">Ír farkaskutya</option>
+                            <option value="Kis olasz agár">Kis olasz agár</option>
+                            <option value="Orosz agár (Borzoj)">Orosz agár (Borzoj)</option>
+                            <option value="Persze agár (Saluki)">Persze agár (Saluki)</option>
+                            <option value="Skót szarvasagár (Deerhound)">Skót szarvasagár (Deerhound)</option>
+                            <option value="Sloughi">Sloughi</option>
+                            <option value="Whippet">Whippet</option>
+                        </optgroup>
+                
+                        <optgroup label="Társasági és kistestű kutyák">
+                            <option value="Bichon Bolognese">Bichon Bolognese</option>
+                            <option value="Bichon Frisé">Bichon Frisé</option>
+                            <option value="Bichon Havanese">Bichon Havanese</option>
+                            <option value="Boston terrier">Boston terrier</option>
+                            <option value="Cavalier King Charles spániel">Cavalier King Charles spániel</option>
+                            <option value="Csivava (Rövid szőrű)">Csivava (Rövid szőrű)</option>
+                            <option value="Csivava (Hosszú szőrű)">Csivava (Hosszú szőrű)</option>
+                            <option value="Francia bulldog">Francia bulldog</option>
+                            <option value="Japán csin">Japán csin</option>
+                            <option value="Kínai meztelen kutya">Kínai meztelen kutya</option>
+                            <option value="Lhasa Apso">Lhasa Apso</option>
+                            <option value="Máltai selyemkutya">Máltai selyemkutya</option>
+                            <option value="Mopsz">Mopsz</option>
+                            <option value="Papillon">Papillon</option>
+                            <option value="Pekingi palotakutya">Pekingi palotakutya</option>
+                            <option value="Pomerániai törpespicc">Pomerániai törpespicc</option>
+                            <option value="Schnauzer (Törpe)">Schnauzer (Törpe)</option>
+                            <option value="Shiba Inu">Shiba Inu</option>
                             <option value="Shih-tzu">Shih-tzu</option>
-                            <option value="Uszkár">Uszkár</option>
+                            <option value="Tibeti terrier">Tibeti terrier</option>
+                            <option value="Törpe uszkár">Törpe uszkár</option>
+                            <option value="Óriás uszkár">Óriás uszkár</option>
                             <option value="Yorkshire terrier">Yorkshire terrier</option>
                         </optgroup>
                 
                         <option value="Keverék">Keverék</option>
-                        <option value="Egyéb">Egyéb</option>
+                        <option value="Egyéb">Egyéb / Nem elismert fajta</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <textarea id="kutyaModalLeiras" name="leiras" class="form-control" placeholder="A kutya története, személyisége, leírása..." rows="4"></textarea>
+                    <textarea id="adminKutyaLeiras" name="leiras" class="form-control" placeholder="A kutya története..." rows="4"></textarea>
                 </div>
                 
                 <div class="form-group text-left">

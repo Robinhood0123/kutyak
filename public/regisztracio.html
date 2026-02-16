@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700&display=swap">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         
     </head>
 <body>
@@ -21,11 +22,22 @@
             <label for="check" class="checkbtn">
               <i class="fas fa-bars"></i>
             </label>
-            <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
+            <label class="logo"><a href="index.html"><img src="img/logo2.png" alt="" style="margin-top: 13px"></a></label>
             <ul>
               <li><a href="index.html">Főoldal</a></li>
-              <li><a href="bejelentkezes.html">Bejelentkezés</a></li>
-            </ul>
+              <li><a href="index.html#kutyaink">Kutyáink</a></li>
+              <li><a href="index.html#ricsirobinorbi">Rólunk</a></li>
+              <li><a href="index.html#visszajelzesek">Visszajelzések</a></li>
+              <li><a href="index.html#elerheto">Elérhetőségek</a></li>
+              <li id="adminNavItem"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
+          
+              <!-- Bejelentkezés gomb, ami eltűnik ha bejelentkezve -->
+              <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
+              <li id="profileNavItem" style="display:none; vertical-align: middle;">
+                <img id="profileIcon" src="img/default-profile.png" style="width:50px; height:50px; border-radius:50%; cursor:pointer;border: 2px solid #f0f0f0; object-fit: cover; margin-left: 15px;">
+            </li>
+            
+          </ul>
         </nav>
     </header>
     
@@ -39,30 +51,41 @@
             <button type="submit">Regisztrálok</button>
         </form>
         <p style="text-align:center; margin-top: 15px;">
-            Már van fiókod? <a href="bejelentkezes.html" style="color: #ff9800; text-decoration: none; font-weight: bold;">Jelentkezz be itt!</a>
+            Már van fiókod? <a href="bejelentkezes.html" style="color: #007bff; text-decoration: none; font-weight: bold;">Jelentkezz be itt!</a>
         </p>
         <p id="regError" style="color:red;text-align:center;"></p>
 </section>
 
 
-    <footer class="footer">
-        <div class="container">
-            <div class="nemtudom">
-                
-                <div class="footer-col">
-                    <h4>Kövess minket</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
-                        <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
+<footer class="footer" id="elerheto">
+    <div class="container">
+        <div class="nemtudom">
+            <div class="footer-col">
+                <h4>Elérhetőségek</h4>
+                <p>
+                    <b>Telefonszám:</b> <a href="tel:+36303249866">+36 30 324 9866</a> <br>
+                    <b>E-mail:</b> <a href="mailto:kirajok69@gmail.com">kirajok69@gmail.com</a> <br>
+                    <b>Cím:</b> 1171 Budapest, Csordakút utca vége
+                </p>
+            </div>
 
-                <div class="responsive-map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d172909.9915411935!2d19.075317863939777!3d47.378410099265786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4741c727e291f24d%3A0xed53048b254a1976!2zTk_DiSDDgWxsYXRvdHRob24gQWxhcMOtdHbDoW55!5e0!3m2!1shu!2shu!4v1712988782062!5m2!1shu!2shu" width="800" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+            <div class="footer-col">
+                <h4>Kövess minket</h4>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
                 </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="responsive-map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2698.358249673516!2d19.2941566!3d47.4439075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4741917f8a32a611%3A0x633d76717a02737d!2sBudapest%2C%20Csordak%C3%BAt%20u.%2C%201171!5e0!3m2!1shu!2shu!4v1700000000000!5m2!1shu!2shu" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
         </div>
-   </footer>
+    </div>
+</footer>
    <script src="java.js"></script>
 </body>
 </html>

@@ -1,33 +1,50 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kutyamenhely</title>
     <link rel="icon" type="image/x-icon" href="img/logo2.png">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;600&display=swap">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        corePlugins: {
+          preflight: false,
+        }
+      }
+    </script>
 </head>
 <body>
-    
     <header>
         <nav>
             <input type="checkbox" id="check">
             <label for="check" class="checkbtn">
               <i class="fas fa-bars"></i>
             </label>
-            <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
+            <label class="logo"><img src="img/logo2.png" style="margin-top: 12.3px" alt=""></label>
             <ul>
-              <li><a class="active" href="index.html">Főoldal</a></li>
+              <li><a href="index.html">Főoldal</a></li>
               <li><a href="#kutyaink">Kutyáink</a></li>
               <li><a href="#ricsirobinorbi">Rólunk</a></li>
-              <li><a href="#Visszajelzések">Visszajelzések</a></li>
+              <li><a href="#visszajelzesek">Visszajelzések</a></li>
               <li><a href="#elerheto">Elérhetőségek</a></li>
-              <li><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
-              <li><a href="bejelentkezes.html">Bejelentkezés</a></li>
-            </ul>
+              <li id="adminNavItem"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
+          
+              <!-- Bejelentkezés gomb, ami eltűnik ha bejelentkezve -->
+              <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
+              <li id="profileNavItem" style="display:none; vertical-align: middle;">
+                <img id="profileIcon" src="img/default-profile.png" style="width:50px; height:50px; border-radius:50%; cursor:pointer;border: 2px solid #f0f0f0; object-fit: cover; margin-left: 15px;">
+            </li>
+            
+          </ul>
         </nav>
     </header>
 
@@ -38,15 +55,69 @@
             <p>Biztonságosan, precízen és gyorsan</p>
 
             <a href="#kutyaink" class="main-btn">Fogadj örökbe most! <i class="bx bx-right-arrow-alt"></i></a>
+            <a href="#adomany" class="main-btn donate-btn-pro">
+              <i class="bx bxs-heart-circle"></i> ADOMÁNYOZÁS
+          </a>
         </div>
     </section>
 
     <section class="kutyaink" id="kutyaink">
-        <div class="center-text">
-            <h2><br>Örökbe fogadható <span>kutyáink</span></h2>
-        </div>
-        <div class="kutyak" id="kutyaLista">
-            <p style="text-align:center;">Betöltés folyamatban...</p>
+        <div class="kutyak-container">
+            <!-- Szűrő rész -->
+            <div class="filter-sidebar">
+                <h3><i class="fas fa-filter"></i> Szűrés</h3>
+                <div class="filter-group">
+                    <label for="fajtaFilter">Fajta</label>
+                    <select id="fajtaFilter" class="filter-select">
+                        <option value="">Összes fajta</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="nemFilter">Nem</label>
+                    <select id="nemFilter" class="filter-select">
+                        <option value="">Összes</option>
+                        <option value="kan">Kan</option>
+                        <option value="szuka">Szuka</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="korFilter">Kor</label>
+                    <select id="korFilter" class="filter-select">
+                        <option value="">Összes kor</option>
+                        <option value="kölyök">Kölyök (0-1 év)</option>
+                        <option value="fiatal">Fiatal (1-3 év)</option>
+                        <option value="felnőtt">Felnőtt (3-8 év)</option>
+                        <option value="idős">Idős (8+ év)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="kereso">Keresés név szerint</label>
+                    <input type="text" id="kereso" class="filter-input" placeholder="Kutya neve...">
+                </div>
+                
+                <div class="filter-actions">
+                    <button id="filterBtn" class="filter-btn">
+                        <i class="fas fa-search"></i> Szűrés
+                    </button>
+                    <button id="resetFilterBtn" class="filter-btn reset">
+                        <i class="fas fa-times"></i> Törlés
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Kutyák listája -->
+            <div class="kutyak-content">
+                <div class="center-text">
+                    <h2>Örökbe fogadható <span>kutyáink</span></h2>
+                </div>
+                <div class="kutyak" id="kutyaLista">
+                    <p style="text-align:center;">Betöltés folyamatban...</p>
+                </div>
+                <div id="pagination" class="pagination-container"></div>
+            </div>
         </div>
     </section>
 
@@ -81,136 +152,202 @@
       </div>
     </section>
     
-    <!-- Új kutya feltöltő form -->
-    <section id="feltoltes">
-      <h1>Új kutya hozzáadása</h1>
-      <form id="kutyaForm" enctype="multipart/form-data">
-        <input type="text" name="nev" placeholder="Kutya neve" required>
-        <input type="number" name="eletkor" placeholder="Életkor">
+    <section id="adomany" class="donation-section">
+      <div class="donation-container">
+          <h2>Támogasd a védenceinket!</h2>
+          <div class="donation-box">
+              <div class="payment-footer">
+                  
+                  <button class="revolut-btn" onclick="payWithRevolut()" style="background: #fff; color: #000; border: 2px solid #000; padding: 15px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 10px; cursor: pointer; font-family: sans-serif;">
+                      Fizetés Revoluton
+                  </button>
   
-        <select name="nem" required>
-          <option value="">Válassz nemet</option>
-          <option value="kan">Kan</option>
-          <option value="szuka">Szuka</option>
-        </select>
+                  <button class="paypal-btn" onclick="payWithPaypal()" style="background: #007bff; color: #000; border: 2px solid #000; padding: 15px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 15px; cursor: pointer; font-family: sans-serif;">
+                      Fizetés PayPal-lal
+                  </button>
   
-        <select name="fajta" required>
-          <option value="">Válassz fajtát</option>
-          <option value="Labrador Retriever">Labrador Retriever</option>
-          <option value="Német juhász">Német juhász</option>
-          <option value="Golden Retriever">Golden Retriever</option>
-          <option value="Border Collie">Border Collie</option>
-          <option value="Vizsla">Magyar Vizsla</option>
-          <option value="Tacskó">Tacskó</option>
-          <option value="Beagle">Beagle</option>
-          <option value="Francia bulldog">Francia bulldog</option>
-          <option value="Angol bulldog">Angol bulldog</option>
-          <option value="Rottweiler">Rottweiler</option>
-          <option value="Dobermann">Dobermann</option>
-          <option value="Boxer">Boxer</option>
-          <option value="Husky">Szibériai Husky</option>
-          <option value="Mopsz">Mopsz</option>
-          <option value="Shih Tzu">Shih Tzu</option>
-          <option value="Máltai selyemkutya">Máltai selyemkutya</option>
-          <option value="Yorkshire terrier">Yorkshire terrier</option>
-          <option value="Westie">West Highland White Terrier</option>
-          <option value="Skót juhász">Skót juhász (Collie)</option>
-          <option value="Bernáthegyi">Bernáthegyi</option>
-          <option value="Newfoundland">Újfundlandi</option>
-          <option value="Akita Inu">Akita Inu</option>
-          <option value="Shiba Inu">Shiba Inu</option>
-          <option value="Dalmatin">Dalmatin</option>
-          <option value="Whippet">Whippet</option>
-          <option value="Greyhound">Angol agár</option>
-          <option value="Ír szetter">Ír szetter</option>
-          <option value="Angol springer spániel">Angol springer spániel</option>
-          <option value="Cocker spániel">Cocker spániel</option>
-          <option value="Puli">Puli</option>
-          <option value="Komondor">Komondor</option>
-          <option value="Kuvasz">Kuvasz</option>
-          <option value="Mudi">Mudi</option>
-          <option value="Csivava">Csivava</option>
-          <option value="Papillon">Papillon</option>
-          <option value="Basenji">Basenji</option>
-          <option value="Shar Pei">Shar Pei</option>
-          <option value="Kaukázusi juhász">Kaukázusi juhász</option>
-          <option value="Tosa Inu">Tosa Inu</option>
-          <option value="Bullterrier">Bullterrier</option>
-          <option value="Staffordshire bullterrier">Staffordshire bullterrier</option>
-          <option value="Amerikai staffordshire terrier">Amerikai staffordshire terrier</option>
-          <option value="Pitbull">Pitbull</option>
-          <option value="Alaszkai malamut">Alaszkai malamut</option>
-          <option value="Samoyed">Samoyed</option>
-          <option value="Bichon Frisé">Bichon Frisé</option>
-          <option value="Havanese">Havanese</option>
-          <option value="Pomerániai törpespicc">Pomerániai törpespicc</option>
-          <option value="Egyéb">Egyéb</option>
-        </select>
-  
-        <input type="file" name="kep">
-        <button type="submit">Feltöltés</button>
-      </form>
+                  <p style="font-size: 14px; color: #666; text-align: center;">
+                      Vagy közvetlen utalás: <br>
+                      <b>10701599-72908547-51100005</b> (CIB)
+                  </p>
+              </div>
+          </div>
+      </div>
   </section>
+    
+   
 
-  <section id="elerheto">
-    <div class="rolunk">
-        <h1><br>Elérhetőségek</h1>
-        <p>
-            <b>Telefonszám:</b> +36 30 324 9866 <br>
-            <b>E-mail:</b> kirajok69@gmail.com <br>
-            <b>Cím:</b> 1171 Budapest, Csordakút utca vége
-        </p><br>
-  </section>
+<footer class="footer" id="elerheto">
+    <div class="container">
+        <div class="nemtudom">
+            <div class="footer-col">
+                <h4>Elérhetőségek</h4>
+                <p>
+                    <b>Telefonszám:</b> <a href="tel:+36303249866">+36 30 324 9866</a> <br>
+                    <b>E-mail:</b> <a href="mailto:kirajok69@gmail.com">kirajok69@gmail.com</a> <br>
+                    <b>Cím:</b> 1171 Budapest, Csordakút utca vége
+                </p>
+            </div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="nemtudom">
-                <div class="footer-col">
-                    <h4>Kövess minket</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
-                        <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
-                    </div>
+            <div class="footer-col">
+                <h4>Kövess minket</h4>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
                 </div>
+            </div>
 
+            <div class="footer-col">
                 <div class="responsive-map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d172909.9915411935!2d19.075317863939777!3d47.378410099265786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4741c727e291f24d%3A0xed53048b254a1976!2zTk_DiSDDgWxsYXRvdHRob24gQWxhcMOtdHbDoW55!5e0!3m2!1shu!2shu!4v1712988782062!5m2!1shu!2shu" width="800" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2698.544431786523!2d19.293!3d47.47!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDfCsDI4JzEyLjAiTiAxOcKwMTcnMzQuOCJF!5e0!3m2!1shu!2shu!4v1630000000000!5m2!1shu!2shu" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
+            </div>
         </div>
-   </footer>
+    </div>
+</footer>
 
    <!-- Örökbefogadási űrlap modal -->
 <div class="modal fade" id="adoptModal" tabindex="-1" role="dialog" aria-labelledby="adoptModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         
         <div class="modal-header">
-          <h5 class="modal-title" id="adoptModalLabel">Örökbefogadás</h5>
+          <h5 class="modal-title" id="adoptModalLabel">Örökbefogadási jelentkezés</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Bezárás">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         
         <div class="modal-body">
+          <div class="error-message" id="adoptErrorMessage"></div>
+          <div class="success-message" id="adoptSuccessMessage">
+            <i class="fas fa-check-circle"></i> <strong>Köszönjük a jelentkezésedet!</strong><br>
+            Hamarosan felvesszük veled a kapcsolatot.
+          </div>
+          
           <form id="adoptForm">
-            <div class="form-group">
-              <label for="nev">Név</label>
-              <input type="text" class="form-control" id="nev" name="nev" required>
+            <!-- Személyes adatok -->
+            <div class="form-section">
+                <h6><i class="fas fa-user"></i> Személyes adatok</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="adoptNev">Teljes név <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptNev" name="nev" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="adoptEmail">E-mail cím <span class="required-star">*</span></label>
+                        <input type="email" class="form-control" id="adoptEmail" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="adoptTelefon">Telefonszám <span class="required-star">*</span></label>
+                        <input type="tel" class="form-control" id="adoptTelefon" name="telefonszam" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="adoptSzuletesi">Születési dátum</label>
+                        <input type="date" class="form-control" id="adoptSzuletesi" name="szuletesiDatum">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="telefonszam">Telefonszám</label>
-              <input type="tel" class="form-control" id="telefonszam" name="telefonszam" required>
+
+            <!-- Lakcím -->
+            <div class="form-section">
+                <h6><i class="fas fa-home"></i> Lakcím</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="adoptIrsz">Irányítószám <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptIrsz" name="iranyitoszam" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="adoptVaros">Város <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptVaros" name="varos" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="adoptUtca">Utca, házszám <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="adoptUtca" name="utcaHazszam" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="cim">Cím</label>
-              <input type="text" class="form-control" id="cim" name="cim" required>
+
+            <!-- Lakókörnyezet -->
+            <div class="form-section">
+                <h6><i class="fas fa-building"></i> Lakókörnyezet</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>Lakás típusa <span class="required-star">*</span></label>
+                        <select class="form-control" name="lakasTipus" required>
+                            <option value="">Válassz...</option>
+                            <option value="panel">Panel lakás</option>
+                            <option value="tegla">Tégla lakás</option>
+                            <option value="haz">Családi ház</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Birtokolt ingatlan <span class="required-star">*</span></label>
+                        <select class="form-control" name="ingatlanTipus" required>
+                            <option value="">Válassz...</option>
+                            <option value="sajat">Saját</option>
+                            <option value="berelt">Bérelt</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Kert megléte <span class="required-star">*</span></label>
+                        <select class="form-control" name="kert" required>
+                            <option value="">Válassz...</option>
+                            <option value="van">Van kert</option>
+                            <option value="nincs">Nincs kert</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-  
-            <!-- Rejtett mező a kutya azonosítójának -->
-            <input type="hidden" id="kutya_id" name="kutya_id">
-  
-            <button type="submit" class="btn btn-primary">Jelentkezés</button>
+
+            <!-- Állattartási tapasztalat -->
+            <div class="form-section">
+                <h6><i class="fas fa-paw"></i> Állattartási tapasztalat</h6>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Korábban tartottál már kutyát? <span class="required-star">*</span></label>
+                        <select class="form-control" name="kutyaTapasztalat" required>
+                            <option value="">Válassz...</option>
+                            <option value="igen">Igen</option>
+                            <option value="nem">Nem</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Minden családtag egyetért örökbefogadással? <span class="required-star">*</span></label>
+                        <select class="form-control" name="csaladEgyetert" required>
+                            <option value="">Válassz...</option>
+                            <option value="igen">Igen</option>
+                            <option value="nem">Nem</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="adoptMegjegyzes">Megjegyzések, kérdések</label>
+                    <textarea class="form-control" id="adoptMegjegyzes" name="megjegyzes" rows="3" placeholder="Itt írhatod bármilyen kérdésedet vagy megjegyzésedet..."></textarea>
+                </div>
+            </div>
+
+            <!-- Rejtett mezők a kutya adatainak -->
+            <input type="hidden" id="adoptKutyaId" name="kutya_id">
+            <input type="hidden" id="adoptKutyaNev" name="kutya_neve">
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="adoptElfogadom" name="elfogadom" required>
+                <label for="adoptElfogadom">Elfogadom az örökbefogadási feltételeket <span class="required-star">*</span></label>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Jelentkezés elküldése
+            </button>
           </form>
         </div>
       </div>
@@ -232,7 +369,7 @@
             <div class="col-md-6 modern-modal-details">
               <div class="info-grid">
                 <p><strong>Fajta:</strong> <span id="kutyaModalFajta"></span></p>
-                <p><strong>Kor:</strong> <span id="kutyaModalEletkor"></span> év</p>
+                <p><strong>Kor:</strong> <span id="kutyaModalEletkor"></span></p>
                 <p><strong>Nem:</strong> <span id="kutyaModalNem"></span></p>
               </div>
               <hr>
@@ -248,8 +385,80 @@
   </div>
 </div>
 
+
+<!-- Profil Modal -->
+<div id="profileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000;">
+  <div style="background: white; padding: 20px; border-radius: 8px; min-width: 350px; text-align: center; position: relative;">
+      <span id="closeProfileModal" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px;">×</span>
+      
+      <div style="position: relative; display: inline-block;">
+          <img id="profileModalImg" src="img/default-profile.png" 
+               style="width:100px; height:100px; border-radius:50%; object-fit: cover; cursor: pointer; border: 2px solid #ddd;"
+               title="Kattints a kép módosításához">
+          <div style="font-size: 10px; color: #666; margin-top: 5px;">Kattints a képre a cseréhez</div>
+      </div>
+      
+      <input type="file" id="profileImageInput" style="display: none;" accept="image/*">
+
+      <div class="text-left mt-3">
+          <label>Név:</label>
+          <input type="text" id="editNameInput" class="form-control" placeholder="Új név">
+          
+          <label class="mt-2">Jelszó módosítása:</label>
+          <input type="password" id="editPasswordInput" class="form-control" placeholder="Új jelszó">
+          
+          <p class="mt-3"><strong>Email:</strong> <span id="profileModalEmail"></span></p>
+      </div>
+
+      <button id="saveProfileBtn" class="btn btn-success btn-block">Adatok mentése</button>
+      <button id="logoutBtnModal" class="btn btn-danger btn-block mt-2">Kijelentkezés</button>
+  </div>
+</div>
+
+<button id="game-button" class="fixed bottom-6 right-6 w-16 h-16 bg-black text-white rounded-full shadow-2xl flex items-center justify-center z-[50] hover:bg-zinc-800 focus:outline-none border-4 border-white transition-transform active:scale-95">
+  <svg viewBox="0 0 24 24" fill="currentColor" class="w-10 h-10">
+    <path d="M8.5,5.19c1.07,0,1.93,1.3,1.93,2.91s-0.86,2.91-1.93,2.91s-1.93-1.3-1.93-2.91S7.43,5.19,8.5,5.19z M15.5,5.19 c1.07,0,1.93,1.3,1.93,2.91s-0.86,2.91-1.93,2.91s-1.93-1.3-1.93-2.91S14.43,5.19,15.5,5.19z M4.3,10.51c0.91,0,1.64,1.3,1.64,2.91 s-0.73,2.91-1.64,2.91s-1.64-1.3-1.64-2.91S3.39,10.51,4.3,10.51z M19.7,10.51c0.91,0,1.64,1.3,1.64,2.91s-0.73,2.91-1.64,2.91 s-1.64-1.3-1.64-2.91S18.79,10.51,19.7,10.51z M12,13.24c-2.8,0-5.12,2.02-5.12,4.52c0,1.11,0.45,2.12,1.22,2.9 c1.02,1.03,2.37,1.65,3.9,1.65s2.88-0.62,3.9-1.65c0.77-0.78,1.22-1.79,1.22-2.9C17.12,15.26,14.8,13.24,12,13.24z"/>
+  </svg>
+</button>
+
+<div id="game-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
+  <div class="bg-slate-900 w-full max-w-md rounded-3xl overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.5)] border-2 border-slate-700 relative">
+      
+      <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+          <h2 class="text-white font-black flex items-center gap-2 italic m-0 tracking-tighter">
+              <span class="text-2xl">🦴</span> BONE CATCHER
+          </h2>
+          <button id="close-game" class="text-slate-400 hover:text-white text-3xl leading-none font-light transition-all">&times;</button>
+      </div>
+
+      <div class="relative aspect-[3/4] flex items-center justify-center overflow-hidden bg-slate-950">
+          <canvas id="gameCanvas" class="w-full h-full"></canvas>
+          
+          <div id="game-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 text-center p-6">
+              <div class="text-7xl mb-4 drop-shadow-lg">🐕</div>
+              <h3 id="overlay-title" class="text-3xl font-black text-white mb-2 uppercase italic tracking-tighter">Készen állsz?</h3>
+              <p id="overlay-score" class="text-blue-400 mb-8 font-bold text-xl"></p>
+              
+              <button id="start-btn" class="px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-full transition-all transform active:scale-95 shadow-[0_0_15px_rgba(37,99,235,0.5)] uppercase tracking-widest text-lg">
+                  VADÁSZAT INDÍTÁSA
+              </button>
+              
+              <div class="mt-8 flex gap-4 opacity-50">
+                  <span class="text-white text-xs font-bold border border-white/20 px-2 py-1 rounded">NYILAK</span>
+                  <span class="text-white text-xs font-bold border border-white/20 px-2 py-1 rounded">SWIPE</span>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-3 bg-slate-800 text-center border-t border-slate-700">
+          <p class="text-slate-400 text-[10px] font-black uppercase m-0 tracking-[0.2em]">Játsz, és nyerj!</p>
+      </div>
+  </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="java.js"></script>
+<script src="jatek.js"></script>
 </body>
 </html>
