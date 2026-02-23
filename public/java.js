@@ -28,6 +28,8 @@ let osszesKutya = [];
 let szurtKutyak = []; // Szűrt kutyák tárolása
 let jelenlegiOldal = 1;
 const kutyakPerOldal = 9;
+// A szerver elérhetősége a képekhez
+const serverUrl = "https://unantagonized-delisa-oneiric.ngrok-free.dev";
 
 window.addEventListener('DOMContentLoaded', () => {
     const lista = document.getElementById('kutyaLista');
@@ -45,7 +47,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
     if (lista) {
-        fetch('http://localhost:3000/kutyak')
+        // ngrok-skip-browser-warning hozzáadva a zavartalan betöltéshez
+        fetch(`${serverUrl}/kutyak`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        })
             .then(res => res.json())
             .then(data => {
                 osszesKutya = data;
@@ -172,7 +177,7 @@ function megjelenitOldalt(oldal) {
     
     // Határértékek kezelése
     if (oldal < 1) oldal = 1;
-    if (oldal > osszesOldalSzama) oldal = osszesOldalSzama;
+    if (oldal > osszesOldalSzama && osszesOldalSzama > 0) oldal = osszesOldalSzama;
     
     jelenlegiOldal = oldal;
     const lista = document.getElementById('kutyaLista');
@@ -190,11 +195,27 @@ function megjelenitOldalt(oldal) {
     }
 
     aktualisKutyak.forEach(kutya => {
+        let kepUrl = `${serverUrl}/img/1770806719489-image.jpg`; 
+
+        if (kutya.kep_url) {
+            // Ha véletlenül benne maradt a localhost, azt vágjuk le
+            let tisztaUt = kutya.kep_url.replace('http://localhost:3000', '');
+            
+            if (tisztaUt.startsWith('http')) {
+                // Ha valódi külső link (pl. egy másik weboldalról)
+                kepUrl = tisztaUt;
+            } else {
+                // Ha relatív út, akkor rakjuk elé az ngrok szerverünket
+                if (!tisztaUt.startsWith('/')) tisztaUt = '/' + tisztaUt;
+                kepUrl = `${serverUrl}${tisztaUt}`;
+            }
+        }
+
         const card = document.createElement('div');
         card.className = 'kutya-card';
         card.innerHTML = `
             <div class="kutya-card-img-wrapper">
-                <img class="kutya-card-img" src="${kutya.kep_url || 'img/alap.png'}" alt="${kutya.nev}">
+                <img class="kutya-card-img" src="${kepUrl}" alt="${kutya.nev}" onerror="this.src='img//kutyak/1770806719489-image.jpg'">
             </div>
             <div class="kutya-card-body">
                 <h3>${kutya.nev}</h3>
@@ -202,14 +223,11 @@ function megjelenitOldalt(oldal) {
                 <span class="btn-reszletek-custom">Részletek</span>
             </div>`;
         
-        // --- KATTINTÁS ELLENŐRZÉSE ---
         card.addEventListener('click', () => {
             const bejelentkezve = localStorage.getItem('loggedInUser');
             if (bejelentkezve) {
-                // Ha be van jelentkezve, megnyitjuk a részleteket
                 megnyitKutyaModalt(kutya);
             } else {
-                // Ha nincs bejelentkezve, hibaüzenet
                 Swal.fire({
                     icon: 'info',
                     title: 'Bejelentkezés szükséges',
@@ -228,29 +246,45 @@ function megjelenitOldalt(oldal) {
 
 // --- Kutya modal megnyitása ---
 function megnyitKutyaModalt(kutya) {
+
+    let kepUrl = `${serverUrl}/img/1770806719489-image.jpg`; 
+
+    if (kutya.kep_url) {
+        // Ha véletlenül benne maradt a localhost, azt vágjuk le
+        let tisztaUt = kutya.kep_url.replace('http://localhost:3000', '');
+        
+        if (tisztaUt.startsWith('http')) {
+            // Ha valódi külső link (pl. egy másik weboldalról)
+            kepUrl = tisztaUt;
+        } else {
+            // Ha relatív út, akkor rakjuk elé az ngrok szerverünket
+            if (!tisztaUt.startsWith('/')) tisztaUt = '/' + tisztaUt;
+            kepUrl = `${serverUrl}${tisztaUt}`;
+        }
+    }
+
     $('#kutyaModalNev').text(kutya.nev);
-    $('#kutyaModalKep').attr('src', kutya.kep_url || 'img/alap.png');
+    $('#kutyaModalKep').attr('src', kepUrl);
     $('#kutyaModalFajta').text(kutya.fajta);
     $('#kutyaModalEletkor').text(kutya.eletkor + ' éves');
     $('#kutyaModalNem').text(kutya.nem);
     
-    // Leírás kezelése - ha van, azt mutatja, ha nincs, alapértelmezett szöveget
-    if (kutya.leiras && kutya.leiras.trim() !== '') {
+    if (kutya.leiras && kutya.leiras.trim() !== '' && kutya.leiras !== "null") {
         $('#kutyaModalLeiras').text(kutya.leiras);
     } else {
         $('#kutyaModalLeiras').text('Nincs megadott leírás ennél a kutyánál.');
     }
     
-    // Örökbefogadás gomb eseménykezelője
     $('#orokbeBtn').off('click').on('click', function() {
-        // Bezárjuk a kutya modalt
         $('#dogModal').modal('hide');
-        
-        // Kitöltjük a rejtett mezőket a kutya adataival
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (user) {
+            $('#adoptNev').val(user.nev || user.felhasznalonev).attr('readonly', true);
+            $('#adoptEmail').val(user.email).attr('readonly', true);
+        }
         $('#adoptKutyaId').val(kutya.kutya_id);
         $('#adoptKutyaNev').val(kutya.nev);
         
-        // Megnyitjuk az örökbefogadási modalt
         setTimeout(() => {
             $('#adoptModal').modal('show');
         }, 300);
@@ -261,22 +295,18 @@ function megnyitKutyaModalt(kutya) {
 
 // --- Örökbefogadási űrlap kezelése ---
 $(document).ready(function() {
-    // Űrlap küldése
     $('#adoptForm').on('submit', function(e) {
         e.preventDefault();
-        
         const formData = new FormData(this);
         const data = Object.fromEntries(formData);
         
-        // Validáció
         if (!data.elfogadom) {
             showAdoptError('Kérlek, fogadd el az örökbefogadási feltételeket!');
             return;
         }
         
-        // Adatok küldése a szervernek
         $.ajax({
-            url: '/api/adoption',
+            url: `${serverUrl}/api/adoption`,
             method: 'POST',
             data: JSON.stringify(data),
             contentType: 'application/json',
@@ -284,20 +314,18 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#adoptForm').hide();
                     $('#adoptSuccessMessage').show();
-                    // Modal bezárása 3 másodperc után
                     setTimeout(() => {
                         $('#adoptModal').modal('hide');
-                        // Reset form
                         $('#adoptForm')[0].reset();
                         $('#adoptForm').show();
                         $('#adoptSuccessMessage').hide();
                     }, 3000);
                 } else {
-                    showAdoptError(response.error || 'Hiba történt a jelentkezés feldolgozása során.');
+                    showAdoptError(response.error || 'Hiba történt.');
                 }
             },
             error: function() {
-                showAdoptError('Hálózati hiba történt. Kérlek, próbáld újra később.');
+                showAdoptError('Hálózati hiba történt.');
             }
         });
     });
@@ -305,9 +333,7 @@ $(document).ready(function() {
 
 function showAdoptError(message) {
     $('#adoptErrorMessage').text(message).show();
-    setTimeout(() => {
-        $('#adoptErrorMessage').fadeOut();
-    }, 5000);
+    setTimeout(() => { $('#adoptErrorMessage').fadeOut(); }, 5000);
 }
 
 function frissitPagination(osszesOldalSzama) {
@@ -317,7 +343,6 @@ function frissitPagination(osszesOldalSzama) {
     pagination.innerHTML = '';
     if (osszesOldalSzama <= 1) return;
 
-    // "Előző" nyíl
     const prevBtn = document.createElement('button');
     prevBtn.innerHTML = '←'; 
     prevBtn.className = 'page-btn nav-btn';
@@ -328,7 +353,6 @@ function frissitPagination(osszesOldalSzama) {
     };
     pagination.appendChild(prevBtn);
 
-    // Számozott gombok
     for (let i = 1; i <= osszesOldalSzama; i++) {
         const btn = document.createElement('button');
         btn.innerText = i;
@@ -340,7 +364,6 @@ function frissitPagination(osszesOldalSzama) {
         pagination.appendChild(btn);
     }
 
-    // "Következő" nyíl
     const nextBtn = document.createElement('button');
     nextBtn.innerHTML = '→'; 
     nextBtn.className = 'page-btn nav-btn';
@@ -369,7 +392,7 @@ function validateForm() {
     return;
   }
 
-  fetch('http://localhost:3000/visszajelzes', {
+  fetch(`${serverUrl}/visszajelzes`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ email: email, szoveg: szoveg })
@@ -377,8 +400,7 @@ function validateForm() {
   .then(response => response.json())
   .then(data => {
     alert(data.message || 'Sikeres mentés!');
-    const regForm = document.getElementById('registrationForm');
-    if (regForm) regForm.reset();
+    if (document.getElementById('registrationForm')) document.getElementById('registrationForm').reset();
   })
   .catch(() => {
     errorMessage.innerHTML = 'Nem sikerült menteni az adatokat.';
@@ -393,55 +415,22 @@ if (kutyaForm) {
       const formData = new FormData(kutyaForm);
 
       try {
-        const res = await fetch('http://localhost:3000/kutyak', {
+        const res = await fetch(`${serverUrl}/kutyak`, {
           method: 'POST',
           body: formData
         });
-
         const data = await res.json();
-
         if (res.ok) {
           alert(' ' + data.message);
           kutyaForm.reset(); 
         } else {
           alert(' Hiba: ' + (data.error || 'Ismeretlen hiba történt.'));
         }
-
       } catch (err) {
         alert(' Szerverhiba: ' + err.message);
       }
     });
 }
-
-function openAdoptModal(kutyaId) {
-  const kIdInput = document.getElementById('kutya_id');
-  const aModal = document.getElementById('adoptModal');
-  if (kIdInput) kIdInput.value = kutyaId;
-  if (aModal) aModal.style.display = 'flex';
-}
-
-function closeModal() {
-  const aModal = document.getElementById('adoptModal');
-  if (aModal) aModal.style.display = 'none';
-}
-
-// Örökbefogadás gomb esemény
-document.addEventListener('click', function(e) {
-  if (e.target && e.target.classList.contains('gomb')) {
-    const card = e.target.closest('.row-back');
-    if (!card) return;
-    const kutyaNev = card.querySelector('h1').innerText.split('\n')[0];
-    const kutyaId = card.getAttribute('data-kutya-id');
-
-    const label = document.getElementById('adoptModalLabel');
-    const kIdInput = document.getElementById('kutya_id');
-    
-    if (label) label.innerText = `Örökbefogadás: ${kutyaNev}`;
-    if (kIdInput) kIdInput.value = kutyaId;
-
-    $('#adoptModal').modal('show');
-  }
-});
 
 // --- Regisztráció Form ---
 const regForm = document.getElementById('regForm');
@@ -457,22 +446,20 @@ if (regForm) {
       if (jelszo !== jelszo2) {
         if (error) error.textContent = 'A két jelszó nem egyezik!';
         return;
-      }
+    }
 
       try {
-        const res = await fetch('http://localhost:3000/register', {
+        const res = await fetch(`${serverUrl}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nev, email, jelszo })
         });
-
         const data = await res.json();
-
         if (res.ok) {
           alert(data.message);
           regForm.reset();
         } else {
-          if (error) error.textContent = data.error || 'Ismeretlen hiba történt.';
+          if (error) error.textContent = data.error || 'Hiba történt.';
         }
       } catch (err) {
         if (error) error.textContent = 'Szerverhiba: ' + err.message;
@@ -482,32 +469,22 @@ if (regForm) {
 
 // --- Bejelentkezés Form ---
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Bejelentkezési oldal betöltve');
     const loginForm = document.getElementById('loginForm');
-    console.log('Login form elem:', loginForm);
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
-            console.log('Bejelentkezési űrlap elküldve');
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const jelszo = document.getElementById('loginJelszo').value;
             const loginError = document.getElementById('loginError');
-            console.log('Bejelentkezési adatok:', { email, jelszo: jelszo ? '***' : '' });
 
             try {
-                const res = await fetch('http://localhost:3000/login', {
+                const res = await fetch(`${serverUrl}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, jelszo })
                 });
-                console.log('Válasz státusz:', res.status);
-
                 const data = await res.json();
-                console.log('Válasz adatok:', data);
-
                 if (res.ok) {
-                    console.log('Bejelentkezés sikeres, adatok mentése...');
-                    // 1. Mentés localStorage-ba
                     localStorage.setItem('loggedInUser', JSON.stringify({ 
                         id: data.user.id,
                         nev: data.user.nev, 
@@ -515,50 +492,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         szerepkor: data.user.szerepkor,
                         kep: data.user.kep
                     }));
-                    console.log('Felhasználói adatok elmentve a localStorage-ba');
-                    
-                    // 2. SZÉP ÉRTESÍTÉS MEGJELENÍTÉSE
-                    console.log('Sikeres bejelentkezés üzenet megjelenítése');
                     Swal.fire({
                         icon: 'success',
                         title: 'Sikeres belépés',
-                        text: 'Üdvözlünk újra, ' + data.user.nev + '!',
+                        text: 'Üdvözlünk újra!',
                         timer: 2000,
-                        showConfirmButton: false,
-                        background: '#ffffff',
-                        iconColor: '#28a745'
-                    }).then(() => {
-                        console.log('Átirányítás az index.html-re');
-                        // 3. Frissítés csak az üzenet lefutása után
-                        window.location.href = 'index.html';
-                    });
-
+                        showConfirmButton: false
+                    }).then(() => { window.location.href = 'index.html'; });
                 } else {
-                    console.log('Bejelentkezés sikertelen:', data.error);
-                    if (loginError) loginError.textContent = data.error || 'Hibás email vagy jelszó!';
+                    if (loginError) loginError.textContent = data.error || 'Hibás adatok!';
                 }
             } catch (err) {
-                console.log('Bejelentkezés közben hiba történt:', err);
-                if (loginError) loginError.textContent = 'Szerverhiba: ' + err.message;
+                if (loginError) loginError.textContent = 'Szerverhiba.';
             }
         });
     }
 });
 
-
-
 // --- Profil és Navigáció kezelése ---
 document.addEventListener('DOMContentLoaded', () => {
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
-  const serverUrl = "http://localhost:3000";
-
-  // Navigációs elemek
   const loginNavItem = document.getElementById('loginNavItem');
   const profileNavItem = document.getElementById('profileNavItem');
   const adminNavItem = document.getElementById('adminNavItem'); 
   const navIcon = document.getElementById('profileIcon');
-  
-  // Modal elemek
   const profileModal = document.getElementById('profileModal');
   const profileModalImg = document.getElementById('profileModalImg');
   const profileModalEmail = document.getElementById('profileModalEmail');
@@ -569,39 +526,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutBtnModal = document.getElementById('logoutBtnModal');
   const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-  if (user) {
-      // 1. Menüpontok láthatósága
-      if (loginNavItem) loginNavItem.style.display = 'none';
-      if (profileNavItem) profileNavItem.style.display = 'inline-block';
+  // --- JAVÍTOTT Profil és Navigáció kezelése ---
+if (user) {
+    if (loginNavItem) loginNavItem.style.display = 'none';
+    if (profileNavItem) profileNavItem.style.display = 'inline-block';
+    if (adminNavItem) {
+        if (user.szerepkor === 'admin') {
+            adminNavItem.style.display = 'inline-block';
+        } else {
+            adminNavItem.style.display = 'none'; // Ha nem admin, kényszerítve elrejtjük
+        }
+    }
 
-      // 2. ADMIN ELLENŐRZÉS
-      if (user.szerepkor === 'admin') {
-          if (adminNavItem) adminNavItem.style.display = 'inline-block';
-      } else {
-          if (adminNavItem) adminNavItem.style.display = 'none';
-      }
+    // A változó neve legyen következetesen kepUrl
+    let kepUrl = `${serverUrl}/img/profilok/blank-profile-picture-973460_640.webp`; 
 
-      // 3. Profilkép útvonalának kiszámítása
-      const kepUtvonal = user.kep 
-          ? (user.kep.startsWith('http') ? user.kep : serverUrl + user.kep) 
-          : 'img/default-profile.png';
-          
-      if (navIcon) navIcon.src = kepUtvonal;
+    if (user.kep) {
+        if (user.kep.startsWith('http')) {
+            kepUrl = user.kep;
+        } else {
+            const tisztaProfilKep = user.kep.replace(/^.*[\\\/]/, '');
+            kepUrl = `${serverUrl}/img/profilok/${tisztaProfilKep}`;
+        }
+    }
+        
+    // Most már a létező kepUrl változót használjuk
+    if (navIcon) navIcon.src = kepUrl;
 
-      // 4. Profil Modal megnyitása
-      if (navIcon) {
-          navIcon.addEventListener('click', () => {
-              if (profileModal) {
-                  profileModal.style.display = 'flex';
-                  if (profileModalImg) profileModalImg.src = kepUtvonal;
-                  if (profileModalEmail) profileModalEmail.innerText = user.email;
-                  if (editNameInput) editNameInput.value = user.nev;
-                  if (editPasswordInput) editPasswordInput.value = ''; 
-              }
-          });
-      }
+    if (navIcon) {
+        navIcon.addEventListener('click', () => {
+            console.log("Profil megnyitása..."); // Teszt üzenet
+            if (profileModal) {
+                profileModal.style.display = 'flex';
+                if (profileModalImg) profileModalImg.src = kepUrl;
+                if (profileModalEmail) profileModalEmail.innerText = user.email;
+                if (editNameInput) editNameInput.value = user.nev;
+            }
+        });
+    }
+    // ... a többi marad változatlan (mentés, kijelentkezés gombok)
 
-      // 5. Adatok mentése
+
       if (saveProfileBtn) {
           saveProfileBtn.addEventListener('click', async () => {
               const formData = new FormData();
@@ -615,77 +580,43 @@ document.addEventListener('DOMContentLoaded', () => {
                       method: 'POST',
                       body: formData
                   });
-
                   const data = await res.json();
-
                   if (res.ok) {
-                      // LocalStorage frissítése az új adatokkal
                       localStorage.setItem('loggedInUser', JSON.stringify({
                           id: user.id,
                           nev: data.user.nev,
                           email: data.user.email,
                           kep: data.user.kep,
-                          szerepkor: user.szerepkor // A szerepkört megőrizzük
+                          szerepkor: user.szerepkor 
                       }));
-
-                      alert('Sikeres mentés! A profilod frissült.');
+                      alert('Sikeres mentés!');
                       location.reload();
-                  } else {
-                      alert('Hiba: ' + (data.error || 'Sikertelen mentés.'));
-                  }
-              } catch (err) {
-                  console.error('Szerver hiba:', err);
-                  alert('Hálózati hiba történt.');
-              }
+                  } else { alert('Hiba történt.'); }
+              } catch (err) { alert('Hiba történt.'); }
           });
       }
 
-      // 6. Kijelentkezés
       if (logoutBtnModal) {
           logoutBtnModal.addEventListener('click', () => {
               localStorage.removeItem('loggedInUser');
               location.href = 'index.html';
           });
       }
-
-  } else {
-      // Ha nincs bejelentkezve
-      if (adminNavItem) adminNavItem.style.display = 'none';
-      if (profileNavItem) profileNavItem.style.display = 'none';
-      if (loginNavItem) loginNavItem.style.display = 'inline-block';
   }
 
-  // --- Segédfunkciók (Kép választás és Modal bezárás) ---
-
-  // Kép előnézet a modalban
   if (profileModalImg && profileImageInput) {
       profileModalImg.addEventListener('click', () => profileImageInput.click());
-
       profileImageInput.addEventListener('change', (e) => {
           const file = e.target.files[0];
           if (file) {
               const reader = new FileReader();
-              reader.onload = (event) => {
-                  profileModalImg.src = event.target.result;
-              };
+              reader.onload = (event) => { profileModalImg.src = event.target.result; };
               reader.readAsDataURL(file);
           }
       });
   }
 
-  // Modal bezárása X-szel
-  if (closeProfileModal) {
-      closeProfileModal.addEventListener('click', () => {
-          profileModal.style.display = 'none';
-      });
-  }
-
-  // Modal bezárása mellékattintással
-  window.addEventListener('click', (e) => {
-      if (e.target === profileModal) {
-          profileModal.style.display = 'none';
-      }
-  });
+  if (closeProfileModal) closeProfileModal.addEventListener('click', () => { profileModal.style.display = 'none'; });
 });
 
 
@@ -695,142 +626,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const data = {
-          name: form.name.value,
-          email: form.email.value,
-          message: form.message.value
-        };
+        const data = { name: form.name.value, email: form.email.value, message: form.message.value };
         try {
-          const res = await fetch('/api/feedback', {
+          const res = await fetch(`${serverUrl}/api/feedback`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
           });
           const json = await res.json();
-          alert(json.success ? 'Köszönjük, üzeneted elküldve.' : ('Hiba: ' + (json.error || 'Ismeretlen hiba')));
-        } catch (err) {
-          alert('Hálózati hiba: ' + err.message);
-        }
+          alert(json.success ? 'Üzenet elküldve!' : 'Hiba történt.');
+        } catch (err) { alert('Hiba történt.'); }
       });
   }
 });
-
-function setupOrkbeBtn() {
-  const orokbeBtn = document.getElementById('orokbeBtn');
-  if (orokbeBtn) {
-      orokbeBtn.addEventListener('click', () => {
-          $('#dogModal').modal('hide');
-          $('#adoptModal').modal('show');
-      });
-  }
-}
-
-// Minden kutya modal megnyitásakor futtasd:
-function megnyitKutyaModalt(kutya) {
-    // Modal elemek feltöltése kutya adatokkal
-    const mKep = document.getElementById('kutyaModalKep');
-    const mNev = document.getElementById('kutyaModalNev');
-    const mEletkor = document.getElementById('kutyaModalEletkor');
-    const mNem = document.getElementById('kutyaModalNem');
-    const mFajta = document.getElementById('kutyaModalFajta');
-    const mLeiras = document.getElementById('kutyaModalLeiras');
-
-    if (mKep) mKep.src = kutya.kep_url || 'img/alap.png';
-    if (mNev) mNev.innerText = kutya.nev;
-    if (mEletkor) mEletkor.innerText = kutya.eletkor + " év";
-    if (mNem) mNem.innerText = kutya.nem;
-    if (mFajta) mFajta.innerText = kutya.fajta;
-    
-    if (mLeiras) {
-        mLeiras.innerText = (kutya.leiras && kutya.leiras !== "null" && kutya.leiras.trim() !== "") 
-            ? kutya.leiras 
-            : "Sajnos ehhez a kutyushoz még nem tartozik leírás.";
-    }
-
-    // --- Örökbefogadás gomb eseménykezelő ---
-    $('#orokbeBtn').off('click').on('click', function() {
-        // Bezárjuk a kutya részletek modalt
-        $('#dogModal').modal('hide');
-        
-        // Kiolvassuk a bejelentkezett felhasználót
-        const user = JSON.parse(localStorage.getItem('loggedInUser'));
-        console.log("Belépett felhasználó adatai:", user); // Ez segít a debuggolásban
-
-        if (user) {
-            // FONTOS: Az index.html alapján ezek a pontos ID-k!
-            // Az adatbázisodban 'felhasznalonev' van, az űrlapon pedig 'adoptNev'
-            $('#adoptNev').val(user.felhasznalonev || user.nev);
-            $('#adoptEmail').val(user.email);
-
-            // Opcionális: tegyük őket csak olvashatóvá, hogy ne gépeljék el
-            $('#adoptNev').attr('readonly', true);
-            $('#adoptEmail').attr('readonly', true);
-            
-            // Ha van felhasznalo_id a localStorage-ban, azt is mentsük el egy rejtett mezőbe (ha létezik ilyen az űrlapon)
-            if (user.felhasznalo_id) {
-                $('#adoptFelhasznaloId').val(user.felhasznalo_id);
-            }
-        }
-
-        // Kutya adatainak beállítása a rejtett mezőkbe
-        $('#adoptKutyaId').val(kutya.kutya_id);
-        $('#adoptKutyaNev').val(kutya.nev);
-
-        // Az örökbefogadó modal megnyitása
-        setTimeout(() => {
-            $('#adoptModal').modal('show');
-        }, 300);
-    });
-
-    $('#dogModal').modal('show');
-}
 
 let currentAmount = 5000;
-
-function selectAmount(btn, amount) {
-    // Gombok stílusának kezelése
-    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    currentAmount = amount;
-    document.getElementById('selected-sum').innerText = amount.toLocaleString();
-    document.getElementById('customInput').value = ""; // Törli az egyedi mezőt
-}
-
-function updateSelectedSum() {
-    let customVal = document.getElementById('customInput').value;
-    if (customVal > 0) {
-        currentAmount = customVal;
-        document.getElementById('selected-sum').innerText = parseInt(customVal).toLocaleString();
-        // Leveszi a kijelölést a fix gombokról
-        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-    }
-}
-
-function payWithRevolut() {
-    // IDE ÍRD A SAJÁT REVOLUT ME LINKEDET!
-    // Példa: https://revolut.me/ricsiandnorbi/
-    const url = `https://revolut.me/szentpalir`;
-    
-    window.open(url, '_blank');
-}
-
-function payWithPaypal() {
-  const url = `https://www.paypal.com/paypalme/TothRobert00`;
-  
-  window.open(url, '_blank');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const menuLinks = document.querySelectorAll('nav ul li a');
-    const checkbox = document.getElementById('check');
-
-    menuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            checkbox.checked = false; // Menü bezárása
-        });
-    });
-});
+function payWithRevolut() { window.open(`https://revolut.me/szentpalir`, '_blank'); }
+function payWithPaypal() { window.open(`https://www.paypal.com/paypalme/TothRobert00`, '_blank'); }
 
 document.addEventListener('DOMContentLoaded', () => {
     const menuLinks = document.querySelectorAll('nav ul li a');
@@ -839,17 +651,63 @@ document.addEventListener('DOMContentLoaded', () => {
     menuLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             const targetId = link.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-
-            if (targetElement) {
-                event.preventDefault();
-                window.scrollTo({
-                    top: targetElement.offsetTop - 75, // Kicsit feljebb görget
-                    behavior: 'smooth'
-                });
+            if (targetId.startsWith('#')) {
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    event.preventDefault();
+                    window.scrollTo({ top: targetElement.offsetTop - 75, behavior: 'smooth' });
+                }
             }
+            if (checkbox) checkbox.checked = false; 
+        });
+    });
+});
 
-            checkbox.checked = false; // Menü bezárása
+$(document).ready(function() {
+    // Csak ez az egy maradjon meg!
+    $('#adoptForm').off('submit').on('submit', function(e) {
+        e.preventDefault();
+
+        const formData = {
+            kutyaId: $('#adoptKutyaId').val(),
+            telefonszam: $('#adoptTelefon').val(),
+            iranyitoszam: $('#adoptIrsz').val(),
+            varos: $('#adoptVaros').val(),
+            utcaHazszam: $('#adoptUtca').val(),
+            lakasTipus: $('select[name="lakasTipus"]').val(),
+            ingatlanTipus: $('select[name="ingatlanTipus"]').val(),
+            kert: $('select[name="kert"]').val(),
+            kutyaTapasztalat: $('select[name="kutyaTapasztalat"]').val(),
+            csaladEgyetert: $('select[name="csaladEgyetert"]').val() || "igen",
+            elfogadom: $('#adoptElfogadom').is(':checked') ? 1 : 0
+        };
+
+        // Figyelj a `${serverUrl}` használatára!
+        fetch(`${serverUrl}/api/adoption`, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Küldi a session sütit
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Siker esetén a korábbi szép animációd:
+                $('#adoptForm').hide();
+                $('#adoptSuccessMessage').show();
+                setTimeout(() => {
+                    $('#adoptModal').modal('hide');
+                    $('#adoptForm')[0].reset();
+                    $('#adoptForm').show();
+                    $('#adoptSuccessMessage').hide();
+                }, 3000);
+            } else {
+                alert(data.error || "Hiba történt.");
+            }
+        })
+        .catch(err => {
+            console.error('Hiba:', err);
+            alert("Hálózati hiba a beküldés során.");
         });
     });
 });

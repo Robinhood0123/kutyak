@@ -7,14 +7,33 @@ const multer = require('multer');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+const session = require('express-session');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: true, // Engedélyez minden origint (fejlesztéshez jó)
+  credentials: true // Ez engedi át a sütiket/sessiont
+}));
+
+// --- Session beállítása (A CORS elé vagy után) ---
+app.use(session({
+  secret: 'nemtudommitkellideirni',
+  resave: false,
+  saveUninitialized: false, // Ezt állítsd false-ra
+  cookie: { 
+      secure: false, // Fejlesztés alatt, HTTP-n maradjon false
+      httpOnly: true,
+      sameSite: 'lax'
+  }
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Statikus fájlok
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/img', express.static(path.join(__dirname, 'public', 'img')));
 
 
 // --- Profilkép mappa létrehozása ---
@@ -58,11 +77,12 @@ db.connect(err => {
   else console.log('MySQL kapcsolat sikeres');
 });
 
-// --- CSP lazább fejlesztéshez ---
+// --- CSP lazább fejlesztéshez (MÓDOSÍTVA NGROKHOZ) ---
 app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; connect-src 'self' http://localhost:* ws://localhost:*; img-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    "default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src *;"
   );
   next();
 });
@@ -136,21 +156,20 @@ app.post('/kutyak', upload.single('kep'), (req, res) => {
   const { nev, eletkor, nem, fajta, leiras } = req.body; 
   if (!nev || !fajta) return res.status(400).json({ error: 'Hiányzó adatok!' });
 
-  const kepUrl = req.file ? `${req.protocol}://${req.get('host')}/img/kutyak/${req.file.filename}` : null;
+  // MÓDOSÍTVA: Relatív útvonal használata localhost helyett
+  const kepUrl = req.file ? `/img/kutyak/${req.file.filename}` : null;
 
   const checkFajta = 'SELECT fajta_id FROM fajtak WHERE nev = ? LIMIT 1';
   db.query(checkFajta, [fajta], (err, results) => {
       if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
 
       if (results.length > 0) {
-          // 1. HA LÉTEZIK A FAJTA: Mentés közvetlenül
           const sql = 'INSERT INTO kutyak (nev, eletkor, nem, fajta_id, kep_url, leiras) VALUES (?, ?, ?, ?, ?, ?)';
           db.query(sql, [nev, eletkor || null, nem || null, results[0].fajta_id, kepUrl, leiras || null], err3 => {
               if (err3) return res.status(500).json({ error: 'Adatbázis hiba mentésnél!' });
               res.json({ message: 'Kutya sikeresen hozzáadva!' });
           });
       } else {
-          // 2. HA NEM LÉTEZIK A FAJTA: Előbb fajta mentés, utána kutya mentés
           const insertFajta = 'INSERT INTO fajtak (nev) VALUES (?)';
           db.query(insertFajta, [fajta], (err2, result2) => {
               if (err2) return res.status(500).json({ error: 'Adatbázis hiba fajta mentésnél!' });
@@ -203,7 +222,6 @@ app.post('/register', async (req, res) => {
       bcrypt.hash(jelszo, 10, async (err, hash) => {
           if (err) return res.status(500).json({ error: 'Hashelési hiba!' });
 
-          // Hozzáadtuk a kep_url-t az INSERT-hez (alapértelmezett értéke null)
           const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, kep_url) VALUES (?, ?, ?, ?, ?)';
           
           db.query(insertSql, [nev, email, hash, 'onkentes', null], async (err2) => {
@@ -211,7 +229,6 @@ app.post('/register', async (req, res) => {
                   return res.status(500).json({ error: 'Adatbázis mentési hiba: ' + err2.sqlMessage });
               }
 
-              // Email küldése a sikeres regisztrációról
               try {
                   const welcomeMail = {
                       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
@@ -220,23 +237,9 @@ app.post('/register', async (req, res) => {
                       html: `
                           <h2>Köszönjük a regisztrációt, ${nev}!</h2>
                           <p>Sikeresen regisztráltál a kutyamenhelyünk weboldalán!</p>
-                          <p>Mostantól:</p>
-                          <ul>
-                              <li>Bejelentkezhetsz a fiókodba</li>
-                              <li>Részletesen megtekintheted a kutyusainkat</li>
-                              <li>Örökbefogadási jelentkezést nyújthatsz be</li>
-                              <li>Értesítést kaphatsz újdonságainkról</li>
-                          </ul>
-                          <p><strong>Bejelentkezési adataid:</strong></p>
-                          <ul>
-                              <li>Email: ${email}</li>
-                          </ul>
-                          <p>Ha bármilyen kérdésed van, keress minket bizalommal!</p>
+                          <p><strong>Bejelentkezési címed:</strong> <a href="https://unantagonized-delisa-oneiric.ngrok-free.dev">kutyamenhely.hu</a></p>
                           <hr>
                           <p><strong>Robi&Ricsi&Norbi Kutyamenhely</strong></p>
-                          <p>Telefon: +36 30 324 9866</p>
-                          <p>Email: kirajok69@gmail.com</p>
-                          <p>Web: <a href="http://localhost:3000">kutyamenhely.hu</a></p>
                       `
                   };
 
@@ -245,7 +248,6 @@ app.post('/register', async (req, res) => {
                   
               } catch (emailError) {
                   console.error('Regisztrációs email küldési hiba:', emailError);
-                  // Ha az email hiba, de a regisztráció sikeres, akkor is jelezzük a sikert
               }
 
               res.json({ message: 'Sikeres regisztráció! Ellenőrizd az emailedet a megerősítő üzenetért.' });
@@ -283,7 +285,11 @@ app.post('/login', (req, res) => {
         return res.status(401).json({ error: 'Hibás email vagy jelszó!' });
       }
 
-      // sikeres bejelentkezés
+      // --- SESSION MENTÉSE ---
+      // Ez az a rész, amitől a szerver emlékezni fog a felhasználóra
+      req.session.userId = user.felhasznalo_id;
+      req.session.felhasznalo_id = user.felhasznalo_id; 
+
       res.json({
         message: 'Sikeres bejelentkezés!',
         user: {
@@ -299,7 +305,6 @@ app.post('/login', (req, res) => {
 });
 
 
-// --- Profil frissítése endpoint módosítása ---
 app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => {
     const { email, nev, jelszo } = req.body;
     let updateFields = [];
@@ -311,8 +316,6 @@ app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => 
     }
 
     if (req.file) {
-        // A teljes URL helyett csak a relatív utat mentsük el!
-        // Így az adatbázisban csak ennyi lesz: /img/profilok/profile-123.jpg
         const kepEleresiUt = `/img/profilok/${req.file.filename}`;
         updateFields.push("kep_url = ?");
         params.push(kepEleresiUt);
@@ -337,13 +340,12 @@ app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => 
         db.query("SELECT felhasznalonev, email, kep_url FROM felhasznalok WHERE email = ?", [email], (err2, results) => {
             if (err2) return res.status(500).json({ error: "Hiba lekéréskor!" });
             
-            // Itt visszaadjuk az új adatokat a frontendnek
             res.json({ 
                 message: "Profil sikeresen frissítve!", 
                 user: {
                     nev: results[0].felhasznalonev,
                     email: results[0].email,
-                    kep: results[0].kep_url // Ez most már a relatív út lesz
+                    kep: results[0].kep_url
                 }
             });
         });
@@ -352,16 +354,26 @@ app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => 
 
 
 app.post('/api/adoption', async (req, res) => {
+  // 1. Ellenőrizzük, hogy be van-e jelentkezve a felhasználó
+  // Ha a session-ben máshogy tárolod (pl. req.session.user.id), írd át!
+  const felhasznaloId = req.session.userId || req.session.felhasznalo_id;
+
+  if (!felhasznaloId) {
+    return res.status(401).json({ 
+      success: false, 
+      error: 'A jelentkezéshez be kell jelentkezned!' 
+    });
+  }
+
   const {
-    nev, email, telefonszam, szuletesiDatum,
-    iranyitoszam, varos, utcaHazszam,
+    telefonszam, iranyitoszam, varos, utcaHazszam,
     lakasTipus, ingatlanTipus, kert,
     kutyaTapasztalat, csaladEgyetert,
-    kutyaNeve, kutyaId, megjegyzes, elfogadom
+    kutyaId, megjegyzes, elfogadom
   } = req.body;
 
-  // Kötelező mezők ellenőrzése
-  if (!nev || !email || !telefonszam || !iranyitoszam || !varos || !utcaHazszam || 
+  // Validálás (nev és email itt már nem kell, mert az adatbázisból jönnek az ID alapján)
+  if (!telefonszam || !iranyitoszam || !varos || !utcaHazszam || 
       !lakasTipus || !ingatlanTipus || !kert || !kutyaTapasztalat || 
       !csaladEgyetert || !elfogadom) {
     return res.status(400).json({ 
@@ -371,116 +383,63 @@ app.post('/api/adoption', async (req, res) => {
   }
 
   try {
-    // Örökbefogadási jelentkezés mentése az adatbázisba
+    // 2. Mentés az adatbázisba (Csak azokat az oszlopokat használjuk, amik léteznek az SQL-edben)
     const sql = `
       INSERT INTO orokbefogadasok (
-        nev, email, telefonszam, szuletesi_datum,
+        felhasznalo_id, kutya_id, telefonszam, 
         iranyitoszam, varos, utca_hazszam,
         lakas_tipus, ingatlan_tipus, kert,
-        kutya_tapasztalat, csalad_egyetert,
-        kutya_neve, kutya_id, megjegyzes, elfogadom,
-        letrehozva
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        kutya_tapasztalat, statusz, letrehozva
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'folyamatban', NOW())
     `;
 
-    console.log('SQL oszlopok száma:', 16);
-    console.log('Values száma:', 16);
-    console.log('Values:', [
-      nev, email, telefonszam, szuletesiDatum || null,
-      iranyitoszam, varos, utcaHazszam,
-      lakasTipus, ingatlanTipus, kert,
-      kutyaTapasztalat, csaladEgyetert,
-      kutyaNeve || null, kutyaId || null, megjegyzes || null, elfogadom ? '1' : '0'
-    ]);
-
     const values = [
-      nev, email, telefonszam, szuletesiDatum || null,
+      felhasznaloId, kutyaId || null, telefonszam,
       iranyitoszam, varos, utcaHazszam,
       lakasTipus, ingatlanTipus, kert,
-      kutyaTapasztalat, csaladEgyetert,
-      kutyaNeve || null, kutyaId || null, megjegyzes || null, elfogadom ? '1' : '0'
+      kutyaTapasztalat
     ];
 
     db.query(sql, values, async (err, result) => {
       if (err) {
         console.error('Hiba az örökbefogadás mentésekor:', err);
-        return res.status(500).json({ 
-          success: false, 
-          error: 'Adatbázis hiba történt!' 
-        });
+        return res.status(500).json({ success: false, error: 'Adatbázis hiba!' });
       }
 
-      // Email küldése az adminisztrátornak
       try {
-        const adminMail = {
-          from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-          to: process.env.ADMIN_EMAIL,
-          subject: `[ÚJ ÖRÖKBEFOGADÁSI JELENTKEZÉS] ${nev}`,
-          html: `
-            <h2>Új örökbefogadási jelentkezés érkezett!</h2>
-            <p><strong>Jelentkező neve:</strong> ${nev}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Telefonszám:</strong> ${telefonszam}</p>
-            <p><strong>Lakcím:</strong> ${iranyitoszam} ${varos}, ${utcaHazszam}</p>
-            <p><strong>Lakás típusa:</strong> ${lakasTipus}</p>
-            <p><strong>Ingatlan:</strong> ${ingatlanTipus}</p>
-            <p><strong>Kert:</strong> ${kert}</p>
-            ${kutyaNeve ? `<p><strong>Kiválasztott kutya:</strong> ${kutyaNeve}</p>` : ''}
-            <p><strong>Kutya tapasztalat:</strong> ${kutyaTapasztalat}</p>
-            <p><strong>Családdal egyetért:</strong> ${csaladEgyetert}</p>
-            ${megjegyzes ? `<p><strong>Megjegyzés:</strong> ${megjegyzes}</p>` : ''}
-            <hr>
-            <p><small>Ez az email automatikusan generálódott a kutyamenhely weboldaláról.</small></p>
-          `
-        };
+        // 3. Felhasználó adatainak lekérése az email küldéshez
+        db.query("SELECT felhasznalonev, email FROM felhasznalok WHERE felhasznalo_id = ?", [felhasznaloId], async (uErr, users) => {
+          if (uErr || users.length === 0) return res.json({ success: true, message: 'Mentve, de email hiba (user nem található).' });
 
-        await transporter.sendMail(adminMail);
+          const user = users[0];
 
-        // Visszaigazoló email a jelentkezőnek
-        const userMail = {
-          from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-          to: email,
-          subject: 'Örökbefogadási jelentkezésedet megkaptuk',
-          html: `
-            <h2>Köszönjük a jelentkezésedet, ${nev}!</h2>
-            <p>Megtettük a szükséges lépéseket, és hamarosan felvesszük veled a kapcsolatot a további teendőkkel kapcsolatban.</p>
-            <p><strong>Kapcsolattartási adataid:</strong></p>
-            <ul>
-              <li>Email: ${email}</li>
-              <li>Telefonszám: ${telefonszam}</li>
-            </ul>
-            ${kutyaNeve ? `<p><strong>Kiválasztott kutya:</strong> ${kutyaNeve}</p>` : ''}
-            <p>Amennyiben kérdésed van, keress minket bizalommal!</p>
-            <hr>
-            <p><strong>Robi&Ricsi&Norbi Kutyamenhely</strong></p>
-            <p>Telefon: +36 30 324 9866</p>
-            <p>Email: kirajok69@gmail.com</p>
-          `
-        };
+          // Admin email
+          await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: process.env.ADMIN_EMAIL,
+            subject: `[ÚJ ÖRÖKBEFOGADÁS] ${user.felhasznalonev}`,
+            html: `<h3>Új jelentkezés!</h3><p>Felhasználó: ${user.felhasznalonev}</p><p>Város: ${varos}</p>`
+          });
 
-        await transporter.sendMail(userMail);
+          // User visszaigazoló email
+          await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Sikeres jelentkezés - Kutyamenhely',
+            html: `<h3>Kedves ${user.felhasznalonev}!</h3><p>Jelentkezésedet rögzítettük.</p>`
+          });
 
-        res.json({ 
-          success: true, 
-          message: 'Jelentkezésedet sikeresen rögzítettük! Hamarosan felvesszük veled a kapcsolatot.' 
+          res.json({ success: true, message: 'Jelentkezésedet sikeresen rögzítettük!' });
         });
 
       } catch (emailError) {
         console.error('Email küldési hiba:', emailError);
-        // Ha az email hiba, de az adatbázis mentés sikeres, akkor is jelezzük a sikert
-        res.json({ 
-          success: true, 
-          message: 'Jelentkezésedet sikeresen rögzítettük! Hamarosan felvesszük veled a kapcsolatot.' 
-        });
+        res.json({ success: true, message: 'Jelentkezés rögzítve, de az email küldése sikertelen.' });
       }
     });
 
   } catch (error) {
-    console.error('Váratlan hiba:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Váratlan hiba történt!' 
-    });
+    res.status(500).json({ success: false, error: 'Váratlan hiba történt!' });
   }
 });
 
