@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Feb 25. 09:20
+-- Létrehozás ideje: 2026. Feb 25. 10:35
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -117,27 +117,7 @@ CREATE TABLE `kutyak` (
 --
 
 INSERT INTO `kutyak` (`kutya_id`, `nev`, `eletkor`, `nem`, `erkezes_datum`, `fajta_id`, `kep_url`, `leiras`) VALUES
-(19, 'Samu', 2, 'kan', NULL, 14, '/img/kutyak/1768985879170-6951690eba32ec486a447c9a_kutya-orokbefogadas-samu-20251109-124750.jpeg', 'Samu a hevesi gyepmesteri telepről érkezett...'),
-(21, 'Günther', 6, 'kan', NULL, 16, '/img/kutyak/1768986296446-GuÌˆnter.avif', 'Készüljetek, mert itt jön GÜNTER...'),
-(23, 'Róka', 7, 'kan', NULL, 15, '/img/kutyak/1768986514275-Roka.avif', 'Nagyon okos, figyelmes kutyus...'),
-(24, 'Cortez', 6, 'kan', NULL, 18, '/img/kutyak/1768986734499-Cortez.avif', 'Cortez egy rendkívül barátságos, emberközpontú...'),
-(25, 'Bendzsó', 11, 'kan', NULL, 14, '/img/kutyak/1768986884461-Bendzso.avif', 'Bendzsó egy éber és mozgékony...'),
-(26, 'Lüsy', 2, 'szuka', NULL, 15, '/img/kutyak/1768986986913-LÃ¼sy.avif', 'Aktív, játékos, de még az új dolgoktól...'),
-(27, 'Dáma', 6, 'szuka', NULL, 14, '/img/kutyak/1768987081982-Dama.avif', 'Közepes testű, teljes oltási sorral...'),
-(28, 'Anubis', 4, 'kan', NULL, 19, '/img/kutyak/1768987201202-Anubis.avif', 'Testvérét már örökbe fogadták...'),
-(29, 'Lara', 12, 'szuka', NULL, 20, '/img/kutyak/1768987376524-Lara.avif', 'Igazi szeretetbomba, aki rajong az emberekért...'),
-(31, 'Simon', 6, 'kan', NULL, 16, '/img/kutyak/1768987581431-Simon.avif', 'Okos, étellel jól motiválható...'),
-(32, 'Ava', 7, 'szuka', NULL, 15, '/img/kutyak/1768987745953-Ava.avif', 'Ava útja nehezen indult: mély szorongással...'),
-(33, 'Joya', 1, 'szuka', NULL, 14, '/img/kutyak/1768987844185-jOYA.avif', 'Ez a figyelemreméltó, értelmes tekintetű...'),
-(34, 'Shiva', 6, 'szuka', NULL, 16, '/img/kutyak/1768987996823-Shiva.avif', 'Atletikus alkatú egy igazi energiabomba...'),
-(35, 'Nala', 8, 'szuka', NULL, 16, '/img/kutyak/1768988110550-Nala.avif', 'Ez a rendkívül stabil, izmos felépítésű...'),
-(36, 'Babóca', 1, 'szuka', NULL, 16, '/img/kutyak/1768988350489-Baboca.avif', 'Idővel elkezdett bízni a gondozóiban...'),
-(37, 'Némo', 3, 'kan', NULL, 14, '/img/kutyak/1768988474567-Nemo.avif', 'Akiket megismer, azokhoz bújik...'),
-(38, 'Franciska', 4, 'szuka', NULL, 22, '/img/kutyak/1768988604407-Franciska.avif', 'Ez a rendkívül elegáns megjelenésű...'),
-(39, 'Keksz', 2, 'kan', NULL, 16, '/img/kutyak/1768988769076-Keksz.avif', 'Keksz egy rendkívül stabil...'),
-(40, 'Mazsola', 8, 'kan', NULL, 14, '/img/kutyak/1768988914395-Mazsola.jpeg', 'Mazsola egy igazán különleges kis egyéniség...'),
-(41, 'Stella', 2, 'szuka', NULL, 14, '/img/kutyak/1768989008696-679e9a75b5807f3414a2a19c_Stella3-p-1080.jpg', 'Ivartalanított, kis-közepes termetű...'),
-(42, 'Károly', 6, 'kan', NULL, 15, '/img/kutyak/1768989768700-Karcsin.jpg', 'Napokban került a telepre egy szomorú szemű...');
+(61, 'Boldizsár', 3, 'kan', NULL, 14, '/img/kutyak/1772011909064-large.avif', 'Most az Alapítvány gondozásában \"éhezik\". Gazikereső. Utcai tartózkodása során több csirkét levadászott, így melléjük nem ajánljuk.\r\nÉrdeklődni privát üzenetben lehet.\r\nKalandos és kusza történetének tisztázása nem kevés időt és energiát vett el önkénteseinktől...\r\n2025. szeptember 9.\r\nSegítségkérés érkezett egy utcán levő kutyáról Mezőkövesden. CHIP nincs, telefon átmeneti elhelyezés kéréséhez a gyepmesternek majd aljegyző úrnak. S.O.S. megoldás egy 150x150 cm-es ketrec az Alapítványnál.\r\nTények, amiket valahogy a bejelentő \"elfelejtett\":\r\n- egy szomszéd utcában lakó bízta rá a kutyát (amit nem sokkal előtte fogadott be) míg külföldön dolgozik. 50 eurót kapott az ellátására.\r\nÖnkéntesünk kapott egy kulcscsomót a tulaj unokájától, hogy megjavítsa a kerítést, és legyen helye a kutyának.\r\nMásnap feljelentéssel fenyegetőzött a tulaj, mert a rokon a ház kulcsát is átadta. Vigyük vissza a kulcsot és a kutyát...\r\n2025. november 16.\r\nA kutya újra az utcán...\r\nA tulaj követelte vigyük vissza a kutyát, mert \"legutóbb sem adtunk neki enni\"... aztán mégsem kellett már neki, nem tudja ellátni.\r\nEzidő alatt állatorvos nem látta, CHIP--et nem kapott ez a barátságos kanocska.');
 
 -- --------------------------------------------------------
 
@@ -163,14 +143,6 @@ CREATE TABLE `orokbefogadasok` (
   `letrehozva` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- A tábla adatainak kiíratása `orokbefogadasok`
---
-
-INSERT INTO `orokbefogadasok` (`id`, `felhasznalo_id`, `kutya_id`, `telefonszam`, `iranyitoszam`, `varos`, `utca_hazszam`, `lakas_tipus`, `ingatlan_tipus`, `kert`, `kutya_tapasztalat`, `allatok`, `csalad_tagok`, `statusz`, `letrehozva`) VALUES
-(1, 8, 42, '06202020200', '1056', 'Budapest', 'király utca 61', 'panel', 'sajat', 'nincs', 'igen', NULL, NULL, 'folyamatban', '2026-02-23 11:19:32'),
-(2, 8, 42, '06202020200', '1056', 'Budapest', 'király utca 61', 'panel', 'sajat', 'van', 'igen', NULL, NULL, 'folyamatban', '2026-02-25 07:31:29');
-
 -- --------------------------------------------------------
 
 --
@@ -183,6 +155,13 @@ CREATE TABLE `orvosi_vizsgalatok` (
   `vizsgalat_datum` date NOT NULL,
   `oltast_kapott` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `orvosi_vizsgalatok`
+--
+
+INSERT INTO `orvosi_vizsgalatok` (`vizsgalat_id`, `kutya_id`, `vizsgalat_datum`, `oltast_kapott`) VALUES
+(14, 61, '2026-01-10', 1);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -256,7 +235,7 @@ ALTER TABLE `felhasznalok`
 -- AUTO_INCREMENT a táblához `kutyak`
 --
 ALTER TABLE `kutyak`
-  MODIFY `kutya_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `kutya_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT a táblához `orokbefogadasok`
@@ -268,7 +247,7 @@ ALTER TABLE `orokbefogadasok`
 -- AUTO_INCREMENT a táblához `orvosi_vizsgalatok`
 --
 ALTER TABLE `orvosi_vizsgalatok`
-  MODIFY `vizsgalat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `vizsgalat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Megkötések a kiírt táblákhoz
