@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Feb 18. 09:04
+-- Létrehozás ideje: 2026. Feb 25. 09:20
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -64,7 +64,12 @@ INSERT INTO `fajtak` (`fajta_id`, `nev`) VALUES
 (20, 'Erdélyi kopó'),
 (21, 'Staffordshire bullterrier'),
 (22, 'Shiba Inu'),
-(23, 'Kuvasz');
+(23, 'Kuvasz'),
+(24, 'Berni pásztorkutya'),
+(25, 'Ónémet juhászkutya'),
+(26, 'Rövidszőrű magyar vizsla'),
+(27, 'Boxer'),
+(28, 'Ír terrier');
 
 -- --------------------------------------------------------
 
@@ -159,6 +164,27 @@ CREATE TABLE `orokbefogadasok` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- A tábla adatainak kiíratása `orokbefogadasok`
+--
+
+INSERT INTO `orokbefogadasok` (`id`, `felhasznalo_id`, `kutya_id`, `telefonszam`, `iranyitoszam`, `varos`, `utca_hazszam`, `lakas_tipus`, `ingatlan_tipus`, `kert`, `kutya_tapasztalat`, `allatok`, `csalad_tagok`, `statusz`, `letrehozva`) VALUES
+(1, 8, 42, '06202020200', '1056', 'Budapest', 'király utca 61', 'panel', 'sajat', 'nincs', 'igen', NULL, NULL, 'folyamatban', '2026-02-23 11:19:32'),
+(2, 8, 42, '06202020200', '1056', 'Budapest', 'király utca 61', 'panel', 'sajat', 'van', 'igen', NULL, NULL, 'folyamatban', '2026-02-25 07:31:29');
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `orvosi_vizsgalatok`
+--
+
+CREATE TABLE `orvosi_vizsgalatok` (
+  `vizsgalat_id` int(11) NOT NULL,
+  `kutya_id` int(11) NOT NULL,
+  `vizsgalat_datum` date NOT NULL,
+  `oltast_kapott` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
 -- Indexek a kiírt táblákhoz
 --
 
@@ -198,6 +224,13 @@ ALTER TABLE `orokbefogadasok`
   ADD KEY `fk_orokbef_kutya` (`kutya_id`);
 
 --
+-- A tábla indexei `orvosi_vizsgalatok`
+--
+ALTER TABLE `orvosi_vizsgalatok`
+  ADD PRIMARY KEY (`vizsgalat_id`),
+  ADD KEY `fk_vizsgalat_kutya` (`kutya_id`);
+
+--
 -- A kiírt táblák AUTO_INCREMENT értéke
 --
 
@@ -211,7 +244,7 @@ ALTER TABLE `adomanyok`
 -- AUTO_INCREMENT a táblához `fajtak`
 --
 ALTER TABLE `fajtak`
-  MODIFY `fajta_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `fajta_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT a táblához `felhasznalok`
@@ -223,13 +256,19 @@ ALTER TABLE `felhasznalok`
 -- AUTO_INCREMENT a táblához `kutyak`
 --
 ALTER TABLE `kutyak`
-  MODIFY `kutya_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `kutya_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT a táblához `orokbefogadasok`
 --
 ALTER TABLE `orokbefogadasok`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT a táblához `orvosi_vizsgalatok`
+--
+ALTER TABLE `orvosi_vizsgalatok`
+  MODIFY `vizsgalat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Megkötések a kiírt táblákhoz
@@ -253,6 +292,12 @@ ALTER TABLE `kutyak`
 ALTER TABLE `orokbefogadasok`
   ADD CONSTRAINT `fk_orokbef_kutya` FOREIGN KEY (`kutya_id`) REFERENCES `kutyak` (`kutya_id`),
   ADD CONSTRAINT `fk_orokbef_user` FOREIGN KEY (`felhasznalo_id`) REFERENCES `felhasznalok` (`felhasznalo_id`);
+
+--
+-- Megkötések a táblához `orvosi_vizsgalatok`
+--
+ALTER TABLE `orvosi_vizsgalatok`
+  ADD CONSTRAINT `fk_vizsgalat_kutya` FOREIGN KEY (`kutya_id`) REFERENCES `kutyak` (`kutya_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
