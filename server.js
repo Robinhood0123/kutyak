@@ -15,7 +15,6 @@ app.use(cors({
   credentials: true // Ez engedi át a sütiket/sessiont
 }));
 
-// --- Session beállítása (A CORS elé vagy után) ---
 app.use(session({
   secret: 'nemtudommitkellideirni',
   resave: false,
