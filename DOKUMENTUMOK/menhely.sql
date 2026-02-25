@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Feb 25. 12:24
+-- Létrehozás ideje: 2026. Feb 25. 18:00
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -177,7 +177,7 @@ CREATE TABLE `orokbefogadasok` (
   `kutya_tapasztalat` varchar(10) DEFAULT NULL,
   `allatok` text DEFAULT NULL,
   `csalad_tagok` int(11) DEFAULT NULL,
-  `statusz` enum('folyamatban','elfogadva','elutasitva') DEFAULT 'folyamatban',
+  `statusz` enum('folyamatban','elbiralt','interju','elfogadva','elutasitva') DEFAULT 'folyamatban',
   `letrehozva` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

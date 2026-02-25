@@ -270,5 +270,152 @@
     </script>
     
     <script src="java.js"></script>
+
+<style>
+  .adoptions-table-wrap { overflow-x: auto; margin-top: 24px; }
+  table.adoptions-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .adoptions-table thead tr { background: #f7fafc; }
+  .adoptions-table th { padding: 14px 16px; text-align: left; color: #4a5568; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; border-bottom: 2px solid #e2e8f0; }
+  .adoptions-table td { padding: 14px 16px; border-bottom: 1px solid #f0f4f8; vertical-align: middle; color: #1a202c; }
+  .adoptions-table tr:last-child td { border-bottom: none; }
+  .adoptions-table tr:hover td { background: #f7fafc; }
+  .badge-statusz { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .badge-folyamatban { background: #fef3c7; color: #92400e; }
+  .badge-elbiralt    { background: #ede9fe; color: #5b21b6; }
+  .badge-interju     { background: #dbeafe; color: #1e40af; }
+  .badge-elfogadva   { background: #d1fae5; color: #065f46; }
+  .badge-elutasitva  { background: #fee2e2; color: #991b1b; }
+  .status-select { border: 1px solid #ddd; border-radius: 6px; padding: 8px 10px; font-size: 14px; color: #1a202c; background: #fff; cursor: pointer; transition: border-color 0.3s; height: 40px; }
+  .status-select:focus { border-color: #007bff; outline: none; }
+  .btn-send-status { background: #007bff; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.3s; height: 40px; }
+  .btn-send-status:hover { background: #0056b3; }
+  .btn-send-status:disabled { opacity: .5; cursor: not-allowed; }
+  #adoptions-msg { padding: 12px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; display: none; margin: 0 0 20px 0; }
+  #adoptions-msg.success { background: #d1fae5; color: #065f46; }
+  #adoptions-msg.error   { background: #fee2e2; color: #991b1b; }
+  .no-adoptions { padding: 48px; text-align: center; color: #555; font-size: 15px; }
+</style>
+
+<section class="admin-section">
+  <div class="feedback-card" style="max-width:960px;">
+    <h2>🐾 Örökbefogadások kezelése</h2>
+    <p>Frissítsd a státuszt és küldd el az értesítő emailt a jelentkezőnek.</p>
+    <div id="adoptions-msg"></div>
+    <div class="adoptions-table-wrap">
+      <table class="adoptions-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jelentkező</th>
+            <th>Kutya</th>
+            <th>Város</th>
+            <th>Telefon</th>
+            <th>Beadva</th>
+            <th>Jelenlegi státusz</th>
+            <th>Új státusz & Email</th>
+          </tr>
+        </thead>
+        <tbody id="adoptions-tbody">
+          <tr><td colspan="8" class="no-adoptions">⏳ Betöltés...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  const statusLabels = {
+    folyamatban: 'Folyamatban',
+    elbiralt:    'Elbírálás',
+    interju:     'Interjú',
+    elfogadva:   'Elfogadva ✓',
+    elutasitva:  'Elutasítva'
+  };
+
+  function showMsg(text, type) {
+    const el = document.getElementById('adoptions-msg');
+    el.textContent = text;
+    el.className = type;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 4000);
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('hu-HU') + ' ' + d.toLocaleTimeString('hu-HU', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  async function loadAdoptions() {
+    try {
+      const res = await fetch('/api/adoptions');
+      const data = await res.json();
+      const tbody = document.getElementById('adoptions-tbody');
+
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="no-adoptions">Még nincs beérkezett örökbefogadási kérelem.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(a => {
+        const opts = Object.entries(statusLabels).map(([val, lbl]) =>
+          `<option value="${val}"${a.statusz === val ? ' selected' : ''}>${lbl}</option>`
+        ).join('');
+
+        return `<tr>
+          <td><strong>#${a.id}</strong></td>
+          <td>
+            <strong>${a.felhasznalonev}</strong><br>
+            <span style="color:#718096;font-size:12px;">${a.email}</span>
+          </td>
+          <td>${a.kutya_nev || '<em style="color:#a0aec0;">—</em>'}</td>
+          <td>${a.varos || '—'}</td>
+          <td>${a.telefonszam || '—'}</td>
+          <td style="font-size:12px;color:#718096;">${formatDate(a.letrehozva)}</td>
+          <td><span class="badge-statusz badge-${a.statusz}">${statusLabels[a.statusz] || a.statusz}</span></td>
+          <td style="display:flex;gap:8px;align-items:center;">
+            <select class="status-select" id="sel-${a.id}">${opts}</select>
+            <button class="btn-send-status" onclick="sendStatus(${a.id})">📧 Küldés</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      document.getElementById('adoptions-tbody').innerHTML =
+        '<tr><td colspan="8" class="no-adoptions" style="color:#e94560;">Hiba a betöltésnél.</td></tr>';
+    }
+  }
+
+  window.sendStatus = async function(id) {
+    const sel = document.getElementById('sel-' + id);
+    const statusz = sel.value;
+    const btn = sel.nextElementSibling;
+    btn.disabled = true;
+    btn.textContent = '⏳ Küldés...';
+
+    try {
+      const res = await fetch(`/api/adoption/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ statusz })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showMsg('✅ ' + data.message, 'success');
+        loadAdoptions();
+      } else {
+        showMsg('❌ ' + (data.error || 'Hiba történt.'), 'error');
+      }
+    } catch (e) {
+      showMsg('❌ Hálózati hiba.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📧 Küldés';
+    }
+  };
+
+  loadAdoptions();
+})();
+</script>
 </body>
 </html>
