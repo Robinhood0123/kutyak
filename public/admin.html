@@ -221,6 +221,21 @@
                 <div class="form-group">
                     <textarea id="adminKutyaLeiras" name="leiras" class="form-control" placeholder="A kutya története..." rows="4"></textarea>
                 </div>
+
+                <div class="form-row border p-2 mb-3 bg-light rounded">
+                    <div class="col-12"><label><strong>Orvosi adatok rögzítése:</strong></label></div>
+                    <div class="form-group col-md-6">
+                        <label for="vizsgalat_datum">Vizsgálat dátuma:</label>
+                        <input type="date" name="vizsgalat_datum" id="vizsgalat_datum" class="form-control" value="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="oltast_kapott">Kapott oltást?</label>
+                        <select name="oltast_kapott" id="oltast_kapott" class="form-control">
+                            <option value="1">Igen</option>
+                            <option value="0" selected>Nem</option>
+                        </select>
+                    </div>
+                </div>
                 
                 <div class="form-group text-left">
                     <label class="file-label">Fénykép feltöltése:</label>
@@ -236,18 +251,17 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     <script>
-        $(document).ready(function() {
-            // Select2 bekapcsolása a fajtaválasztónál
-            $('#fajta-kereso').select2({
-                placeholder: "Válassz vagy keress fajtát...",
-                allowClear: true,
-                language: {
-                    noResults: function() {
-                        return "Nincs ilyen fajta a listában";
-                    }
+       $(document).ready(function() {
+        $('#fajta-kereso').select2({
+            placeholder: "Válassz vagy keress fajtát...",
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "Nincs ilyen fajta a listában";
                 }
-            });
+            }
         });
+    });
     </script>
     
     <script src="java.js"></script>

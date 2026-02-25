@@ -211,16 +211,29 @@ function megjelenitOldalt(oldal) {
             }
         }
 
+        const utolsoVizit = kutya.utolso_vizit 
+        ? new Date(kutya.utolso_vizit).toLocaleDateString('hu-HU') 
+        : 'Nincs adat';
+    
+        const oltasIkon = kutya.utolso_oltas_statusz === 1 
+            ? '<span class="text-success"><i class="fas fa-check-circle"></i> Oltva</span>' 
+            : '<span class="text-danger"><i class="fas fa-times-circle"></i> Oltás szükséges</span>';
+        
         const card = document.createElement('div');
         card.className = 'kutya-card';
         card.innerHTML = `
             <div class="kutya-card-img-wrapper">
-                <img class="kutya-card-img" src="${kepUrl}" alt="${kutya.nev}" onerror="this.src='img//kutyak/1770806719489-image.jpg'">
+                <img class="kutya-card-img" src="${kepUrl}" alt="${kutya.nev}" onerror="this.src='img/kutyak/1770806719489-image.jpg'">
             </div>
             <div class="kutya-card-body">
                 <h3>${kutya.nev}</h3>
-                <p>${kutya.fajta} <br> ${kutya.eletkor} éves • ${kutya.nem}</p>
-                <span class="btn-reszletek-custom">Részletek</span>
+                <p class="mb-1"><strong>${kutya.fajta}</strong></p>
+                <p class="mb-2 text-muted">${kutya.eletkor} éves • ${kutya.nem}</p>
+                <div class="medical-info-mini border-top pt-2" style="background: #f9f9f9; padding: 5px; border-radius: 4px; margin-top: 8px;">
+                    <small class="d-block text-muted">Legutóbbi vizit: ${utolsoVizit}</small>
+                    <small class="d-block font-weight-bold">${oltasIkon}</small>
+                </div>
+                <span class="btn-reszletek-custom mt-2 d-inline-block">Részletek</span>
             </div>`;
         
         card.addEventListener('click', () => {
@@ -410,25 +423,37 @@ function validateForm() {
 // --- Kutya hozzáadás Form ---
 const kutyaForm = document.getElementById('kutyaForm');
 if (kutyaForm) {
-    kutyaForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(kutyaForm);
+    const újForm = kutyaForm.cloneNode(true);
+    kutyaForm.parentNode.replaceChild(újForm, kutyaForm);
 
-      try {
-        const res = await fetch(`${serverUrl}/kutyak`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert(' ' + data.message);
-          kutyaForm.reset(); 
-        } else {
-          alert(' Hiba: ' + (data.error || 'Ismeretlen hiba történt.'));
+    újForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = újForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const formData = new FormData(újForm);
+
+        try {
+            const res = await fetch(`${serverUrl}/kutyak`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok) {
+                alert('Sikeres mentés: ' + data.message);
+                újForm.reset();
+                location.reload();
+            } else {
+                alert('Hiba: ' + (data.error || 'Ismeretlen hiba történt.'));
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        } catch (err) {
+            alert('Szerverhiba: ' + err.message);
+            if (submitBtn) submitBtn.disabled = false;
         }
-      } catch (err) {
-        alert(' Szerverhiba: ' + err.message);
-      }
     });
 }
 
