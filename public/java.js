@@ -736,3 +736,50 @@ $(document).ready(function() {
         });
     });
 });
+
+// --- Toggle Password Visibility ---
+function togglePassword(inputId, icon) {
+    const isRegPage = document.getElementById('jelszo') && document.getElementById('jelszo2');
+
+    if (isRegPage) {
+        const input1 = document.getElementById('jelszo');
+        const input2 = document.getElementById('jelszo2');
+        const icons = document.querySelectorAll('.toggle-password');
+        const newType = input1.type === 'password' ? 'text' : 'password';
+
+        input1.type = newType;
+        input2.type = newType;
+
+        icons.forEach(i => {
+            i.classList.toggle('fa-eye', newType === 'password');
+            i.classList.toggle('fa-eye-slash', newType === 'text');
+        });
+    } else {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+}
+
+// --- Jelszó megjelenítő ikon csak gépelés közben ---
+document.addEventListener('DOMContentLoaded', () => {
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+        const icon = input.parentElement.querySelector('.toggle-password');
+        if (!icon) return;
+
+        // Kezdetben rejtett
+        icon.style.display = 'none';
+
+        input.addEventListener('input', () => {
+            icon.style.display = input.value.length > 0 ? 'block' : 'none';
+        });
+    });
+});

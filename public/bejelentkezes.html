@@ -45,7 +45,10 @@
         <h2>Bejelentkezés</h2>
         <form id="loginForm" class="register-form">
             <input type="email" id="loginEmail" placeholder="Email cím" required>
-            <input type="password" id="loginJelszo" placeholder="Jelszó" required>
+            <div class="password-wrapper">
+                <input type="password" id="loginJelszo" placeholder="Jelszó" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('loginJelszo', this)"></i>
+            </div>
             <button type="submit">Belépés</button>
         </form>
         
