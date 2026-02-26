@@ -69,7 +69,7 @@ const db = mysql.createConnection({
   user: 'root',
   password: '',
   database: 'menhely',
-  port: 3307
+  port: 3306
 });
 db.connect(err => {
   if (err) console.error('MySQL kapcsolódási hiba:', err);
@@ -364,14 +364,144 @@ app.post('/register', async (req, res) => {
                   const welcomeMail = {
                       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
                       to: email,
-                      subject: 'Sikeres regisztráció - Robi&Ricsi&Norbi Kutyamenhely',
+                      subject: '🐾 Üdvözlünk a Kutyamenhely csapatában!',
                       html: `
-                          <h2>Köszönjük a regisztrációt, ${nev}!</h2>
-                          <p>Sikeresen regisztráltál a kutyamenhelyünk weboldalán!</p>
-                          <p><strong>Bejelentkezési címed:</strong> <a href="https://unantagonized-delisa-oneiric.ngrok-free.dev">kutyamenhely.hu</a></p>
-                          <hr>
-                          <p><strong>Robi&Ricsi&Norbi Kutyamenhely</strong></p>
-                      `
+<!DOCTYPE html>
+<html lang="hu">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- HERO -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:72px;margin-bottom:16px;">🐾</div>
+            <h1 style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Üdvözlünk, ${nev}!</h1>
+            <p style="color:#a0aec0;margin:12px 0 0;font-size:16px;">Örülünk, hogy csatlakoztál hozzánk! 🎉</p>
+          </td>
+        </tr>
+
+        <!-- BADGE -->
+        <tr>
+          <td style="background:#059669;padding:10px 48px;text-align:center;">
+            <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">✅ REGISZTRÁCIÓ SIKERES</p>
+          </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+          <td style="padding:48px;">
+            <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Szia <strong style="color:#1a202c;">${nev}</strong>! 👋</p>
+            <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 28px;">Sikeresen regisztráltál a <strong style="color:#1a202c;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely</strong> weboldalán. Mostantól bejelentkezhetsz, böngészheted a kutyusainkat és akár örökbefogadási kérelmet is beadhatsz! 🐕</p>
+
+            <!-- Fiók adatok -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+              <tr>
+                <td style="background:#f7fafc;border-radius:12px;padding:24px;border-left:4px solid #059669;">
+                  <p style="color:#065f46;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin:0 0 14px;">👤 Fiókod adatai</p>
+                  <table width="100%">
+                    <tr>
+                      <td style="color:#4a5568;font-size:13px;font-weight:600;width:120px;padding-bottom:8px;">Felhasználónév</td>
+                      <td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${nev}</td>
+                    </tr>
+                    <tr>
+                      <td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:8px;">E-mail cím</td>
+                      <td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${email}</td>
+                    </tr>
+                    <tr>
+                      <td style="color:#4a5568;font-size:13px;font-weight:600;">Szerepkör</td>
+                      <td style="padding-bottom:0;"><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">Önkéntes</span></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Mit tehetsz -->
+            <p style="color:#1a202c;font-size:16px;font-weight:800;margin:0 0 16px;">🐶 Mit tehetsz most?</p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="padding-bottom:12px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:14px 16px;">
+                  <tr>
+                    <td width="36" style="font-size:22px;vertical-align:middle;">🔍</td>
+                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Böngéssz a kutyusaink között</strong><br><span style="color:#4a5568;font-size:13px;">Nézd meg, ki keres szerető otthont éppen most!</span></td>
+                  </tr>
+                </table>
+              </td></tr>
+              <tr><td style="padding-bottom:12px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:14px 16px;">
+                  <tr>
+                    <td width="36" style="font-size:22px;vertical-align:middle;">❤️</td>
+                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Adj be örökbefogadási kérelmet</strong><br><span style="color:#4a5568;font-size:13px;">Ha megtaláltad az ideális társad, adhatjuk egymásnak őket!</span></td>
+                  </tr>
+                </table>
+              </td></tr>
+              <tr><td>
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:14px 16px;">
+                  <tr>
+                    <td width="36" style="font-size:22px;vertical-align:middle;">💬</td>
+                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Lépj kapcsolatba velünk</strong><br><span style="color:#4a5568;font-size:13px;">Kérdésed van? Visszajelzés oldalunkon írj nekünk bármikor!</span></td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- STATS -->
+        <tr>
+          <td style="background:#f7fafc;padding:28px 48px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="33%" align="center" style="padding:0 8px;">
+                  <div style="font-size:28px;">🏠</div>
+                  <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">50+</p>
+                  <p style="color:#4a5568;font-size:12px;margin:0;">Kutya a menhelyen</p>
+                </td>
+                <td width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
+                  <div style="font-size:28px;">❤️</div>
+                  <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">200+</p>
+                  <p style="color:#4a5568;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
+                </td>
+                <td width="33%" align="center" style="padding:0 8px;">
+                  <div style="font-size:28px;">⭐</div>
+                  <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">5★</p>
+                  <p style="color:#4a5568;font-size:12px;margin:0;">Értékelés</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- QUOTE -->
+        <tr>
+          <td style="padding:0 48px 32px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
+                  <p style="color:#fff;font-size:17px;font-weight:700;margin:0;line-height:1.6;">"Egy mentett kutya nem csak egy állatot jelent –<br>hanem egy egész életet, amit megváltoztatsz." 🐾</p>
+                  <p style="color:rgba(255,255,255,0.88);font-size:13px;margin:10px 0 0;">— Robi, Ricsi &amp; Norbi csapata</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
+            <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
                   };
 
                   await transporter.sendMail(welcomeMail);
