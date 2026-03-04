@@ -124,6 +124,15 @@ function isAdmin(req, res, next) {
   return res.status(403).json({ error: 'Hozzáférés megtagadva! Csak adminok érhetik el ezt az oldalt.' });
 }
 
+// --- DB migration: elerheto oszlop hozzáadása ---
+db.query(`ALTER TABLE kutyak ADD COLUMN elerheto TINYINT(1) NOT NULL DEFAULT 1`, (err) => {
+  if (err && err.code !== 'ER_DUP_FIELDNAME') {
+    console.log('elerheto migration:', err.code);
+  } else {
+    console.log('kutyak.elerheto oszlop OK');
+  }
+});
+
 // --- Elfelejtett jelszó ---
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
@@ -498,6 +507,7 @@ app.get('/kutyak', (req, res) => {
     (SELECT oltast_kapott FROM orvosi_vizsgalatok WHERE kutya_id = k.kutya_id ORDER BY vizsgalat_datum DESC LIMIT 1) AS utolso_oltas_statusz
     FROM kutyak k
     JOIN fajtak f ON k.fajta_id = f.fajta_id
+    WHERE k.elerheto = 1
     ORDER BY k.kutya_id DESC
   `;
   db.query(sql, (err, results) => {
@@ -1100,6 +1110,19 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
 
   db.query('UPDATE orokbefogadasok SET statusz = ? WHERE id = ?', [statusz, id], async (err) => {
     if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+
+    // Ha elfogadva → kutya eltávolítása az örökbefogadhatók közül
+    if (statusz === 'elfogadva') {
+      db.query(
+        `UPDATE kutyak SET elerheto = 0
+         WHERE kutya_id = (SELECT kutya_id FROM orokbefogadasok WHERE id = ? LIMIT 1)`,
+        [id],
+        (kutyaErr) => {
+          if (kutyaErr) console.error('Kutya elrejtési hiba:', kutyaErr);
+          else console.log(`Kutya elrejtve az örökbefogadás #${id} elfogadása után.`);
+        }
+      );
+    }
 
     db.query(`
       SELECT o.id, o.varos, o.telefonszam,
