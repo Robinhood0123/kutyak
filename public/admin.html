@@ -271,7 +271,33 @@
     
     <script src="java.js"></script>
 
-    </section>
+    <script>
+        // --- ADMIN VÉDELEM ---
+        (async function() {
+            const serverUrl = "https://unantagonized-delisa-oneiric.ngrok-free.dev";
+
+            // 1. Gyors localStorage ellenőrzés
+            const user = JSON.parse(localStorage.getItem('loggedInUser'));
+            if (!user || user.szerepkor !== 'admin') {
+                window.location.replace('index.html');
+                return;
+            }
+
+            // 2. Szerver oldali megerősítés (a session alapján)
+            try {
+                const res = await fetch(`${serverUrl}/api/adoptions`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' },
+                    credentials: 'include'
+                });
+                if (res.status === 403 || res.status === 401) {
+                    localStorage.removeItem('loggedInUser');
+                    window.location.replace('index.html');
+                }
+            } catch {
+                // Ha a szerver nem elérhető, a localStorage ellenőrzés már megtörtént
+            }
+        })();
+    </script>
 
     <section class="admin-section adoptions-section">
   <div class="feedback-card adoptions-card">

@@ -41,6 +41,53 @@
         </nav>
     </header>
 
+    <!-- ELFELEJTETT JELSZÓ MODAL -->
+    <div id="forgotModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.15); padding:40px 36px; max-width:460px; width:90%; position:relative; font-family:'Jost',sans-serif;">
+            
+            <!-- Bezáró X -->
+            <button onclick="closeForgotModal()" style="position:absolute; top:14px; right:18px; background:none; border:none; font-size:22px; color:#aaa; cursor:pointer; padding:0; line-height:1;">✕</button>
+
+            <!-- Ikon + cím -->
+            <div style="text-align:center; margin-bottom:24px;">
+                <div style="font-size:52px; margin-bottom:10px;">🔐</div>
+                <h3 style="font-size:22px; font-weight:700; color:#1a202c; margin:0 0 8px;">Elfelejtett jelszó</h3>
+                <p style="color:#718096; font-size:14px; margin:0; line-height:1.6;">Add meg a regisztrációhoz használt email címedet,<br>és kiküldünk egy visszaállító linket!</p>
+            </div>
+
+            <!-- Form -->
+            <form id="forgotForm" onsubmit="sendForgotPassword(event)">
+                <input 
+                    type="email" 
+                    id="forgotEmail" 
+                    placeholder="pelda@email.com" 
+                    required
+                    style="width:100%; padding:13px 15px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:15px; font-family:'Jost',sans-serif; outline:none; transition:border-color 0.2s; box-sizing:border-box; margin-bottom:6px;"
+                    onfocus="this.style.borderColor='#007bff'" 
+                    onblur="this.style.borderColor='#e2e8f0'"
+                >
+                <p id="forgotError" style="color:#dc3545; font-size:13px; margin:0 0 12px; min-height:18px;"></p>
+
+                <!-- Info csík -->
+                <div style="background:#f0f7ff; border-left:3px solid #007bff; border-radius:6px; padding:10px 14px; margin-bottom:20px;">
+                    <p style="color:#2b6cb0; font-size:13px; margin:0;">⏳ A visszaállító link <strong>30 percig érvényes</strong>, és csak egyszer használható.</p>
+                </div>
+
+                <button type="submit" id="forgotBtn" style="width:100%; padding:13px; background:#007bff; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; font-family:'Jost',sans-serif; cursor:pointer; transition:background 0.2s;">
+                    📧 Link küldése
+                </button>
+            </form>
+
+            <!-- Siker üzenet (alapból rejtett) -->
+            <div id="forgotSuccess" style="display:none; text-align:center; padding:10px 0;">
+                <div style="font-size:48px; margin-bottom:12px;">📬</div>
+                <h4 style="color:#1a202c; font-weight:700; font-size:18px; margin:0 0 10px;">Email elküldve!</h4>
+                <p style="color:#718096; font-size:14px; line-height:1.7; margin:0 0 8px;">Ha az email cím regisztrálva van nálunk,<br><strong style="color:#1a202c;">hamarosan megérkezik a visszaállító link!</strong></p>
+                <p style="color:#a0aec0; font-size:12px; margin:0;">Nézd meg a <strong>spam / levélszemét</strong> mappát is! 📁</p>
+            </div>
+        </div>
+    </div>
+
     <section id="bejelentkezes" class="register-section">
         <h2>Bejelentkezés</h2>
         <form id="loginForm" class="register-form">
@@ -51,8 +98,12 @@
             </div>
             <button type="submit">Belépés</button>
         </form>
+
+        <p style="text-align:center; margin-top: 12px;">
+            <a href="#" id="forgotPasswordLink" style="text-decoration: none; color: #6c757d; font-size: 14px;" onclick="openForgotModal()">🔐 Elfelejtett jelszó?</a>
+        </p>
         
-        <p style="text-align:center; margin-top: 15px;">
+        <p style="text-align:center; margin-top: 8px;">
             Még nincs fiókod? <a href="regisztracio.html" style="text-decoration: none; color: #007bff; font-weight: bold;">Regisztrálj itt!</a>
         </p>
         
@@ -89,5 +140,72 @@
         </div>
     </footer>
    <script src="java.js"></script>
+    <script>
+        function openForgotModal() {
+            const modal = document.getElementById('forgotModal');
+            modal.style.display = 'flex';
+            document.getElementById('forgotEmail').value = '';
+            document.getElementById('forgotError').textContent = '';
+            document.getElementById('forgotForm').style.display = 'block';
+            document.getElementById('forgotSuccess').style.display = 'none';
+            document.getElementById('forgotBtn').disabled = false;
+            document.getElementById('forgotBtn').innerHTML = '📧 Link küldése';
+            setTimeout(() => document.getElementById('forgotEmail').focus(), 100);
+        }
+
+        function closeForgotModal() {
+            document.getElementById('forgotModal').style.display = 'none';
+        }
+
+        // Kattintás a háttérre → bezárás
+        document.getElementById('forgotModal').addEventListener('click', function(e) {
+            if (e.target === this) closeForgotModal();
+        });
+
+        // ESC billentyű → bezárás
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeForgotModal();
+        });
+
+        async function sendForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value.trim();
+            const errorEl = document.getElementById('forgotError');
+            const btn = document.getElementById('forgotBtn');
+
+            errorEl.textContent = '';
+
+            if (!email || !email.includes('@')) {
+                errorEl.textContent = 'Kérlek, adj meg egy érvényes email címet!';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Küldés...';
+
+            try {
+                const serverUrl = "https://unantagonized-delisa-oneiric.ngrok-free.dev";
+                const res = await fetch(`${serverUrl}/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('forgotForm').style.display = 'none';
+                    document.getElementById('forgotSuccess').style.display = 'block';
+                } else {
+                    errorEl.textContent = data.error || 'Hiba történt, próbáld újra!';
+                    btn.disabled = false;
+                    btn.innerHTML = '📧 Link küldése';
+                }
+            } catch {
+                errorEl.textContent = 'Hálózati hiba. Próbáld újra!';
+                btn.disabled = false;
+                btn.innerHTML = '📧 Link küldése';
+            }
+        }
+    </script>
 </body>
 </html>

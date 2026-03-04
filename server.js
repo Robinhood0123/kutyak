@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const session = require('express-session');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors({
@@ -111,6 +112,171 @@ transporter.verify()
     console.error('SMTP kapcsolat hiba:', err);
     process.exit(1);
   });
+
+// --- In-memory token tárolás (egyszerű megoldás, újraindításkor törlődik) ---
+const passwordResetTokens = new Map(); // token -> { email, expires }
+
+// --- isAdmin middleware ---
+function isAdmin(req, res, next) {
+  if (req.session && req.session.szerepkor === 'admin') {
+    return next();
+  }
+  return res.status(403).json({ error: 'Hozzáférés megtagadva! Csak adminok érhetik el ezt az oldalt.' });
+}
+
+// --- Elfelejtett jelszó ---
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ success: false, error: 'Hiányzó email cím!' });
+
+  db.query('SELECT felhasznalonev, email FROM felhasznalok WHERE email = ? LIMIT 1', [email], async (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: 'Adatbázis hiba!' });
+
+    // Biztonsági okokból mindig ugyanazt a választ adjuk, függetlenül attól, hogy létezik-e az email
+    if (results.length === 0) {
+      return res.json({ success: true, message: 'Ha az email cím regisztrálva van, kiküldtük a visszaállító linket!' });
+    }
+
+    const user = results[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = Date.now() + 1000 * 60 * 30; // 30 perc
+
+    passwordResetTokens.set(token, { email: user.email, expires });
+
+    const serverUrl = process.env.APP_URL || 'http://localhost:3000';
+    const resetLink = `${serverUrl}/elfelejtett-jelszo.html?token=${token}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: user.email,
+      subject: '🔐 Jelszó visszaállítás – Kutyamenhely',
+      html: `
+<!DOCTYPE html>
+<html lang="hu">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- HERO -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:72px;margin-bottom:16px;">🔐</div>
+            <h1 style="color:#ffffff;margin:0;font-size:30px;font-weight:900;line-height:1.2;">Jelszó visszaállítás</h1>
+            <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">Szia, <strong style="color:#fff;">${user.felhasznalonev}</strong>! Kaptuk a kérésedet. 🐾</p>
+          </td>
+        </tr>
+
+        <!-- BADGE -->
+        <tr>
+          <td style="background:#e94560;padding:10px 48px;text-align:center;">
+            <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">⏳ A link 30 percig érvényes</p>
+          </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+          <td style="padding:48px;">
+            <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 16px;">Kedves <strong style="color:#1a202c;">${user.felhasznalonev}</strong>! 👋</p>
+            <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 28px;">Jelszó-visszaállítási kérelmet kaptunk a fiókodhoz. Kattints az alábbi gombra az új jelszó beállításához!</p>
+
+            <!-- CTA gomb -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
+              <tr>
+                <td align="center">
+                  <a href="${resetLink}" style="display:inline-block;background:linear-gradient(135deg,#e94560,#c53030);color:#ffffff;font-size:16px;font-weight:800;text-decoration:none;padding:16px 48px;border-radius:50px;letter-spacing:1px;box-shadow:0 4px 15px rgba(233,69,96,0.4);">
+                    🔑 Jelszó visszaállítása
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Figyelmeztetés -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+              <tr>
+                <td style="background:#fff8f0;border-radius:12px;padding:20px;border-left:4px solid #f59e0b;">
+                  <p style="color:#92400e;font-size:13px;font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px;">⚠️ Fontos tudnivalók</p>
+                  <ul style="color:#4a5568;font-size:14px;margin:0;padding-left:20px;line-height:1.8;">
+                    <li>A link <strong>30 percig érvényes</strong></li>
+                    <li>A link csak <strong>egyszer</strong> használható</li>
+                    <li>Ha nem te kérted, hagyd figyelmen kívül ezt az emailt</li>
+                  </ul>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Link szövegesen is -->
+            <p style="color:#718096;font-size:13px;margin:0 0 4px;">Ha a gomb nem működik, másold be ezt a linket a böngésződbe:</p>
+            <p style="color:#e94560;font-size:12px;word-break:break-all;margin:0;"><a href="${resetLink}" style="color:#e94560;">${resetLink}</a></p>
+          </td>
+        </tr>
+
+        <!-- QUOTE -->
+        <tr>
+          <td style="background:#f7fafc;padding:28px 48px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
+                  <p style="color:#fff;font-size:16px;font-weight:700;margin:0;line-height:1.6;">"Biztonságban vagy nálunk –<br>mint a kutyusaink is." 🐾</p>
+                  <p style="color:rgba(255,255,255,0.88);font-size:13px;margin:10px 0 0;">— Robi, Ricsi &amp; Norbi csapata</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
+            <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      return res.json({ success: true, message: 'Ha az email cím regisztrálva van, kiküldtük a visszaállító linket!' });
+    } catch (emailErr) {
+      console.error('Jelszó visszaállítási email hiba:', emailErr);
+      return res.status(500).json({ success: false, error: 'Az email küldése sikertelen, próbáld újra!' });
+    }
+  });
+});
+
+// --- Jelszó visszaállítás token alapján ---
+app.post('/reset-password', async (req, res) => {
+  const { token, ujJelszo } = req.body;
+  if (!token || !ujJelszo) return res.status(400).json({ success: false, error: 'Hiányzó adatok!' });
+  if (ujJelszo.length < 6) return res.status(400).json({ success: false, error: 'A jelszónak legalább 6 karakter hosszúnak kell lennie!' });
+
+  const tokenData = passwordResetTokens.get(token);
+
+  if (!tokenData) return res.status(400).json({ success: false, error: 'Érvénytelen vagy már felhasznált visszaállító link!' });
+  if (Date.now() > tokenData.expires) {
+    passwordResetTokens.delete(token);
+    return res.status(400).json({ success: false, error: 'A visszaállító link lejárt! Kérj újat.' });
+  }
+
+  try {
+    const hash = await bcrypt.hash(ujJelszo, 10);
+    db.query('UPDATE felhasznalok SET jelszo = ? WHERE email = ?', [hash, tokenData.email], (err) => {
+      if (err) return res.status(500).json({ success: false, error: 'Adatbázis hiba!' });
+
+      passwordResetTokens.delete(token); // Egyszeri használat
+      return res.json({ success: true, message: 'Jelszavad sikeresen megváltozott! Most már bejelentkezhetsz.' });
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: 'Hiba a jelszó feldolgozásakor!' });
+  }
+});
 
 // --- Feedback endpoint ---
 app.post('/api/feedback', async (req, res) => {
@@ -550,6 +716,7 @@ app.post('/login', (req, res) => {
       // Ez az a rész, amitől a szerver emlékezni fog a felhasználóra
       req.session.userId = user.felhasznalo_id;
       req.session.felhasznalo_id = user.felhasznalo_id; 
+      req.session.szerepkor = user.szerepkor; // ← szerepkör is elmentve
 
       res.json({
         message: 'Sikeres bejelentkezés!',
@@ -906,7 +1073,7 @@ db.query(`
 });
 
 // --- Örökbefogadások listázása (admin) ---
-app.get('/api/adoptions', (req, res) => {
+app.get('/api/adoptions', isAdmin, (req, res) => {
   const sql = `
     SELECT o.id, o.statusz, o.letrehozva, o.telefonszam, o.varos, o.kutya_tapasztalat,
            f.felhasznalonev, f.email,
@@ -923,7 +1090,7 @@ app.get('/api/adoptions', (req, res) => {
 });
 
 // --- Státusz váltás + email küldés ---
-app.put('/api/adoption/:id/status', async (req, res) => {
+app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
   const { id } = req.params;
   const { statusz } = req.body;
   const ervenyes = ['folyamatban', 'elbiralt', 'interju', 'elfogadva', 'elutasitva'];

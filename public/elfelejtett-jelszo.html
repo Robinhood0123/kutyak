@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jelszó visszaállítás – Kutyamenhely</title>
+    <link rel="icon" type="image/x-icon" href="img/logo2.png">
+    <link rel="stylesheet" href="reg.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn">
+                <i class="fas fa-bars"></i>
+            </label>
+            <label class="logo"><a href="index.html"><img src="img/logo2.png" alt="" style="margin-top: 13px"></a></label>
+            <ul>
+                <li><a href="index.html">Főoldal</a></li>
+                <li><a href="index.html#kutyaink">Kutyáink</a></li>
+                <li><a href="index.html#ricsirobinorbi">Rólunk</a></li>
+                <li><a href="index.html#visszajelzesek">Visszajelzések</a></li>
+                <li><a href="index.html#elerheto">Elérhetőségek</a></li>
+                <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="register-section">
+        <!-- Érvénytelen / lejárt token nézet -->
+        <div id="tokenHiba" style="display:none; max-width:500px; margin: 0 auto; text-align:center;">
+            <div class="register-form" style="padding: 40px;">
+                <div style="font-size: 64px; margin-bottom: 16px;">⏳</div>
+                <h3 style="color: #dc3545; font-weight: 700; margin-bottom: 12px;">A link érvénytelen vagy lejárt!</h3>
+                <p style="color: #6c757d; font-size: 15px; line-height: 1.7; margin-bottom: 24px;">
+                    A jelszó-visszaállító link már nem érvényes.<br>
+                    Ez előfordulhat, ha a link lejárt <strong>(30 perc)</strong>, vagy már felhasználták.
+                </p>
+                <a href="bejelentkezes.html" style="display:inline-block; background:#007bff; color:#fff; padding:12px 32px; border-radius:6px; text-decoration:none; font-weight:600; font-size:15px;">
+                    🔐 Új link kérése
+                </a>
+            </div>
+        </div>
+
+        <!-- Jelszó visszaállítás form -->
+        <div id="resetForm" style="display:none;">
+            <h2>🔑 Új jelszó beállítása</h2>
+            <form id="ujJelszoForm" class="register-form">
+                <p style="color: #6c757d; font-size: 14px; margin-bottom: 16px; text-align: left;">
+                    <i class="fas fa-shield-alt" style="color: #007bff;"></i>
+                    Add meg az új jelszavadat. Legalább <strong>6 karakter</strong> hosszú legyen!
+                </p>
+
+                <div class="password-wrapper">
+                    <input type="password" id="ujJelszo" placeholder="Új jelszó" required minlength="6">
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('ujJelszo', this)"></i>
+                </div>
+
+                <div class="password-wrapper" style="margin-top: 0;">
+                    <input type="password" id="ujJelszo2" placeholder="Új jelszó mégegyszer" required minlength="6">
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('ujJelszo2', this)"></i>
+                </div>
+
+                <!-- Jelszóerősség jelző -->
+                <div id="jelszoErosseg" style="margin: 4px 0 12px; height: 6px; border-radius: 3px; background: #e9ecef; overflow: hidden;">
+                    <div id="jelszoErossegBar" style="height: 100%; width: 0%; transition: width 0.3s, background 0.3s; border-radius: 3px;"></div>
+                </div>
+                <p id="jelszoErossegSzoveg" style="font-size: 12px; color: #6c757d; margin: -8px 0 12px; text-align: left;"></p>
+
+                <p id="resetError" style="color: red; font-size: 14px; text-align: center; margin-bottom: 8px;"></p>
+
+                <button type="submit" id="resetBtn">
+                    <i class="fas fa-lock"></i> Jelszó mentése
+                </button>
+            </form>
+        </div>
+
+        <!-- Betöltés állapot -->
+        <div id="betoltes" style="text-align:center; padding: 60px 20px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #007bff;"></i>
+            <p style="color: #6c757d; margin-top: 16px; font-size: 16px;">Ellenőrzés folyamatban...</p>
+        </div>
+    </section>
+
+    <footer class="footer" id="elerheto">
+        <div class="container">
+            <div class="nemtudom">
+                <div class="footer-col">
+                    <h4>Elérhetőségek</h4>
+                    <p>
+                        <b>Telefonszám:</b> <a href="tel:+36303249866">+36 30 324 9866</a> <br>
+                        <b>E-mail:</b> <a href="mailto:kirajok69@gmail.com">kirajok69@gmail.com</a> <br>
+                        <b>Cím:</b> 1171 Budapest, Csordakút utca vége
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Kövess minket</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="responsive-map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2698.544431786523!2d19.293!3d47.47!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDfCsDI4JzEyLjAiTiAxOcKwMTcnMzQuOCJF!5e0!3m2!1shu!2shu!4v1630000000000!5m2!1shu!2shu" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const serverUrl = "https://unantagonized-delisa-oneiric.ngrok-free.dev";
+
+        // Token kiolvasása az URL-ből
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const betoltes = document.getElementById('betoltes');
+            const resetForm = document.getElementById('resetForm');
+            const tokenHiba = document.getElementById('tokenHiba');
+
+            if (!token) {
+                betoltes.style.display = 'none';
+                tokenHiba.style.display = 'block';
+                return;
+            }
+
+            // Rövid animáció, majd megjelenítjük a formot
+            // (a token tényleges ellenőrzése csak beküldéskor történik szerveren)
+            setTimeout(() => {
+                betoltes.style.display = 'none';
+                resetForm.style.display = 'block';
+            }, 800);
+
+            // --- Jelszóerősség jelző ---
+            const ujJelszo = document.getElementById('ujJelszo');
+            const bar = document.getElementById('jelszoErossegBar');
+            const szoveg = document.getElementById('jelszoErossegSzoveg');
+
+            ujJelszo.addEventListener('input', () => {
+                const val = ujJelszo.value;
+                let score = 0;
+                if (val.length >= 6) score++;
+                if (val.length >= 10) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+
+                const szintek = [
+                    { szazalek: '20%', szin: '#dc3545', felirat: '🔴 Nagyon gyenge' },
+                    { szazalek: '40%', szin: '#fd7e14', felirat: '🟠 Gyenge' },
+                    { szazalek: '60%', szin: '#ffc107', felirat: '🟡 Közepes' },
+                    { szazalek: '80%', szin: '#20c997', felirat: '🟢 Erős' },
+                    { szazalek: '100%', szin: '#28a745', felirat: '✅ Kiváló' },
+                ];
+
+                if (val.length === 0) {
+                    bar.style.width = '0%';
+                    szoveg.textContent = '';
+                } else {
+                    const szint = szintek[Math.min(score - 1, 4)];
+                    bar.style.width = szint.szazalek;
+                    bar.style.background = szint.szin;
+                    szoveg.textContent = szint.felirat;
+                    szoveg.style.color = szint.szin;
+                }
+            });
+
+            // --- Form beküldése ---
+            document.getElementById('ujJelszoForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const jelszo1 = document.getElementById('ujJelszo').value;
+                const jelszo2 = document.getElementById('ujJelszo2').value;
+                const errorEl = document.getElementById('resetError');
+                const btn = document.getElementById('resetBtn');
+
+                errorEl.textContent = '';
+
+                if (jelszo1.length < 6) {
+                    errorEl.textContent = 'A jelszónak legalább 6 karakter hosszúnak kell lennie!';
+                    return;
+                }
+
+                if (jelszo1 !== jelszo2) {
+                    errorEl.textContent = 'A két jelszó nem egyezik!';
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mentés...';
+
+                try {
+                    const res = await fetch(`${serverUrl}/reset-password`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                        body: JSON.stringify({ token, ujJelszo: jelszo1 })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        await Swal.fire({
+                            icon: 'success',
+                            title: '✅ Jelszó megváltoztatva!',
+                            html: `
+                                <p style="color:#4a5568;font-size:15px;line-height:1.7;">
+                                    Az új jelszavad sikeresen beállítva!<br>
+                                    Most már bejelentkezhetsz az új jelszavaddal. 🐾
+                                </p>
+                            `,
+                            confirmButtonText: 'Bejelentkezés →',
+                            confirmButtonColor: '#007bff'
+                        });
+                        window.location.href = 'bejelentkezes.html';
+                    } else {
+                        // Ha a token lejárt vagy érvénytelen
+                        document.getElementById('resetForm').style.display = 'none';
+                        document.getElementById('tokenHiba').style.display = 'block';
+                    }
+                } catch {
+                    errorEl.textContent = 'Hálózati hiba. Próbáld újra!';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-lock"></i> Jelszó mentése';
+                }
+            });
+        });
+
+        // --- Toggle Password Visibility ---
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // --- Jelszó megjelenítő ikon csak gépelés közben ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[type="password"]').forEach(input => {
+                const icon = input.parentElement.querySelector('.toggle-password');
+                if (!icon) return;
+                icon.style.display = 'none';
+                input.addEventListener('input', () => {
+                    icon.style.display = input.value.length > 0 ? 'block' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
