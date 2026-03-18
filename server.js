@@ -531,7 +531,7 @@ app.post('/register', async (req, res) => {
 
           const insertSql = 'INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor, kep_url) VALUES (?, ?, ?, ?, ?)';
           
-          db.query(insertSql, [nev, email, hash, 'onkentes', null], async (err2) => {
+          db.query(insertSql, [nev, email, hash, 'felhasznalo', null], async (err2) => {
               if (err2) {
                   return res.status(500).json({ error: 'Adatbázis mentési hiba: ' + err2.sqlMessage });
               }

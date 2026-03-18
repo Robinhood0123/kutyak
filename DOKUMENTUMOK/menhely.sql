@@ -20,7 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `menhely`
 --
-
+CREATE DATABASE IF NOT EXISTS `menhely` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `menhely`;
 -- --------------------------------------------------------
 
 --
@@ -96,7 +97,7 @@ CREATE TABLE `felhasznalok` (
   `felhasznalonev` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
-  `szerepkor` enum('admin','dolgozo','onkentes') DEFAULT 'dolgozo',
+  `szerepkor` enum('admin','dolgozo','felhasznalo') DEFAULT 'dolgozo',
   `kep_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -106,8 +107,8 @@ CREATE TABLE `felhasznalok` (
 
 INSERT INTO `felhasznalok` (`felhasznalo_id`, `felhasznalonev`, `email`, `jelszo`, `szerepkor`, `kep_url`) VALUES
 (4, 'admin', 'kirajok69@gmail.com', '$2b$10$9GG0WDAxbltus6R3cIXIrOJ97R8CHAx07cb8f8s69OVQRIcdch4he', 'admin', '/img/profilok/profile-1768392893743.jpg'),
-(6, 'Ricsi', 'szentpalirichard9@gmail.com', '$2b$10$fnFMju1gdT7UXayvse7J.OgEBhpRCaL4H8rSHB7CQfax0wCSPle2K', 'onkentes', '/img/profilok/profile-1769678038133.png'),
-(8, 'Ács Norbert', 'norbiasz62@gmail.com', '$2b$10$eJN1/piiuGfClDZphDJij.5rXTLfj0VZGIItAB4EVZSYkfDYIHF8W', 'onkentes', NULL);
+(6, 'Ricsi', 'szentpalirichard9@gmail.com', '$2b$10$fnFMju1gdT7UXayvse7J.OgEBhpRCaL4H8rSHB7CQfax0wCSPle2K', 'felhasznalo', '/img/profilok/profile-1769678038133.png'),
+(8, 'Ács Norbert', 'norbiasz62@gmail.com', '$2b$10$eJN1/piiuGfClDZphDJij.5rXTLfj0VZGIItAB4EVZSYkfDYIHF8W', 'felhasznalo', NULL);
 
 -- --------------------------------------------------------
 
