@@ -1099,6 +1099,27 @@ app.get('/api/adoptions', isAdmin, (req, res) => {
   });
 });
 
+// --- Saját örökbefogadási kérelmek (bejelentkezett felhasználó) ---
+app.get('/api/my-adoptions', (req, res) => {
+  const felhasznaloId = req.session.userId || req.session.felhasznalo_id;
+  if (!felhasznaloId) return res.status(401).json({ error: 'Bejelentkezés szükséges!' });
+
+  const sql = `
+    SELECT o.id, o.statusz, o.letrehozva, o.varos, o.lakas_tipus, o.kutya_tapasztalat,
+           k.nev AS kutya_nev, k.kep_url AS kutya_kep,
+           f.nev AS fajta_nev
+    FROM orokbefogadasok o
+    LEFT JOIN kutyak k ON o.kutya_id = k.kutya_id
+    LEFT JOIN fajtak f ON k.fajta_id = f.fajta_id
+    WHERE o.felhasznalo_id = ?
+    ORDER BY o.letrehozva DESC
+  `;
+  db.query(sql, [felhasznaloId], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+    res.json(results);
+  });
+});
+
 // --- Státusz váltás + email küldés ---
 app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
   const { id } = req.params;

@@ -580,25 +580,39 @@ if (user) {
 
     if (navIcon) {
         navIcon.addEventListener('click', () => {
-            console.log("Profil megnyitása..."); // Teszt üzenet
             if (profileModal) {
                 profileModal.style.display = 'flex';
                 if (profileModalImg) profileModalImg.src = kepUrl;
                 if (profileModalEmail) profileModalEmail.innerText = user.email;
-                if (editNameInput) editNameInput.value = user.nev;
+                if (editNameInput) editNameInput.value = '';
+                // Név betöltése
+                const nameEl = document.getElementById('profileModalName');
+                if (nameEl) nameEl.textContent = user.nev || user.felhasznalonev || '';
+                // Szerepkör badge
+                const roleEl = document.getElementById('profileModalRole');
+                if (roleEl) {
+                    const roles = {
+                        admin:       { text: 'Adminisztrátor', bg: '#fee2e2', color: '#dc2626' },
+                        dolgozo:     { text: 'Dolgozó',        bg: '#dbeafe', color: '#1d4ed8' },
+                        felhasznalo: { text: 'Felhasználó',    bg: '#d1fae5', color: '#065f46' }
+                    };
+                    const r = roles[user.szerepkor] || roles.felhasznalo;
+                    roleEl.textContent = r.text;
+                    roleEl.style.background = r.bg;
+                    roleEl.style.color = r.color;
+                }
             }
         });
     }
-    // ... a többi marad változatlan (mentés, kijelentkezés gombok)
 
 
       if (saveProfileBtn) {
           saveProfileBtn.addEventListener('click', async () => {
               const formData = new FormData();
               formData.append('email', user.email);
-              if (editNameInput.value) formData.append('nev', editNameInput.value);
-              if (editPasswordInput.value) formData.append('jelszo', editPasswordInput.value);
-              if (profileImageInput.files[0]) formData.append('profilkep', profileImageInput.files[0]);
+              if (editNameInput && editNameInput.value) formData.append('nev', editNameInput.value);
+              if (editPasswordInput && editPasswordInput.value) formData.append('jelszo', editPasswordInput.value);
+              if (profileImageInput && profileImageInput.files[0]) formData.append('profilkep', profileImageInput.files[0]);
 
               try {
                   const res = await fetch(`${serverUrl}/user/update`, {
@@ -782,4 +796,224 @@ document.addEventListener('DOMContentLoaded', () => {
             icon.style.display = input.value.length > 0 ? 'block' : 'none';
         });
     });
-});
+// ================================================================
+// PROFILOM OLDAL (profil.html)
+// ================================================================
+
+// togglePass globális kell, mert onclick="togglePass()" hívja
+function togglePass() {
+    var inp = document.getElementById('editPassword');
+    if (!inp) return;
+    var ico = document.getElementById('togglePassIcon');
+    if (inp.type === 'password') {
+        inp.type = 'text'; ico.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        inp.type = 'password'; ico.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+(function () {
+    if (!document.getElementById('profileGrid')) return;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    var user = JSON.parse(localStorage.getItem('loggedInUser'));
+
+    if (!user) {
+        document.getElementById('notLoggedIn').style.display = 'block';
+    } else {
+        document.getElementById('profileGrid').style.display = 'grid';
+        initProfile();
+        loadAdoptions();
+    }
+
+    function initProfile() {
+        var nev = user.nev || user.felhasznalonev || '-';
+        document.getElementById('pcName').textContent = nev;
+        document.getElementById('pcEmail').textContent = user.email || '-';
+
+        var kepUrl = serverUrl + '/img/profilok/blank-profile-picture-973460_640.webp';
+        if (user.kep) {
+            if (user.kep.startsWith('http')) {
+                kepUrl = user.kep;
+            } else {
+                var tiszta = user.kep.replace(/^.*[\\\/]/, '');
+                kepUrl = serverUrl + '/img/profilok/' + tiszta;
+            }
+        }
+        document.getElementById('profileImg').src = kepUrl;
+
+        var badge = document.getElementById('pcRoleBadge');
+        var roles = {
+            admin:       { text: 'Adminisztrátor', cls: 'role-admin' },
+            dolgozo:     { text: 'Dolgozó',        cls: 'role-dolgozo' },
+            felhasznalo: { text: 'Felhasználó',    cls: 'role-felhasznalo' }
+        };
+        var r = roles[user.szerepkor] || roles.felhasznalo;
+        badge.textContent = r.text;
+        badge.className = 'role-badge ' + r.cls;
+
+        document.getElementById('profileImageInput').addEventListener('change', function (e) {
+            var f = e.target.files[0];
+            if (f) {
+                var rd = new FileReader();
+                rd.onload = function (ev) { document.getElementById('profileImg').src = ev.target.result; };
+                rd.readAsDataURL(f);
+            }
+        });
+
+        document.getElementById('saveProfileBtn').addEventListener('click', async function () {
+            var btn     = document.getElementById('saveProfileBtn');
+            var newName = document.getElementById('editName').value.trim();
+            var newPass = document.getElementById('editPassword').value.trim();
+            var imgFile = document.getElementById('profileImageInput').files[0];
+
+            if (!newName && !newPass && !imgFile) {
+                Swal.fire({ icon: 'info', title: 'Nincs változtatás', text: 'Módosítsd legalább az egyiket!', confirmButtonColor: '#007bff' });
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('email', user.email);
+            if (newName) formData.append('nev', newName);
+            if (newPass) formData.append('jelszo', newPass);
+            if (imgFile) formData.append('profilkep', imgFile);
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mentés...';
+
+            try {
+                var res  = await fetch(serverUrl + '/user/update', {
+                    method: 'POST', body: formData, credentials: 'include',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                var data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('loggedInUser', JSON.stringify({
+                        id: user.id, nev: data.user.nev, email: data.user.email,
+                        kep: data.user.kep, szerepkor: user.szerepkor
+                    }));
+                    Swal.fire({ icon: 'success', title: 'Sikeresen mentve!', confirmButtonColor: '#007bff' })
+                        .then(function () { location.reload(); });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Hiba!', text: data.error || 'Sikertelen mentés.', confirmButtonColor: '#007bff' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Hálózati hiba!', text: 'Nem sikerült a szerverrel kommunikálni.', confirmButtonColor: '#007bff' });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save" style="margin-right:6px;"></i>Módosítások mentése';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            Swal.fire({
+                icon: 'question', title: 'Biztosan kilép?',
+                confirmButtonText: 'Igen, kilépek', cancelButtonText: 'Mégse',
+                showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d'
+            }).then(function (r) {
+                if (r.isConfirmed) { localStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; }
+            });
+        });
+    }
+
+    async function loadAdoptions() {
+        var listEl  = document.getElementById('adoptionsList');
+        var countEl = document.getElementById('adoptionCount');
+        try {
+            var res  = await fetch(serverUrl + '/api/my-adoptions', {
+                credentials: 'include',
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            if (!res.ok) { listEl.innerHTML = errorBox('Nem sikerült betölteni a kérelmeket.'); return; }
+
+            var data = await res.json();
+            countEl.textContent = data.length;
+
+            if (data.length === 0) {
+                listEl.innerHTML =
+                    '<div class="state-box">' +
+                    '<div class="state-icon">🐶</div>' +
+                    '<h3>Még nincs kérelmed</h3>' +
+                    '<p>Böngészd kutyusainkat és küldj be örökbefogadási kérelmet!</p>' +
+                    '<a href="index.html#kutyaink"><i class="fas fa-search" style="margin-right:6px;"></i>Kutyáink megtekintése</a>' +
+                    '</div>';
+                return;
+            }
+            listEl.innerHTML = data.map(renderAdoptionCard).join('');
+        } catch (e) {
+            listEl.innerHTML = errorBox('Hálózati hiba. Ellenőrizd az internetkapcsolatot!');
+        }
+    }
+
+    function renderAdoptionCard(a) {
+        var statusMap = {
+            folyamatban: { text: 'Folyamatban',        icon: '🔄', cls: 's-folyamatban', step: 0 },
+            elbiralt:    { text: 'Elbírálás alatt',    icon: '🔍', cls: 's-elbiralt',    step: 1 },
+            interju:     { text: 'Interjú egyeztetés', icon: '📋', cls: 's-interju',     step: 2 },
+            elfogadva:   { text: 'Elfogadva',          icon: '✅', cls: 's-elfogadva',   step: 4 },
+            elutasitva:  { text: 'Elutasítva',         icon: '❌', cls: 's-elutasitva',  step: -1 }
+        };
+        var s        = statusMap[a.statusz] || statusMap.folyamatban;
+        var rejected = a.statusz === 'elutasitva';
+        var date     = new Date(a.letrehozva).toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        var kepUrl = '';
+        if (a.kutya_kep) {
+            var t = a.kutya_kep.replace('http://localhost:3000', '');
+            kepUrl = t.startsWith('http') ? t : serverUrl + t;
+        }
+
+        var stepLabels = ['Beküldve', 'Elbírálás', 'Interjú', 'Döntés'];
+        var progHtml = '<div class="adopt-progress">';
+        stepLabels.forEach(function (lbl, i) {
+            var dotCls = '', lblCls = '', dotContent = i + 1;
+            if (rejected) {
+                if (i === 0)      { dotCls = 'done';     lblCls = 'done';     dotContent = '✓'; }
+                else if (i === 3) { dotCls = 'rejected'; lblCls = 'rejected'; dotContent = '✕'; }
+            } else {
+                if (s.step > i)        { dotCls = 'done';   lblCls = 'done';   dotContent = '✓'; }
+                else if (s.step === i) { dotCls = 'active'; lblCls = 'active'; }
+            }
+            progHtml += '<div class="prog-step">' +
+                '<div class="prog-dot ' + dotCls + '">' + dotContent + '</div>' +
+                '<span class="prog-lbl ' + lblCls + '">' + lbl + '</span>' +
+                '</div>';
+            if (i < stepLabels.length - 1) {
+                var lineCls = '';
+                if (rejected && i === 0)            lineCls = 'done';
+                else if (!rejected && s.step > i)   lineCls = 'done';
+                else if (!rejected && s.step === i) lineCls = 'active';
+                progHtml += '<div class="prog-line ' + lineCls + '"></div>';
+            }
+        });
+        progHtml += '</div>';
+
+        return '<div class="adopt-card">' +
+            (kepUrl ? '<img class="adopt-card-img" src="' + kepUrl + '" alt="' + escapeHtml(a.kutya_nev) + '" onerror="this.style.display=\'none\'">' : '') +
+            '<div class="adopt-card-body">' +
+            '<div class="adopt-card-top">' +
+            '<div>' +
+            '<p class="adopt-dog-name">' + (escapeHtml(a.kutya_nev) || 'Ismeretlen kutya') + '</p>' +
+            '<p class="adopt-dog-breed">' + escapeHtml(a.fajta_nev) + '</p>' +
+            '</div>' +
+            '<span class="status-badge ' + s.cls + '">' + s.icon + ' ' + s.text + '</span>' +
+            '</div>' +
+            progHtml +
+            '<p class="adopt-date"><i class="fas fa-calendar-alt" style="margin-right:5px;opacity:.6;"></i>' + date + '</p>' +
+            '</div>' +
+            '</div>';
+    }
+
+    function errorBox(msg) {
+        return '<div class="state-box"><div class="state-icon">⚠️</div><p>' + msg + '</p></div>';
+    }
+})();});

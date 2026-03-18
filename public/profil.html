@@ -4,52 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilom - Kutyamenhely</title>
-    <link rel="stylesheet" href="reg.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="icon" type="image/x-icon" href="img/logo2.png">
+    <link rel="stylesheet" href="reg.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body>
+<body class="profil-page">
     <header>
         <nav>
-            <label class="logo"><img src="img/logo2.png" alt="" style="margin-top: 10px"></label>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn"><i class="fas fa-bars"></i></label>
+            <label class="logo">
+                <a href="index.html"><img src="img/logo2.png" alt="" style="margin-top:13px"></a>
+            </label>
             <ul>
-              <li><a href="index.html">Főoldal</a></li>
-              <li><a href="profil.html" class="active">Profil</a></li>
+                <li><a href="index.html">Főoldal</a></li>
+                <li><a href="index.html#kutyaink">Kutyáink</a></li>
+                <li><a href="index.html#ricsirobinorbi">Rólunk</a></li>
+                <li><a href="index.html#visszajelzesek">Visszajelzések</a></li>
+                <li><a href="index.html#elerheto">Elérhetőségek</a></li>
+                <li id="adminNavItem" style="display:none;"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
+                <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
+                <li id="profileNavItem" style="display:none; vertical-align:middle;">
+                    <img id="profileIcon" src="img/profilok/blank-profile-picture-973460_640.webp"
+                         style="width:50px;height:50px;border-radius:50%;cursor:pointer;border:2px solid #f0f0f0;object-fit:cover;margin-left:15px;">
+                </li>
             </ul>
         </nav>
     </header>
 
-    <section class="register-section">
-        <h2>Profilom</h2>
-        <div id="profileInfo" style="text-align:center;">
-            <p>Betöltés...</p>
+    <!-- MAIN -->
+    <div class="profile-main">
+        
+
+        <!-- Nincs bejelentkezve -->
+        <div id="notLoggedIn" style="display:none; max-width:520px; margin:0 auto;">
+            <div class="state-box">
+                <div class="state-icon">🔒</div>
+                <h3>Bejelentkezés szükséges</h3>
+                <p>A profilod megtekintéséhez be kell jelentkezned.</p>
+                <a href="bejelentkezes.html"><i class="fas fa-sign-in-alt" style="margin-right:6px;"></i>Bejelentkezés</a>
+            </div>
         </div>
-        <div style="text-align:center; margin-top: 20px;">
-            <button id="logoutBtn">Kijelentkezés</button>
+
+        <!-- Tartalom -->
+        <div class="profile-grid" id="profileGrid" style="display:none;">
+
+            <!-- BAL: Profil kártya -->
+            <div>
+                <div class="profile-card">
+                    <div class="pc-header">
+                        <div class="avatar-wrap">
+                            <img id="profileImg" src="img/profilok/blank-profile-picture-973460_640.webp" alt="Profil">
+                            <label for="profileImageInput" class="avatar-upload-lbl" title="Profilkép módosítása">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="profileImageInput" accept="image/*" style="display:none">
+                        </div>
+                        <h2 id="pcName">-</h2>
+                        <p id="pcEmail">-</p>
+                        <span id="pcRoleBadge" class="role-badge role-felhasznalo">Felhasználó</span>
+                    </div>
+                    <div class="pc-body">
+                        <div class="pf-group">
+                            <label><i class="fas fa-user" style="margin-right:5px;"></i>Felhasználónév módosítása</label>
+                            <input type="text" id="editName" placeholder="Új felhasználónév">
+                        </div>
+                        <div class="pf-group">
+                            <label><i class="fas fa-lock" style="margin-right:5px;"></i>Jelszó módosítása</label>
+                            <div class="pass-wrap">
+                                <input type="password" id="editPassword" placeholder="Új jelszó (opcionális)">
+                                <i class="fas fa-eye eye-icon" id="togglePassIcon" onclick="togglePass()"></i>
+                            </div>
+                        </div>
+                        <button class="btn-save" id="saveProfileBtn">
+                            <i class="fas fa-save" style="margin-right:6px;"></i>Módosítások mentése
+                        </button>
+                        <button class="btn-logout" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i>Kijelentkezés
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOBB: Örökbefogadások -->
+            <div class="adoptions-col">
+                <div class="adopt-header">
+                    <h2><i class="fas fa-paw" style="color:#007bff;font-size:18px;margin-right:8px;"></i>Örökbefogadási kérelmeim</h2>
+                    <span class="count-badge" id="adoptionCount">0</span>
+                </div>
+                <div id="adoptionsList">
+                    <div class="adopt-card" id="skeletonCard">
+                        <div class="skeleton" style="width:110px;flex-shrink:0;min-height:120px;"></div>
+                        <div class="adopt-card-body" style="display:flex;flex-direction:column;gap:10px;">
+                            <div class="skeleton" style="height:18px;width:55%;border-radius:6px;"></div>
+                            <div class="skeleton" style="height:12px;width:35%;border-radius:6px;"></div>
+                            <div class="skeleton" style="height:10px;width:80%;border-radius:6px;margin-top:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </section>
+    </div>
 
-    <script>
-        // --- Ellenőrizd, hogy a felhasználó be van-e jelentkezve ---
-        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    <!-- FOOTER -->
+    <footer class="footer" id="elerheto">
+        <div class="container">
+            <div class="nemtudom">
+                <div class="footer-col">
+                    <h4>Elérhetőségek</h4>
+                    <p>
+                        <b>Telefonszám:</b> <a href="tel:+36303249866">+36 30 324 9866</a><br>
+                        <b>E-mail:</b> <a href="mailto:kirajok69@gmail.com">kirajok69@gmail.com</a><br>
+                        <b>Cím:</b> 1171 Budapest, Csordakút utca vége
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Kövess minket</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="responsive-map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2698.544431786523!2d19.293!3d47.47!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDfCsDI4JzEyLjAiTiAxOcKwMTcnMzQuOCJF!5e0!3m2!1shu!2shu!4v1630000000000!5m2!1shu!2shu"
+                            width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-        const profileInfo = document.getElementById('profileInfo');
-
-        if (!user) {
-            profileInfo.innerHTML = '<p style="color:red;">Nincs bejelentkezett felhasználó! <a href="bejelentkezes.html">Jelentkezz be</a></p>';
-        } else {
-            profileInfo.innerHTML = `
-                <p><strong>Név:</strong> ${user.nev}</p>
-                <p><strong>Email:</strong> ${user.email}</p>
-            `;
-        }
-
-        // --- Kijelentkezés ---
-        const logoutBtn = document.getElementById('logoutBtn');
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('loggedInUser');
-            alert('Sikeresen kijelentkeztél!');
-            window.location.href = 'index.html';
-        });
-    </script>
+    <script src="java.js"></script>
 </body>
 </html>
