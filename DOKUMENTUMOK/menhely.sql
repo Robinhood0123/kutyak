@@ -25,20 +25,6 @@ USE `menhely`;
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `adomanyok`
---
-
-CREATE TABLE `adomanyok` (
-  `adomany_id` int(11) NOT NULL,
-  `felhasznalo_id` int(11) NOT NULL,
-  `datum` date NOT NULL,
-  `osszeg` decimal(10,2) DEFAULT NULL,
-  `targy` varchar(200) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Tábla szerkezet ehhez a táblához `fajtak`
 --
 
@@ -237,13 +223,6 @@ INSERT INTO `orvosi_vizsgalatok` (`vizsgalat_id`, `kutya_id`, `vizsgalat_datum`,
 --
 
 --
--- A tábla indexei `adomanyok`
---
-ALTER TABLE `adomanyok`
-  ADD PRIMARY KEY (`adomany_id`),
-  ADD KEY `fk_adomany_user` (`felhasznalo_id`);
-
---
 -- A tábla indexei `fajtak`
 --
 ALTER TABLE `fajtak`
@@ -283,12 +262,6 @@ ALTER TABLE `orvosi_vizsgalatok`
 --
 
 --
--- AUTO_INCREMENT a táblához `adomanyok`
---
-ALTER TABLE `adomanyok`
-  MODIFY `adomany_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT a táblához `fajtak`
 --
 ALTER TABLE `fajtak`
@@ -321,12 +294,6 @@ ALTER TABLE `orvosi_vizsgalatok`
 --
 -- Megkötések a kiírt táblákhoz
 --
-
---
--- Megkötések a táblához `adomanyok`
---
-ALTER TABLE `adomanyok`
-  ADD CONSTRAINT `fk_adomany_user` FOREIGN KEY (`felhasznalo_id`) REFERENCES `felhasznalok` (`felhasznalo_id`);
 
 --
 -- Megkötések a táblához `kutyak`

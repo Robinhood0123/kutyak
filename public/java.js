@@ -1,3 +1,21 @@
+// --- Törölt fiók detektálása ---
+async function checkAccountExists() {
+  const raw = localStorage.getItem('loggedInUser');
+  if (!raw) return;
+  let user;
+  try { user = JSON.parse(raw); } catch (e) { return; }
+  if (!user || !user.id) return;
+  try {
+    const res = await fetch(`/api/check-user/${user.id}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.exists) {
+      localStorage.removeItem('loggedInUser');
+      window.location.replace('bejelentkezes.html');
+    }
+  } catch (e) { /* szerver nem elérhető */ }
+}
+
 // --- Fejléc színváltás görgetésre ---
 window.onscroll = function() {scrollFunction()};
 
@@ -30,6 +48,9 @@ let jelenlegiOldal = 1;
 const kutyakPerOldal = 9;
 // A szerver elérhetősége a képekhez
 const serverUrl = "https://unantagonized-delisa-oneiric.ngrok-free.dev";
+
+// Azonnal futtatjuk, miután a serverUrl már definiált
+checkAccountExists();
 
 window.addEventListener('DOMContentLoaded', () => {
     const lista = document.getElementById('kutyaLista');

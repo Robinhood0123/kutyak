@@ -50,13 +50,13 @@
 
 /* ===== ADOPTIONS SECTION ===== */
 .adoptions-section {
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 .adoptions-card {
-  max-width: 1100px;
   width: 100%;
   overflow: hidden;
+  text-align: left;
 }
 
 .adoptions-card h2 {
@@ -206,7 +206,62 @@
   cursor: not-allowed;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== USERS SECTION ===== */
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badge-admin       { background: #cce5ff; color: #004085; }
+.badge-dolgozo     { background: #d1ecf1; color: #0c5460; }
+.badge-felhasznalo { background: #e2e3e5; color: #383d41; }
+
+.btn-delete-user {
+  padding: 0.35rem 0.8rem;
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.btn-delete-user:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btn-delete-user:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
 @media (max-width: 768px) {
   .adoptions-card h2 {
     font-size: 1.3rem;
@@ -234,10 +289,6 @@
 }
 
 @media (max-width: 480px) {
-  .adoptions-card {
-    padding: 1rem;
-  }
-
   .adoptions-table thead th:nth-child(4),
   .adoptions-table tbody td:nth-child(4),
   .adoptions-table thead th:nth-child(5),

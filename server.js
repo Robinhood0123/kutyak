@@ -791,6 +791,30 @@ app.post('/user/update', uploadProfile.single('profilkep'), async (req, res) => 
 });
 
 
+// --- Bejelentkezett felhasználó ellenőrzése (törölt fiók detektáláshoz) ---
+app.get('/api/me', (req, res) => {
+  const felhasznaloId = req.session.userId || req.session.felhasznalo_id;
+  if (!felhasznaloId) return res.status(401).json({ loggedIn: false });
+
+  db.query('SELECT felhasznalo_id FROM felhasznalok WHERE felhasznalo_id = ?', [felhasznaloId], (err, results) => {
+    if (err || results.length === 0) {
+      req.session.destroy();
+      return res.status(401).json({ loggedIn: false });
+    }
+    res.json({ loggedIn: true });
+  });
+});
+
+// --- Felhasználó létezés-ellenőrzés (ID alapján, session nélkül) ---
+app.get('/api/check-user/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id || isNaN(id)) return res.json({ exists: false });
+  db.query('SELECT felhasznalo_id FROM felhasznalok WHERE felhasznalo_id = ?', [id], (err, results) => {
+    if (err) return res.json({ exists: true }); // hiba esetén ne dobjuk ki
+    res.json({ exists: results.length > 0 });
+  });
+});
+
 app.post('/api/adoption', async (req, res) => {
   // 1. Ellenőrizzük, hogy be van-e jelentkezve a felhasználó
   // Ha a session-ben máshogy tárolod (pl. req.session.user.id), írd át!
@@ -1313,6 +1337,50 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
         console.error('Státusz email hiba:', emailErr);
         res.json({ success: true, message: 'Státusz frissítve, de az email küldése sikertelen.' });
       }
+    });
+  });
+});
+
+// --- Felhasználók listázása (admin) ---
+app.get('/api/admin/users', isAdmin, (req, res) => {
+  const sql = 'SELECT felhasznalo_id, felhasznalonev, email, szerepkor, kep_url FROM felhasznalok ORDER BY felhasznalo_id ASC';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+    res.json(results);
+  });
+});
+
+// --- Felhasználó szerepkörének módosítása (admin) ---
+app.put('/api/admin/users/:id/role', isAdmin, (req, res) => {
+  const { id } = req.params;
+  const { szerepkor } = req.body;
+  const ervenyes = ['admin', 'dolgozo', 'felhasznalo'];
+  if (!ervenyes.includes(szerepkor)) {
+    return res.status(400).json({ error: 'Érvénytelen szerepkör!' });
+  }
+  // Saját magát nem módosíthatja
+  if (parseInt(id) === req.session.userId) {
+    return res.status(403).json({ error: 'Saját szerepkörödet nem módosíthatod!' });
+  }
+  db.query('UPDATE felhasznalok SET szerepkor = ? WHERE felhasznalo_id = ?', [szerepkor, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+    res.json({ success: true, message: 'Szerepkör sikeresen frissítve.' });
+  });
+});
+
+// --- Felhasználó törlése (admin) ---
+app.delete('/api/admin/users/:id', isAdmin, (req, res) => {
+  const { id } = req.params;
+  // Saját magát nem törölheti
+  if (parseInt(id) === req.session.userId) {
+    return res.status(403).json({ error: 'Saját fiókodat nem törölheted!' });
+  }
+  db.query('SET FOREIGN_KEY_CHECKS = 0', (e0) => {
+    if (e0) return res.status(500).json({ error: 'FK kikapcsolási hiba: ' + e0.message });
+    db.query('DELETE FROM felhasznalok WHERE felhasznalo_id = ?', [id], (err) => {
+      db.query('SET FOREIGN_KEY_CHECKS = 1'); // mindig visszakapcsoljuk
+      if (err) return res.status(500).json({ error: 'Adatbázis hiba: ' + err.message });
+      res.json({ success: true, message: 'Felhasználó sikeresen törölve.' });
     });
   });
 });

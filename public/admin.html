@@ -418,5 +418,142 @@
 })();
 </script>
 
+<section class="admin-section adoptions-section">
+  <div class="feedback-card adoptions-card">
+    <h2>👥 Felhasználók szerkesztése</h2>
+    <p>Módosítsd a felhasználók szerepkörét vagy töröld a fiókjukat.</p>
+    <div id="users-msg"></div>
+    <div class="adoptions-table-wrap">
+      <table class="adoptions-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Felhasználó</th>
+            <th>Jelenlegi szerepkör</th>
+            <th>Új szerepkör</th>
+            <th>Műveletek</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="5" class="no-adoptions">⏳ Betöltés...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  function showUsersMsg(text, type) {
+    const el = document.getElementById('users-msg');
+    el.textContent = text;
+    el.className = type;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 4000);
+  }
+
+  const roleLabels = {
+    admin:       'Admin',
+    dolgozo:     'Dolgozó',
+    felhasznalo: 'Felhasználó'
+  };
+
+  const roleBadgeClass = {
+    admin:       'badge-admin',
+    dolgozo:     'badge-dolgozo',
+    felhasznalo: 'badge-felhasznalo'
+  };
+
+  async function loadUsers() {
+    try {
+      const res = await fetch('/api/admin/users');
+      const data = await res.json();
+      const tbody = document.getElementById('users-tbody');
+
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="no-adoptions">Nincsenek felhasználók.</td></tr>';
+        return;
+      }
+
+      const currentUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+
+      tbody.innerHTML = data.map(u => {
+        const opts = Object.entries(roleLabels).map(([val, lbl]) =>
+          `<option value="${val}"${u.szerepkor === val ? ' selected' : ''}>${lbl}</option>`
+        ).join('');
+
+        const isSelf = u.felhasznalo_id === currentUser.id;
+        const avatar = u.kep_url
+          ? `<img src="${u.kep_url}" class="user-avatar" alt="">`
+          : `<div class="user-avatar-placeholder">${(u.felhasznalonev || '?')[0].toUpperCase()}</div>`;
+
+        return `<tr>
+          <td><strong>#${u.felhasznalo_id}</strong></td>
+          <td>
+            <div class="user-info-cell">
+              ${avatar}
+              <div>
+                <strong>${u.felhasznalonev}</strong>
+                <br><small>${u.email}</small>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge-statusz ${roleBadgeClass[u.szerepkor] || ''}">${roleLabels[u.szerepkor] || u.szerepkor}</span></td>
+          <td>
+            <select class="status-select" id="role-sel-${u.felhasznalo_id}" ${isSelf ? 'disabled' : ''}>${opts}</select>
+          </td>
+          <td class="action-cell">
+            <button class="btn-send-status" onclick="saveRole(${u.felhasznalo_id})" ${isSelf ? 'disabled' : ''}>💾 Mentés</button>
+            <button class="btn-delete-user" onclick="deleteUser(${u.felhasznalo_id}, '${u.felhasznalonev}')" ${isSelf ? 'disabled' : ''}>🗑️ Törlés</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      document.getElementById('users-tbody').innerHTML =
+        '<tr><td colspan="5" class="no-adoptions">Hiba a betöltésnél.</td></tr>';
+    }
+  }
+
+  window.saveRole = async function(id) {
+    const sel = document.getElementById('role-sel-' + id);
+    const szerepkor = sel.value;
+    try {
+      const res = await fetch(`/api/admin/users/${id}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ szerepkor })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showUsersMsg('✅ ' + data.message, 'success');
+        loadUsers();
+      } else {
+        showUsersMsg('❌ ' + (data.error || 'Hiba történt.'), 'error');
+      }
+    } catch (e) {
+      showUsersMsg('❌ Hálózati hiba.', 'error');
+    }
+  };
+
+  window.deleteUser = async function(id, nev) {
+    if (!confirm(`Biztosan törlöd a(z) "${nev}" felhasználót? Ez a művelet nem vonható vissza!`)) return;
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showUsersMsg('✅ ' + data.message, 'success');
+        loadUsers();
+      } else {
+        showUsersMsg('❌ ' + (data.error || 'Hiba történt.'), 'error');
+      }
+    } catch (e) {
+      showUsersMsg('❌ Hálózati hiba.', 'error');
+    }
+  };
+
+  loadUsers();
+})();
+</script>
+
 </body>
 </html>
