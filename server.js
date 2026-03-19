@@ -162,31 +162,31 @@ app.post('/forgot-password', async (req, res) => {
       html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
         <!-- HERO -->
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
-            <div class="hi" style="font-size:72px;margin-bottom:16px;">🔐</div>
-            <h1 class="ht" style="color:#ffffff;margin:0;font-size:30px;font-weight:900;line-height:1.2;">Jelszó visszaállítás</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:72px;margin-bottom:16px;">🔐</div>
+            <h1 style="color:#ffffff;margin:0;font-size:30px;font-weight:900;line-height:1.2;">Jelszó visszaállítás</h1>
             <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">Szia, <strong style="color:#fff;">${user.felhasznalonev}</strong>! Kaptuk a kérésedet. 🐾</p>
           </td>
         </tr>
 
         <!-- BADGE -->
         <tr>
-          <td class="pb" style="background:#e94560;padding:10px 48px;text-align:center;">
+          <td style="background:#e94560;padding:10px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">⏳ A link 30 percig érvényes</p>
           </td>
         </tr>
 
         <!-- BODY -->
         <tr>
-          <td class="pm" style="padding:48px;">
+          <td style="padding:48px;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 16px;">Kedves <strong style="color:#1a202c;">${user.felhasznalonev}</strong>! 👋</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 28px;">Jelszó-visszaállítási kérelmet kaptunk a fiókodhoz. Kattints az alábbi gombra az új jelszó beállításához!</p>
 
@@ -223,7 +223,7 @@ app.post('/forgot-password', async (req, res) => {
 
         <!-- QUOTE -->
         <tr>
-          <td class="ps" style="background:#f7fafc;padding:28px 48px;">
+          <td style="background:#f7fafc;padding:28px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
@@ -237,7 +237,7 @@ app.post('/forgot-password', async (req, res) => {
 
         <!-- FOOTER -->
         <tr>
-          <td class="pf" style="background:#1a1a2e;padding:28px 48px;text-align:center;">
+          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
             <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
             <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
@@ -299,28 +299,28 @@ app.post('/api/feedback', async (req, res) => {
     html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <!-- HEADER -->
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 48px;text-align:center;">
-            <div class="hi" style="font-size:48px;margin-bottom:8px;">🐾</div>
-            <h1 class="ht" style="color:#e94560;margin:0;font-size:28px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 48px;text-align:center;">
+            <div style="font-size:48px;margin-bottom:8px;">🐾</div>
+            <h1 style="color:#e94560;margin:0;font-size:28px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
             <p style="color:#a0aec0;margin:6px 0 0;font-size:14px;letter-spacing:2px;text-transform:uppercase;">Kutyamenhely</p>
           </td>
         </tr>
         <!-- BADGE -->
         <tr>
-          <td class="pb" style="background:#e94560;padding:10px 48px;text-align:center;">
+          <td style="background:#e94560;padding:10px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">📬 Új visszajelzés érkezett</p>
           </td>
         </tr>
         <!-- BODY -->
         <tr>
-          <td class="pm" style="padding:40px 48px;">
+          <td style="padding:40px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="background:#f7fafc;border-radius:12px;padding:24px;border-left:4px solid #e94560;">
@@ -348,7 +348,7 @@ app.post('/api/feedback', async (req, res) => {
         </tr>
         <!-- FOOTER -->
         <tr>
-          <td class="pf" style="background:#1a1a2e;padding:24px 48px;text-align:center;">
+          <td style="background:#1a1a2e;padding:24px 48px;text-align:center;">
             <p style="color:#a0aec0;font-size:12px;margin:0;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely &bull; Belső admin értesítő</p>
           </td>
         </tr>
@@ -366,22 +366,22 @@ app.post('/api/feedback', async (req, res) => {
     html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <!-- HEADER -->
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px;text-align:center;">
-            <div class="hi" style="font-size:64px;margin-bottom:12px;">🐶</div>
-            <h1 class="ht" style="color:#ffffff;margin:0;font-size:30px;font-weight:800;">Köszönjük, ${name || 'kedves barátunk'}!</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px;text-align:center;">
+            <div style="font-size:64px;margin-bottom:12px;">🐶</div>
+            <h1 style="color:#ffffff;margin:0;font-size:30px;font-weight:800;">Köszönjük, ${name || 'kedves barátunk'}!</h1>
             <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">Megkaptuk az üzenetedet 💌</p>
           </td>
         </tr>
         <!-- BODY -->
         <tr>
-          <td class="pm" style="padding:48px;">
+          <td style="padding:48px;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 24px;">Szia <strong style="color:#1a202c;">${name || 'ismeretlen barátunk'}</strong> 👋</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 24px;">Hatalmas köszönet, hogy időt szántál arra, hogy írj nekünk! A visszajelzésed rendkívül sokat jelent a menhelyünk és a gondozásunkban lévő kutyusok számára. 🐾</p>
             <!-- Quote box -->
@@ -398,20 +398,20 @@ app.post('/api/feedback', async (req, res) => {
         </tr>
         <!-- STATS ROW -->
         <tr>
-          <td class="ps" style="background:#f7fafc;padding:32px 48px;">
+          <td style="background:#f7fafc;padding:32px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td class="sc" width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" style="padding:0 8px;">
                   <div style="font-size:32px;">🏠</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">50+</p>
                   <p style="color:#4a5568;font-size:12px;margin:0;">Kutya a menhelyen</p>
                 </td>
-                <td class="sc" width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
+                <td width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
                   <div style="font-size:32px;">❤️</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">200+</p>
                   <p style="color:#4a5568;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
                 </td>
-                <td class="sc" width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" style="padding:0 8px;">
                   <div style="font-size:32px;">⭐</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">5★</p>
                   <p style="color:#4a5568;font-size:12px;margin:0;">Értékelés</p>
@@ -422,7 +422,7 @@ app.post('/api/feedback', async (req, res) => {
         </tr>
         <!-- FOOTER -->
         <tr>
-          <td class="pf" style="background:#1a1a2e;padding:32px 48px;text-align:center;">
+          <td style="background:#1a1a2e;padding:32px 48px;text-align:center;">
             <p style="color:#ffffff;font-size:16px;font-weight:700;margin:0 0 4px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
             <p style="color:#a0aec0;font-size:12px;margin:8px 0 0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
@@ -544,31 +544,31 @@ app.post('/register', async (req, res) => {
                       html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
         <!-- HERO -->
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
-            <div class="hi" style="font-size:72px;margin-bottom:16px;">🐾</div>
-            <h1 class="ht" style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Üdvözlünk, ${nev}!</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:72px;margin-bottom:16px;">🐾</div>
+            <h1 style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Üdvözlünk, ${nev}!</h1>
             <p style="color:#a0aec0;margin:12px 0 0;font-size:16px;">Örülünk, hogy csatlakoztál hozzánk! 🎉</p>
           </td>
         </tr>
 
         <!-- BADGE -->
         <tr>
-          <td class="pb" style="background:#059669;padding:10px 48px;text-align:center;">
+          <td style="background:#059669;padding:10px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">✅ REGISZTRÁCIÓ SIKERES</p>
           </td>
         </tr>
 
         <!-- BODY -->
         <tr>
-          <td class="pm" style="padding:48px;">
+          <td style="padding:48px;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Szia <strong style="color:#1a202c;">${nev}</strong>! 👋</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 28px;">Sikeresen regisztráltál a <strong style="color:#1a202c;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely</strong> weboldalán. Mostantól bejelentkezhetsz, böngészheted a kutyusainkat és akár örökbefogadási kérelmet is beadhatsz! 🐕</p>
 
@@ -628,20 +628,20 @@ app.post('/register', async (req, res) => {
 
         <!-- STATS -->
         <tr>
-          <td class="ps" style="background:#f7fafc;padding:28px 48px;">
+          <td style="background:#f7fafc;padding:28px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td class="sc" width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" style="padding:0 8px;">
                   <div style="font-size:28px;">🏠</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">50+</p>
                   <p style="color:#4a5568;font-size:12px;margin:0;">Kutya a menhelyen</p>
                 </td>
-                <td class="sc" width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
+                <td width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
                   <div style="font-size:28px;">❤️</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">200+</p>
                   <p style="color:#4a5568;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
                 </td>
-                <td class="sc" width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" style="padding:0 8px;">
                   <div style="font-size:28px;">⭐</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">5★</p>
                   <p style="color:#4a5568;font-size:12px;margin:0;">Értékelés</p>
@@ -653,7 +653,7 @@ app.post('/register', async (req, res) => {
 
         <!-- QUOTE -->
         <tr>
-          <td class="ps" style="padding:0 48px 32px;">
+          <td style="padding:0 48px 32px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
@@ -667,7 +667,7 @@ app.post('/register', async (req, res) => {
 
         <!-- FOOTER -->
         <tr>
-          <td class="pf" style="background:#1a1a2e;padding:28px 48px;text-align:center;">
+          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
             <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
             <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
@@ -859,20 +859,20 @@ app.post('/api/adoption', async (req, res) => {
             html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 48px;text-align:center;">
-            <div class="hi" style="font-size:48px;margin-bottom:8px;">🐾</div>
-            <h1 class="ht" style="color:#e94560;margin:0;font-size:26px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 48px;text-align:center;">
+            <div style="font-size:48px;margin-bottom:8px;">🐾</div>
+            <h1 style="color:#e94560;margin:0;font-size:26px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
             <p style="color:#a0aec0;margin:6px 0 0;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Kutyamenhely · Admin Értesítő</p>
           </td>
         </tr>
         <tr>
-          <td class="pb" style="background:#e94560;padding:12px 48px;text-align:center;">
+          <td style="background:#e94560;padding:12px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">🏠 Új Örökbefogadási Jelentkezés · #${result.insertId}</p>
           </td>
         </tr>
@@ -915,7 +915,7 @@ app.post('/api/adoption', async (req, res) => {
           </td>
         </tr>
         <tr>
-          <td class="pf" style="background:#1a1a2e;padding:24px 48px;text-align:center;">
+          <td style="background:#1a1a2e;padding:24px 48px;text-align:center;">
             <p style="color:#a0aec0;font-size:12px;margin:0;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely &bull; Belső admin értesítő</p>
           </td>
         </tr>
@@ -934,22 +934,22 @@ app.post('/api/adoption', async (req, res) => {
             html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <!-- HERO -->
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
-            <div class="hi" style="font-size:72px;margin-bottom:16px;">🐕‍🦺</div>
-            <h1 class="ht" style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Gratulálunk, ${user.felhasznalonev}!</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:72px;margin-bottom:16px;">🐕‍🦺</div>
+            <h1 style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Gratulálunk, ${user.felhasznalonev}!</h1>
             <p style="color:#a0aec0;margin:12px 0 0;font-size:16px;">Örökbefogadási kérelmed sikeresen beérkezett! 🎉</p>
           </td>
         </tr>
         <!-- PROGRESS -->
         <tr>
-          <td class="pb" style="background:#0f3460;padding:20px 48px;">
+          <td style="background:#0f3460;padding:20px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" width="25%">
@@ -976,7 +976,7 @@ app.post('/api/adoption', async (req, res) => {
         </tr>
         <!-- BODY -->
         <tr>
-          <td class="pm" style="padding:48px;">
+          <td style="padding:48px;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Kedves <strong style="color:#1a202c;">${user.felhasznalonev}</strong>,</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Rögzítettük az örökbefogadási kérelmedet! Ez egy hatalmas és csodálatos lépés – köszönjük, hogy megnyitod a szívedet és az otthonod egy kutyus előtt. 🐾❤️</p>
             <!-- Info box -->
@@ -1031,7 +1031,7 @@ app.post('/api/adoption', async (req, res) => {
         </tr>
         <!-- QUOTE -->
         <tr>
-          <td class="ps" style="background:#f7fafc;padding:32px 48px;">
+          <td style="background:#f7fafc;padding:32px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:28px;text-align:center;">
@@ -1262,25 +1262,25 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
       const htmlEmail = `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><style>@media only screen and (max-width:620px){.ew{width:100%!important;max-width:100%!important}.ph{padding:32px 20px!important}.pb{padding:8px 20px!important}.pm{padding:28px 20px!important}.ps{padding:20px!important}.pf{padding:20px 24px!important}.hi{font-size:48px!important;margin-bottom:8px!important}.ht{font-size:22px!important;line-height:1.3!important}.sc{display:block!important;width:100%!important;border:none!important}.pt{font-size:9px!important}}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 8px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
     <tr><td align="center">
-      <table class="ew" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <tr>
-          <td class="ph" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px;text-align:center;">
-            <div class="hi" style="font-size:64px;margin-bottom:12px;">${cfg.emoji}</div>
-            <h1 class="ht" style="color:#ffffff;margin:0;font-size:28px;font-weight:900;line-height:1.2;">${cfg.title}</h1>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px;text-align:center;">
+            <div style="font-size:64px;margin-bottom:12px;">${cfg.emoji}</div>
+            <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:900;line-height:1.2;">${cfg.title}</h1>
             <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">${cfg.subtitle}</p>
           </td>
         </tr>
-        <tr><td class="pb" style="background:${cfg.badge};padding:10px 48px;text-align:center;">
+        <tr><td style="background:${cfg.badge};padding:10px 48px;text-align:center;">
           <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">${cfg.badgeText}</p>
         </td></tr>
         ${progressHTML}
-        <tr><td class="pm" style="padding:40px 48px;">${cfg.body}</td></tr>
+        <tr><td style="padding:40px 48px;">${cfg.body}</td></tr>
         <tr>
-          <td class="ps" style="background:#f7fafc;padding:28px 48px;">
+          <td style="background:#f7fafc;padding:28px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
               <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
                 <p style="color:#fff;font-size:16px;font-weight:700;margin:0;line-height:1.6;">"Egy kutya a legjobb barát,<br>akit valaha kaphatsz." 🐾</p>
@@ -1290,7 +1290,7 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
           </td>
         </tr>
         <tr>
-          <td class="pf" style="background:#1a1a2e;padding:28px 48px;text-align:center;">
+          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
             <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
             <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>

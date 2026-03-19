@@ -482,7 +482,7 @@ if (regForm) {
         const data = await res.json();
         if (res.ok) {
           alert(data.message);
-          regForm.reset();
+          window.location.href = 'bejelentkezes.html';
         } else {
           if (error) error.textContent = data.error || 'Hiba történt.';
         }
