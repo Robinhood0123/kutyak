@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     event.preventDefault();
-                    window.scrollTo({ top: targetElement.offsetTop - 75, behavior: 'smooth' });
+                    window.scrollTo({ top: targetElement.offsetTop - 150, behavior: 'smooth' });
                 }
             }
             if (checkbox) checkbox.checked = false; 

@@ -31,10 +31,11 @@
             </label>
             <label class="logo"><img src="img/logo2.png" style="margin-top: 12.3px" alt=""></label>
             <ul>
-              <li><a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Főoldal</a></li>
+              <li><a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('check').checked = false; return false;">Főoldal</a></li>
               <li><a href="#kutyaink">Kutyáink</a></li>
               <li><a href="#ricsirobinorbi">Rólunk</a></li>
               <li><a href="#visszajelzesek">Visszajelzések</a></li>
+              <li><a href="#adomany">Támogatás</a></li>
               <li><a href="#elerheto">Elérhetőségek</a></li>
               <li id="adminNavItem" style="display: none;"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
           
@@ -133,7 +134,10 @@
         </div>
     </section>
 
-    <section id="visszajelzesek">
+    <div class="visszajelzesek-outer">
+    <div class="visszajelzesek-tamogatas-wrapper">
+
+    <section id="visszajelzesek" class="visszajelzesek-panel">
       <div class="feedback-card">
         <h2>Visszajelzések</h2>
         <p>Itt írd meg nekünk, ha van problémád az oldallal, vagy javaslatod!</p>
@@ -152,30 +156,29 @@
       </div>
     </section>
     
-    <section id="adomany" class="donation-section">
-      <div class="donation-container">
+    <section id="adomany" class="donation-section tamogatas-panel">
+      <div class="donation-card">
+          <div class="donation-icon"><i class="bx bxs-heart"></i></div>
           <h2>Támogasd a védenceinket!</h2>
-          <div class="donation-box">
-              <div class="payment-footer">
-                  
-                  <button class="revolut-btn" onclick="payWithRevolut()" style="background: #fff; color: #000; border: 2px solid #000; padding: 15px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 10px; cursor: pointer; font-family: sans-serif;">
-                      Fizetés Revoluton
-                  </button>
-  
-                  <button class="paypal-btn" onclick="payWithPaypal()" style="background: #007bff; color: #000; border: 2px solid #000; padding: 15px 20px; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 15px; cursor: pointer; font-family: sans-serif;">
-                      Fizetés PayPal-lal
-                  </button>
-  
-                  <p style="font-size: 14px; color: #666; text-align: center;">
-                      Vagy közvetlen utalás: <br>
-                      <b>10701599-72908547-51100005</b> (CIB)
-                  </p>
-              </div>
+          <p>Segítségeddel még több kutyának adhatunk új otthont!</p>
+          <div class="donation-btns">
+              <button class="revolut-btn" onclick="payWithRevolut()">
+                  Fizetés Revoluton
+              </button>
+              <button class="paypal-btn" onclick="payWithPaypal()">
+                  Fizetés PayPal-lal
+              </button>
+              <p class="bank-transfer-info">
+                  Vagy közvetlen utalás: <br>
+                  <b>10701599-72908547-51100005</b> (CIB)
+              </p>
           </div>
       </div>
   </section>
-    
-   
+
+    </div>
+    </div>
+
 
 <footer class="footer" id="elerheto">
     <div class="container">

@@ -82,7 +82,7 @@ nav ul li a {
     display: none;
 }
 
-@media (max-width: 858px) {
+@media (max-width: 915px) {
     .checkbtn {
         display: block;
         order: 2;
@@ -234,11 +234,89 @@ section{
     font-size: 1.2rem;
 }
 .donation-section {
-    padding: 60px 20px;
+    padding: 0;
     text-align: center;
     font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    background: transparent;
+}
+.donation-card {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.donation-icon {
+    font-size: 48px;
+    color: #e63946;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+.donation-card h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #222;
+}
+.donation-card p {
+    color: #555;
+    margin-bottom: 25px;
+}
+.donation-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.revolut-btn {
+    background: #fff;
+    color: #000;
+    border: 2px solid #000;
+    padding: 14px 20px;
+    font-weight: bold;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: sans-serif;
+    transition: background 0.3s;
+}
+.revolut-btn:hover {
+    background: #f0f0f0;
+}
+.paypal-btn {
+    background: #007bff;
+    color: #fff;
+    border: 2px solid #007bff;
+    padding: 14px 20px;
+    font-weight: bold;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: sans-serif;
+    transition: background 0.3s;
+}
+.paypal-btn:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+}
+.bank-transfer-info {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+    margin-bottom: 0;
 }
 .donation-box {
+    width: 100%;
     max-width: 450px;
     margin: 0 auto;
     background: #ffffff;
@@ -686,18 +764,52 @@ button:hover {
     padding-top: 0.25%;
 }
 
-/* --- Feedback form --- */
-#visszajelzesek {
+.visszajelzesek-outer {
+    background: #fff;
     padding: 60px 20px;
+}
+
+/* --- Feedback form --- */
+.visszajelzesek-tamogatas-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.visszajelzesek-panel,
+.tamogatas-panel {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+}
+
+@media (max-width: 860px) {
+    .visszajelzesek-tamogatas-wrapper {
+        flex-direction: column;
+        gap: 24px;
+        padding: 40px 20px;
+    }
+    .visszajelzesek-panel,
+    .tamogatas-panel {
+        width: 100%;
+    }
+}
+
+#visszajelzesek {
+    padding: 0;
+    background: transparent;
   }
   
   .feedback-card {
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
     background: #fff;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     text-align: center;
   }
   
@@ -1234,7 +1346,7 @@ nav ul, .navbar-nav {
 }
 
 #visszajelzesek {
-    scroll-margin-top: 90px;
+    scroll-margin-top: 150px;
 }
 
 .scrolled nav {
