@@ -206,6 +206,20 @@
   cursor: not-allowed;
 }
 
+.btn-delete-adopt {
+  padding: 0.35rem 0.7rem;
+  background: #e53e3e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.btn-delete-adopt:hover { opacity: 0.82; }
+
 /* ===== USERS SECTION ===== */
 .user-info-cell {
   display: flex;

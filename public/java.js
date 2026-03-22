@@ -1,4 +1,4 @@
-// --- Törölt fiók detektálása ---
+// --- Törölt fiók + lejárt session detektálása ---
 async function checkAccountExists() {
   const raw = localStorage.getItem('loggedInUser');
   if (!raw) return;
@@ -6,6 +6,7 @@ async function checkAccountExists() {
   try { user = JSON.parse(raw); } catch (e) { return; }
   if (!user || !user.id) return;
   try {
+    // 2. Ellenőrizzük, hogy a fiók még létezik-e
     const res = await fetch(`/api/check-user/${user.id}`);
     if (!res.ok) return;
     const data = await res.json();
@@ -326,44 +327,6 @@ function megnyitKutyaModalt(kutya) {
     
     $('#dogModal').modal('show');
 }
-
-// --- Örökbefogadási űrlap kezelése ---
-$(document).ready(function() {
-    $('#adoptForm').on('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData);
-        
-        if (!data.elfogadom) {
-            showAdoptError('Kérlek, fogadd el az örökbefogadási feltételeket!');
-            return;
-        }
-        
-        $.ajax({
-            url: `${serverUrl}/api/adoption`,
-            method: 'POST',
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            success: function(response) {
-                if (response.success) {
-                    $('#adoptForm').hide();
-                    $('#adoptSuccessMessage').show();
-                    setTimeout(() => {
-                        $('#adoptModal').modal('hide');
-                        $('#adoptForm')[0].reset();
-                        $('#adoptForm').show();
-                        $('#adoptSuccessMessage').hide();
-                    }, 3000);
-                } else {
-                    showAdoptError(response.error || 'Hiba történt.');
-                }
-            },
-            error: function() {
-                showAdoptError('Hálózati hiba történt.');
-            }
-        });
-    });
-});
 
 function showAdoptError(message) {
     $('#adoptErrorMessage').text(message).show();
@@ -686,6 +649,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn.disabled) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Küldés...';
+
         const data = { name: form.name.value, email: form.email.value, message: form.message.value };
         try {
           const res = await fetch(`${serverUrl}/api/feedback`, {
@@ -694,11 +663,43 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(data)
           });
           const json = await res.json();
-          alert(json.success ? 'Üzenet elküldve!' : 'Hiba történt.');
-        } catch (err) { alert('Hiba történt.'); }
+          if (json.success) {
+            showFeedbackToast('Üzenet sikeresen elküldve! Köszönjük a visszajelzést!', 'success');
+            form.reset();
+          } else {
+            showFeedbackToast('Hiba történt az üzenet küldésekor. Próbáld újra!', 'error');
+          }
+        } catch (err) {
+          showFeedbackToast('Hiba történt az üzenet küldésekor. Próbáld újra!', 'error');
+        }
+
+        btn.textContent = 'Küldés';
+        setTimeout(() => { btn.disabled = false; }, 5000);
       });
   }
 });
+
+function showFeedbackToast(message, type) {
+  const existing = document.getElementById('feedbackToast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'feedbackToast';
+  toast.className = `feedback-toast feedback-toast--${type}`;
+
+  const icon = type === 'success' ? '✓' : '✕';
+  toast.innerHTML = `<span class="feedback-toast__icon">${icon}</span><span>${message}</span>`;
+
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('feedback-toast--visible'));
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('feedback-toast--visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 4500);
+}
 
 let currentAmount = 5000;
 function payWithRevolut() { window.open(`https://revolut.me/szentpalir`, '_blank'); }
@@ -724,7 +725,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 $(document).ready(function() {
-    // Csak ez az egy maradjon meg!
     $('#adoptForm').off('submit').on('submit', function(e) {
         e.preventDefault();
 
@@ -742,17 +742,30 @@ $(document).ready(function() {
             elfogadom: $('#adoptElfogadom').is(':checked') ? 1 : 0
         };
 
-        // Figyelj a `${serverUrl}` használatára!
         fetch(`${serverUrl}/api/adoption`, { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include', // Küldi a session sütit
+            credentials: 'include',
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.status === 401) {
+                localStorage.removeItem('loggedInUser');
+                $('#adoptModal').modal('hide');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Munkamenet lejárt',
+                    text: 'A bejelentkezésed lejárt, kérlek jelentkezz be újra!',
+                    confirmButtonText: 'Bejelentkezés',
+                    confirmButtonColor: '#e94560'
+                }).then(() => { window.location.href = 'bejelentkezes.html'; });
+                return null;
+            }
+            return response.json();
+        })
         .then(data => {
+            if (!data) return;
             if (data.success) {
-                // Siker esetén a korábbi szép animációd:
                 $('#adoptForm').hide();
                 $('#adoptSuccessMessage').show();
                 setTimeout(() => {
@@ -762,12 +775,12 @@ $(document).ready(function() {
                     $('#adoptSuccessMessage').hide();
                 }, 3000);
             } else {
-                alert(data.error || "Hiba történt.");
+                showAdoptError(data.error || 'Hiba történt.');
             }
         })
         .catch(err => {
             console.error('Hiba:', err);
-            alert("Hálózati hiba a beküldés során.");
+            showAdoptError('Hálózati hiba a beküldés során.');
         });
     });
 });
@@ -1018,6 +1031,12 @@ function togglePass() {
         });
         progHtml += '</div>';
 
+        var canCancel = (a.statusz !== 'elfogadva');
+        var cancelBtn = canCancel
+            ? '<button class="adopt-cancel-btn" onclick="cancelAdoption(' + a.id + ', \'' + escapeHtml(a.kutya_nev || 'kutya').replace(/'/g, '') + '\')">' +
+              '<i class="fas fa-times" style="margin-right:5px;"></i>Visszavonás</button>'
+            : '';
+
         return '<div class="adopt-card">' +
             (kepUrl ? '<img class="adopt-card-img" src="' + kepUrl + '" alt="' + escapeHtml(a.kutya_nev) + '" onerror="this.style.display=\'none\'">' : '') +
             '<div class="adopt-card-body">' +
@@ -1029,7 +1048,10 @@ function togglePass() {
             '<span class="status-badge ' + s.cls + '">' + s.icon + ' ' + s.text + '</span>' +
             '</div>' +
             progHtml +
+            '<div class="adopt-card-footer">' +
             '<p class="adopt-date"><i class="fas fa-calendar-alt" style="margin-right:5px;opacity:.6;"></i>' + date + '</p>' +
+            cancelBtn +
+            '</div>' +
             '</div>' +
             '</div>';
     }
@@ -1037,4 +1059,41 @@ function togglePass() {
     function errorBox(msg) {
         return '<div class="state-box"><div class="state-icon">⚠️</div><p>' + msg + '</p></div>';
     }
+
+    window.cancelAdoption = async function(id, dogName) {
+        const result = await Swal.fire({
+            title: 'Visszavonod a kérelmet?',
+            html: '<p style="color:#4a5568;">Biztosan visszavonod az örökbefogadási kérelmedet<br><strong>' + (dogName || 'a kutyához') + '</strong>?</p>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e53e3e',
+            cancelButtonColor: '#718096',
+            confirmButtonText: '<i class="fas fa-times" style="margin-right:5px;"></i>Igen, visszavonás',
+            cancelButtonText: 'Mégsem'
+        });
+        if (!result.isConfirmed) return;
+
+        try {
+            var res = await fetch(serverUrl + '/api/adoption/' + id, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            var data = await res.json();
+            if (res.ok && data.success) {
+                await Swal.fire({
+                    title: 'Visszavonva!',
+                    text: 'A kérelmed sikeresen visszavonásra került.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                loadAdoptions();
+            } else {
+                Swal.fire('Hiba', data.error || 'Nem sikerült visszavonni.', 'error');
+            }
+        } catch (e) {
+            Swal.fire('Hiba', 'Hálózati hiba. Próbáld újra!', 'error');
+        }
+    };
 })();});

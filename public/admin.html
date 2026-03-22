@@ -377,6 +377,7 @@
           <td class="action-cell">
             <select class="status-select" id="sel-${a.id}">${opts}</select>
             <button class="btn-send-status" onclick="sendStatus(${a.id})">📧 Küldés</button>
+            <button class="btn-delete-adopt" onclick="deleteAdoption(${a.id})">🗑️ Törlés</button>
           </td>
         </tr>`;
       }).join('');
@@ -385,6 +386,22 @@
         '<tr><td colspan="8" class="no-adoptions">Hiba a betöltésnél.</td></tr>';
     }
   }
+
+  window.deleteAdoption = async function(id) {
+    if (!confirm('Biztosan törlöd ezt az örökbefogadási kérelmet? (#' + id + ')')) return;
+    try {
+      const res = await fetch('/api/adoption/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showMsg('✅ Kérelem sikeresen törölve (#' + id + ').', 'success');
+        loadAdoptions();
+      } else {
+        showMsg('❌ ' + (data.error || 'Hiba történt.'), 'error');
+      }
+    } catch (e) {
+      showMsg('❌ Hálózati hiba.', 'error');
+    }
+  };
 
   window.sendStatus = async function(id) {
     const sel = document.getElementById('sel-' + id);

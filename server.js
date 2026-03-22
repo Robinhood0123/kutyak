@@ -70,7 +70,7 @@ const db = mysql.createConnection({
   user: 'root',
   password: '',
   database: 'menhely',
-  port: 3307
+  port: 3306
 });
 db.connect(err => {
   if (err) console.error('MySQL kapcsolódási hiba:', err);
@@ -112,6 +112,53 @@ transporter.verify()
     console.error('SMTP kapcsolat hiba:', err);
     process.exit(1);
   });
+
+// Reszponzív email CSS – minden sablon ezt használja
+const EMAIL_CSS = `<style>
+/* ── Sötét mód: Gmail iOS/Android + Apple Mail + Samsung Mail ── */
+@media (prefers-color-scheme:dark){
+  /* Kártya háttere */
+  .em-card                    { background-color:#1e293b!important }
+  /* Hero: megakadályozzuk az automatikus invertálást */
+  .em-hero                    { background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%)!important }
+  .em-hero *                  { color:#e2e8f0!important }
+  .em-h1                      { color:#ffffff!important }
+  /* Progress bar sáv */
+  .em-prog                    { background-color:#1e3a8a!important }
+  .em-prog *                  { color:#e2e8f0!important }
+  .em-prog-label              { color:#e2e8f0!important }
+  /* Body */
+  .em-body                    { background-color:#1e293b!important }
+  .em-body p                  { color:#d1d5db!important }
+  .em-body td                 { color:#d1d5db!important }
+  .em-body li                 { color:#d1d5db!important }
+  .em-body strong, .em-body b { color:#f9fafb!important }
+  .em-body a                  { color:#f87171!important }
+  /* Statisztika szekció */
+  .em-sec                     { background-color:#0f172a!important }
+  .em-sec p                   { color:#d1d5db!important }
+  .em-stat p                  { color:#d1d5db!important }
+  /* Lábléc */
+  .em-footer                  { background-color:#0f172a!important }
+  .em-footer p                { color:#9ca3af!important }
+}
+/* ── Reszponzív ── */
+@media only screen and (max-width:640px){
+  .em-wrap>tr>td{padding-left:12px!important;padding-right:12px!important}
+  .em-card{width:100%!important;border-radius:8px!important}
+  .em-hero{padding:32px 20px!important}
+  .em-badge{padding:10px 16px!important;word-break:break-word}
+  .em-body{padding:28px 20px!important}
+  .em-sec{padding:20px!important}
+  .em-footer{padding:20px!important}
+  .em-h1{font-size:22px!important;line-height:1.3!important}
+  .em-stat{display:block!important;width:100%!important;padding:10px 8px!important;border-left:none!important;border-right:none!important}
+  .em-prog{padding:14px 16px!important}
+  .em-prog-cell{padding:4px 2px!important}
+  .em-prog-label{font-size:9px!important}
+  .em-badge p{letter-spacing:1px!important;font-size:12px!important}
+}
+</style>`;
 
 // --- In-memory token tárolás (egyszerű megoldás, újraindításkor törlődik) ---
 const passwordResetTokens = new Map(); // token -> { email, expires }
@@ -162,31 +209,37 @@ app.post('/forgot-password', async (req, res) => {
       html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" class="em-gbody" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
 
         <!-- HERO -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
-            <div style="font-size:72px;margin-bottom:16px;">🔐</div>
-            <h1 style="color:#ffffff;margin:0;font-size:30px;font-weight:900;line-height:1.2;">Jelszó visszaállítás</h1>
-            <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">Szia, <strong style="color:#fff;">${user.felhasznalonev}</strong>! Kaptuk a kérésedet. 🐾</p>
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:64px;margin-bottom:16px;">🔐</div>
+            <h1 class="em-h1" style="color:#ffffff;margin:0;font-size:30px;font-weight:900;line-height:1.2;">Jelszó visszaállítás</h1>
+            <p style="color:#e2e8f0;margin:10px 0 0;font-size:15px;">Szia, <strong style="color:#fff;">${user.felhasznalonev}</strong>! Kaptuk a kérésedet. 🐾</p>
           </td>
         </tr>
 
         <!-- BADGE -->
         <tr>
-          <td style="background:#e94560;padding:10px 48px;text-align:center;">
+          <td class="em-badge" style="background:#e94560;padding:10px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">⏳ A link 30 percig érvényes</p>
           </td>
         </tr>
 
         <!-- BODY -->
         <tr>
-          <td style="padding:48px;">
+          <td class="em-body" style="padding:48px;background-color:#ffffff;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 16px;">Kedves <strong style="color:#1a202c;">${user.felhasznalonev}</strong>! 👋</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 28px;">Jelszó-visszaállítási kérelmet kaptunk a fiókodhoz. Kattints az alábbi gombra az új jelszó beállításához!</p>
 
@@ -204,7 +257,7 @@ app.post('/forgot-password', async (req, res) => {
             <!-- Figyelmeztetés -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
               <tr>
-                <td style="background:#fff8f0;border-radius:12px;padding:20px;border-left:4px solid #f59e0b;">
+                <td style="background:#fffbeb;border-radius:12px;padding:20px;border-left:4px solid #f59e0b;">
                   <p style="color:#92400e;font-size:13px;font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px;">⚠️ Fontos tudnivalók</p>
                   <ul style="color:#4a5568;font-size:14px;margin:0;padding-left:20px;line-height:1.8;">
                     <li>A link <strong>30 percig érvényes</strong></li>
@@ -237,9 +290,9 @@ app.post('/forgot-password', async (req, res) => {
 
         <!-- FOOTER -->
         <tr>
-          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
-            <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
-            <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          <td class="em-footer" style="background:#f7fafc;padding:28px 48px;text-align:center;">
+            <p style="color:#1a202c;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#718096;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
         </tr>
 
@@ -299,43 +352,49 @@ app.post('/api/feedback', async (req, res) => {
     html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" class="em-gbody" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
         <!-- HEADER -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 48px;text-align:center;">
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:40px 48px;text-align:center;">
             <div style="font-size:48px;margin-bottom:8px;">🐾</div>
-            <h1 style="color:#e94560;margin:0;font-size:28px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
-            <p style="color:#a0aec0;margin:6px 0 0;font-size:14px;letter-spacing:2px;text-transform:uppercase;">Kutyamenhely</p>
+            <h1 class="em-h1" style="color:#e94560;margin:0;font-size:28px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
+            <p style="color:#e2e8f0;margin:6px 0 0;font-size:14px;letter-spacing:2px;text-transform:uppercase;">Kutyamenhely</p>
           </td>
         </tr>
         <!-- BADGE -->
         <tr>
-          <td style="background:#e94560;padding:10px 48px;text-align:center;">
+          <td class="em-badge" style="background:#e94560;padding:10px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">📬 Új visszajelzés érkezett</p>
           </td>
         </tr>
         <!-- BODY -->
         <tr>
-          <td style="padding:40px 48px;">
+          <td class="em-body" style="padding:40px 48px;background-color:#ffffff;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="background:#f7fafc;border-radius:12px;padding:24px;border-left:4px solid #e94560;">
+                <td style="background:#fff5f5;border-radius:12px;padding:24px;border-left:4px solid #e94560;">
                   <table width="100%">
                     <tr>
-                      <td width="120" style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:12px;">👤 Feladó neve</td>
+                      <td width="120" style="color:#718096;font-size:13px;font-weight:600;padding-bottom:12px;">👤 Feladó neve</td>
                       <td style="color:#1a202c;font-size:14px;font-weight:700;padding-bottom:12px;">${name || '<em>Névtelen</em>'}</td>
                     </tr>
                     <tr>
-                      <td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:12px;">✉️ E-mail cím</td>
+                      <td style="color:#718096;font-size:13px;font-weight:600;padding-bottom:12px;">✉️ E-mail cím</td>
                       <td style="padding-bottom:12px;"><a href="mailto:${email}" style="color:#e94560;font-weight:700;text-decoration:none;">${email}</a></td>
                     </tr>
                     <tr>
                       <td colspan="2" style="border-top:1px solid #e2e8f0;padding-top:16px;">
-                        <p style="color:#4a5568;font-size:13px;font-weight:600;margin:0 0 8px;">💬 Üzenet</p>
+                        <p style="color:#718096;font-size:13px;font-weight:600;margin:0 0 8px;">💬 Üzenet</p>
                         <p style="color:#1a202c;font-size:15px;line-height:1.7;margin:0;white-space:pre-wrap;">${message}</p>
                       </td>
                     </tr>
@@ -343,13 +402,13 @@ app.post('/api/feedback', async (req, res) => {
                 </td>
               </tr>
             </table>
-            <p style="margin:24px 0 0;color:#4a5568;font-size:13px;text-align:center;">📅 Beérkezett: ${new Date().toLocaleString('hu-HU', {timeZone:'Europe/Budapest'})}</p>
+            <p style="margin:24px 0 0;color:#718096;font-size:13px;text-align:center;">📅 Beérkezett: ${new Date().toLocaleString('hu-HU', {timeZone:'Europe/Budapest'})}</p>
           </td>
         </tr>
         <!-- FOOTER -->
         <tr>
-          <td style="background:#1a1a2e;padding:24px 48px;text-align:center;">
-            <p style="color:#a0aec0;font-size:12px;margin:0;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely &bull; Belső admin értesítő</p>
+          <td class="em-footer" style="background:#f7fafc;padding:24px 48px;text-align:center;">
+            <p style="color:#718096;font-size:12px;margin:0;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely &bull; Belső admin értesítő</p>
           </td>
         </tr>
       </table>
@@ -366,22 +425,28 @@ app.post('/api/feedback', async (req, res) => {
     html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" class="em-gbody" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
         <!-- HEADER -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px;text-align:center;">
-            <div style="font-size:64px;margin-bottom:12px;">🐶</div>
-            <h1 style="color:#ffffff;margin:0;font-size:30px;font-weight:800;">Köszönjük, ${name || 'kedves barátunk'}!</h1>
-            <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">Megkaptuk az üzenetedet 💌</p>
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:48px;text-align:center;">
+            <div style="font-size:56px;margin-bottom:12px;">🐶</div>
+            <h1 class="em-h1" style="color:#ffffff;margin:0;font-size:30px;font-weight:800;">Köszönjük, ${name || 'kedves barátunk'}!</h1>
+            <p style="color:#e2e8f0;margin:10px 0 0;font-size:15px;">Megkaptuk az üzenetedet 💌</p>
           </td>
         </tr>
         <!-- BODY -->
         <tr>
-          <td style="padding:48px;">
+          <td class="em-body" style="padding:48px;background-color:#ffffff;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 24px;">Szia <strong style="color:#1a202c;">${name || 'ismeretlen barátunk'}</strong> 👋</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 24px;">Hatalmas köszönet, hogy időt szántál arra, hogy írj nekünk! A visszajelzésed rendkívül sokat jelent a menhelyünk és a gondozásunkban lévő kutyusok számára. 🐾</p>
             <!-- Quote box -->
@@ -398,23 +463,23 @@ app.post('/api/feedback', async (req, res) => {
         </tr>
         <!-- STATS ROW -->
         <tr>
-          <td style="background:#f7fafc;padding:32px 48px;">
+          <td class="em-sec" style="background:#f7fafc;padding:32px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" class="em-stat" style="padding:0 8px;">
                   <div style="font-size:32px;">🏠</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">50+</p>
-                  <p style="color:#4a5568;font-size:12px;margin:0;">Kutya a menhelyen</p>
+                  <p style="color:#718096;font-size:12px;margin:0;">Kutya a menhelyen</p>
                 </td>
-                <td width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
+                <td width="33%" align="center" class="em-stat" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
                   <div style="font-size:32px;">❤️</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">200+</p>
-                  <p style="color:#4a5568;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
+                  <p style="color:#718096;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
                 </td>
-                <td width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" class="em-stat" style="padding:0 8px;">
                   <div style="font-size:32px;">⭐</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">5★</p>
-                  <p style="color:#4a5568;font-size:12px;margin:0;">Értékelés</p>
+                  <p style="color:#718096;font-size:12px;margin:0;">Értékelés</p>
                 </td>
               </tr>
             </table>
@@ -422,9 +487,9 @@ app.post('/api/feedback', async (req, res) => {
         </tr>
         <!-- FOOTER -->
         <tr>
-          <td style="background:#1a1a2e;padding:32px 48px;text-align:center;">
-            <p style="color:#ffffff;font-size:16px;font-weight:700;margin:0 0 4px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
-            <p style="color:#a0aec0;font-size:12px;margin:8px 0 0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          <td class="em-footer" style="background:#f7fafc;padding:32px 48px;text-align:center;">
+            <p style="color:#1a202c;font-size:16px;font-weight:700;margin:0 0 4px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#718096;font-size:12px;margin:8px 0 0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
         </tr>
       </table>
@@ -544,50 +609,56 @@ app.post('/register', async (req, res) => {
                       html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" class="em-gbody" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
 
         <!-- HERO -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
-            <div style="font-size:72px;margin-bottom:16px;">🐾</div>
-            <h1 style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Üdvözlünk, ${nev}!</h1>
-            <p style="color:#a0aec0;margin:12px 0 0;font-size:16px;">Örülünk, hogy csatlakoztál hozzánk! 🎉</p>
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:64px;margin-bottom:16px;">🐾</div>
+            <h1 class="em-h1" style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Üdvözlünk, ${nev}!</h1>
+            <p style="color:#e2e8f0;margin:12px 0 0;font-size:16px;">Örülünk, hogy csatlakoztál hozzánk! 🎉</p>
           </td>
         </tr>
 
         <!-- BADGE -->
         <tr>
-          <td style="background:#059669;padding:10px 48px;text-align:center;">
+          <td class="em-badge" style="background:#059669;padding:10px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">✅ REGISZTRÁCIÓ SIKERES</p>
           </td>
         </tr>
 
         <!-- BODY -->
         <tr>
-          <td style="padding:48px;">
+          <td class="em-body" style="padding:48px;background-color:#ffffff;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Szia <strong style="color:#1a202c;">${nev}</strong>! 👋</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 28px;">Sikeresen regisztráltál a <strong style="color:#1a202c;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely</strong> weboldalán. Mostantól bejelentkezhetsz, böngészheted a kutyusainkat és akár örökbefogadási kérelmet is beadhatsz! 🐕</p>
 
             <!-- Fiók adatok -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
               <tr>
-                <td style="background:#f7fafc;border-radius:12px;padding:24px;border-left:4px solid #059669;">
+                <td style="background:#f0fdf4;border-radius:12px;padding:24px;border-left:4px solid #059669;">
                   <p style="color:#065f46;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin:0 0 14px;">👤 Fiókod adatai</p>
                   <table width="100%">
                     <tr>
-                      <td style="color:#4a5568;font-size:13px;font-weight:600;width:120px;padding-bottom:8px;">Felhasználónév</td>
+                      <td style="color:#718096;font-size:13px;font-weight:600;width:120px;padding-bottom:8px;">Felhasználónév</td>
                       <td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${nev}</td>
                     </tr>
                     <tr>
-                      <td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:8px;">E-mail cím</td>
+                      <td style="color:#718096;font-size:13px;font-weight:600;padding-bottom:8px;">E-mail cím</td>
                       <td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${email}</td>
                     </tr>
                     <tr>
-                      <td style="color:#4a5568;font-size:13px;font-weight:600;">Szerepkör</td>
+                      <td style="color:#718096;font-size:13px;font-weight:600;">Szerepkör</td>
                       <td style="padding-bottom:0;"><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">Felhasználó</span></td>
                     </tr>
                   </table>
@@ -599,26 +670,26 @@ app.post('/register', async (req, res) => {
             <p style="color:#1a202c;font-size:16px;font-weight:800;margin:0 0 16px;">🐶 Mit tehetsz most?</p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td style="padding-bottom:12px;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:14px 16px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef2ff;border-radius:10px;padding:14px 16px;">
                   <tr>
                     <td width="36" style="font-size:22px;vertical-align:middle;">🔍</td>
-                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Böngéssz a kutyusaink között</strong><br><span style="color:#4a5568;font-size:13px;">Nézd meg, ki keres szerető otthont éppen most!</span></td>
+                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Böngéssz a kutyusaink között</strong><br><span style="color:#718096;font-size:13px;">Nézd meg, ki keres szerető otthont éppen most!</span></td>
                   </tr>
                 </table>
               </td></tr>
               <tr><td style="padding-bottom:12px;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:14px 16px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef2ff;border-radius:10px;padding:14px 16px;">
                   <tr>
                     <td width="36" style="font-size:22px;vertical-align:middle;">❤️</td>
-                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Adj be örökbefogadási kérelmet</strong><br><span style="color:#4a5568;font-size:13px;">Ha megtaláltad az ideális társad, adhatjuk egymásnak őket!</span></td>
+                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Adj be örökbefogadási kérelmet</strong><br><span style="color:#718096;font-size:13px;">Ha megtaláltad az ideális társad, adhatjuk egymásnak őket!</span></td>
                   </tr>
                 </table>
               </td></tr>
               <tr><td>
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:14px 16px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef2ff;border-radius:10px;padding:14px 16px;">
                   <tr>
                     <td width="36" style="font-size:22px;vertical-align:middle;">💬</td>
-                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Lépj kapcsolatba velünk</strong><br><span style="color:#4a5568;font-size:13px;">Kérdésed van? Visszajelzés oldalunkon írj nekünk bármikor!</span></td>
+                    <td style="vertical-align:middle;"><strong style="color:#1a202c;font-size:14px;">Lépj kapcsolatba velünk</strong><br><span style="color:#718096;font-size:13px;">Kérdésed van? Visszajelzés oldalunkon írj nekünk bármikor!</span></td>
                   </tr>
                 </table>
               </td></tr>
@@ -628,23 +699,23 @@ app.post('/register', async (req, res) => {
 
         <!-- STATS -->
         <tr>
-          <td style="background:#f7fafc;padding:28px 48px;">
+          <td class="em-sec" style="background:#f7fafc;padding:28px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" class="em-stat" style="padding:0 8px;">
                   <div style="font-size:28px;">🏠</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">50+</p>
-                  <p style="color:#4a5568;font-size:12px;margin:0;">Kutya a menhelyen</p>
+                  <p style="color:#718096;font-size:12px;margin:0;">Kutya a menhelyen</p>
                 </td>
-                <td width="33%" align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
+                <td width="33%" align="center" class="em-stat" style="padding:0 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
                   <div style="font-size:28px;">❤️</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">200+</p>
-                  <p style="color:#4a5568;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
+                  <p style="color:#718096;font-size:12px;margin:0;">Sikeres örökbefogadás</p>
                 </td>
-                <td width="33%" align="center" style="padding:0 8px;">
+                <td width="33%" align="center" class="em-stat" style="padding:0 8px;">
                   <div style="font-size:28px;">⭐</div>
                   <p style="color:#1a202c;font-weight:800;font-size:20px;margin:4px 0 2px;">5★</p>
-                  <p style="color:#4a5568;font-size:12px;margin:0;">Értékelés</p>
+                  <p style="color:#718096;font-size:12px;margin:0;">Értékelés</p>
                 </td>
               </tr>
             </table>
@@ -653,7 +724,7 @@ app.post('/register', async (req, res) => {
 
         <!-- QUOTE -->
         <tr>
-          <td style="padding:0 48px 32px;">
+          <td style="padding:0 48px 32px;background:#f7fafc;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
@@ -667,9 +738,9 @@ app.post('/register', async (req, res) => {
 
         <!-- FOOTER -->
         <tr>
-          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
-            <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
-            <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          <td class="em-footer" style="background:#f7fafc;padding:28px 48px;text-align:center;">
+            <p style="color:#1a202c;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#718096;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
         </tr>
 
@@ -883,34 +954,40 @@ app.post('/api/adoption', async (req, res) => {
             html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" class="em-gbody" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 48px;text-align:center;">
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:40px 48px;text-align:center;">
             <div style="font-size:48px;margin-bottom:8px;">🐾</div>
-            <h1 style="color:#e94560;margin:0;font-size:26px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
-            <p style="color:#a0aec0;margin:6px 0 0;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Kutyamenhely · Admin Értesítő</p>
+            <h1 class="em-h1" style="color:#e94560;margin:0;font-size:26px;font-weight:800;letter-spacing:1px;">Robi &amp; Ricsi &amp; Norbi</h1>
+            <p style="color:#e2e8f0;margin:6px 0 0;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Kutyamenhely · Admin Értesítő</p>
           </td>
         </tr>
         <tr>
-          <td style="background:#e94560;padding:12px 48px;text-align:center;">
+          <td class="em-badge" style="background:#e94560;padding:12px 48px;text-align:center;">
             <p style="color:#fff;margin:0;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">🏠 Új Örökbefogadási Jelentkezés · #${result.insertId}</p>
           </td>
         </tr>
         <tr>
-          <td style="padding:40px 48px;">
+          <td class="em-body" style="padding:40px 48px;background-color:#ffffff;">
             <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td colspan="2" style="padding-bottom:20px;"><p style="margin:0;font-size:15px;color:#2d3748;">Egy új jelentkezés várakozik az elbírálásra. Az adatok alább olvashatók:</p></td></tr>
+              <tr><td colspan="2" style="padding-bottom:20px;"><p style="margin:0;font-size:15px;color:#4a5568;">Egy új jelentkezés várakozik az elbírálásra. Az adatok alább olvashatók:</p></td></tr>
               <!-- Szekció: Azonosítás -->
               <tr><td colspan="2" style="background:#f7fafc;border-radius:10px;padding:20px;border-left:4px solid #e94560;margin-bottom:16px;">
                 <p style="margin:0 0 12px;color:#c0392b;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">👤 Felhasználói Adatok</p>
                 <table width="100%">
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;width:160px;padding-bottom:8px;">Név</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${user.felhasznalonev}</td></tr>
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:8px;">Email</td><td style="padding-bottom:8px;"><a href="mailto:${user.email}" style="color:#c0392b;font-weight:700;text-decoration:none;">${user.email}</a></td></tr>
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;">Telefonszám</td><td style="color:#1a202c;font-weight:700;">${telefonszam}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;width:160px;padding-bottom:8px;">Név</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${user.felhasznalonev}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;padding-bottom:8px;">Email</td><td style="padding-bottom:8px;"><a href="mailto:${user.email}" style="color:#c0392b;font-weight:700;text-decoration:none;">${user.email}</a></td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;">Telefonszám</td><td style="color:#1a202c;font-weight:700;">${telefonszam}</td></tr>
                 </table>
               </td></tr>
               <tr><td colspan="2" style="height:12px;"></td></tr>
@@ -918,10 +995,10 @@ app.post('/api/adoption', async (req, res) => {
               <tr><td colspan="2" style="background:#f7fafc;border-radius:10px;padding:20px;border-left:4px solid #4c6ef5;">
                 <p style="margin:0 0 12px;color:#3b5bdb;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">📍 Lakcím &amp; Lakókörnyezet</p>
                 <table width="100%">
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;width:160px;padding-bottom:8px;">Cím</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${iranyitoszam} ${varos}, ${utcaHazszam}</td></tr>
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:8px;">Lakás típusa</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${lakasTipus}</td></tr>
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:8px;">Ingatlan típusa</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${ingatlanTipus}</td></tr>
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;">Kert</td><td style="color:#1a202c;font-weight:700;">${kert}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;width:160px;padding-bottom:8px;">Cím</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${iranyitoszam} ${varos}, ${utcaHazszam}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;padding-bottom:8px;">Lakás típusa</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${lakasTipus}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;padding-bottom:8px;">Ingatlan típusa</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${ingatlanTipus}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;">Kert</td><td style="color:#1a202c;font-weight:700;">${kert}</td></tr>
                 </table>
               </td></tr>
               <tr><td colspan="2" style="height:12px;"></td></tr>
@@ -929,18 +1006,18 @@ app.post('/api/adoption', async (req, res) => {
               <tr><td colspan="2" style="background:#f7fafc;border-radius:10px;padding:20px;border-left:4px solid #2f9e44;">
                 <p style="margin:0 0 12px;color:#2f9e44;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">🐕 Tapasztalat &amp; Egyéb</p>
                 <table width="100%">
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;width:160px;padding-bottom:8px;">Kutya tapasztalat</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${kutyaTapasztalat}</td></tr>
-                  <tr><td style="color:#4a5568;font-size:13px;font-weight:600;padding-bottom:8px;">Kutya ID</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${kutyaId || '—'}</td></tr>
-                  ${megjegyzes ? `<tr><td style="color:#4a5568;font-size:13px;font-weight:600;">Megjegyzés</td><td style="color:#1a202c;font-weight:700;">${megjegyzes}</td></tr>` : ''}
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;width:160px;padding-bottom:8px;">Kutya tapasztalat</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${kutyaTapasztalat}</td></tr>
+                  <tr><td style="color:#718096;font-size:13px;font-weight:600;padding-bottom:8px;">Kutya ID</td><td style="color:#1a202c;font-weight:700;padding-bottom:8px;">${kutyaId || '—'}</td></tr>
+                  ${megjegyzes ? `<tr><td style="color:#718096;font-size:13px;font-weight:600;">Megjegyzés</td><td style="color:#1a202c;font-weight:700;">${megjegyzes}</td></tr>` : ''}
                 </table>
               </td></tr>
             </table>
-            <p style="margin:24px 0 0;color:#4a5568;font-size:13px;text-align:center;">📅 Beérkezett: ${new Date().toLocaleString('hu-HU', {timeZone:'Europe/Budapest'})}</p>
+            <p style="margin:24px 0 0;color:#718096;font-size:13px;text-align:center;">📅 Beérkezett: ${new Date().toLocaleString('hu-HU', {timeZone:'Europe/Budapest'})}</p>
           </td>
         </tr>
         <tr>
-          <td style="background:#1a1a2e;padding:24px 48px;text-align:center;">
-            <p style="color:#a0aec0;font-size:12px;margin:0;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely &bull; Belső admin értesítő</p>
+          <td class="em-footer" style="background:#f7fafc;padding:24px 48px;text-align:center;">
+            <p style="color:#718096;font-size:12px;margin:0;">Robi &amp; Ricsi &amp; Norbi Kutyamenhely &bull; Belső admin értesítő</p>
           </td>
         </tr>
       </table>
@@ -958,41 +1035,47 @@ app.post('/api/adoption', async (req, res) => {
             html: `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" class="em-gbody" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
         <!-- HERO -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:56px 48px;text-align:center;">
-            <div style="font-size:72px;margin-bottom:16px;">🐕‍🦺</div>
-            <h1 style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Gratulálunk, ${user.felhasznalonev}!</h1>
-            <p style="color:#a0aec0;margin:12px 0 0;font-size:16px;">Örökbefogadási kérelmed sikeresen beérkezett! 🎉</p>
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:56px 48px;text-align:center;">
+            <div style="font-size:64px;margin-bottom:16px;">🐕‍🦺</div>
+            <h1 class="em-h1" style="color:#ffffff;margin:0;font-size:32px;font-weight:900;line-height:1.2;">Gratulálunk, ${user.felhasznalonev}!</h1>
+            <p style="color:#e2e8f0;margin:12px 0 0;font-size:16px;">Örökbefogadási kérelmed sikeresen beérkezett! 🎉</p>
           </td>
         </tr>
         <!-- PROGRESS -->
         <tr>
-          <td style="background:#0f3460;padding:20px 48px;">
+          <td class="em-prog" style="background:#1e3a8a;padding:20px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td align="center" width="25%">
+                <td align="center" width="25%" class="em-prog-cell">
                   <div style="width:36px;height:36px;border-radius:50%;background:#e94560;margin:0 auto 6px;">
                     <span style="color:#fff;font-size:18px;font-weight:900;line-height:36px;display:block;text-align:center;">✓</span>
                   </div>
-                  <p style="color:#ff8fa3;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Beérkezett</p>
+                  <p class="em-prog-label" style="color:#ff8fa3;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Beérkezett</p>
                 </td>
-                <td align="center" width="25%">
-                  <div style="width:36px;height:36px;border-radius:50%;background:transparent;margin:0 auto 6px;border:2px dashed #a0aec0;"></div>
-                  <p style="color:#a0aec0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Elbírálás</p>
+                <td align="center" width="25%" class="em-prog-cell">
+                  <div style="width:36px;height:36px;border-radius:50%;background:transparent;margin:0 auto 6px;border:2px dashed #90cdf4;"></div>
+                  <p class="em-prog-label" style="color:#e2e8f0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Elbírálás</p>
                 </td>
-                <td align="center" width="25%">
-                  <div style="width:36px;height:36px;border-radius:50%;background:transparent;margin:0 auto 6px;border:2px dashed #a0aec0;"></div>
-                  <p style="color:#a0aec0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Interjú</p>
+                <td align="center" width="25%" class="em-prog-cell">
+                  <div style="width:36px;height:36px;border-radius:50%;background:transparent;margin:0 auto 6px;border:2px dashed #90cdf4;"></div>
+                  <p class="em-prog-label" style="color:#e2e8f0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Interjú</p>
                 </td>
-                <td align="center" width="25%">
-                  <div style="width:36px;height:36px;border-radius:50%;background:transparent;margin:0 auto 6px;border:2px dashed #a0aec0;"></div>
-                  <p style="color:#a0aec0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Örökbefogadás!</p>
+                <td align="center" width="25%" class="em-prog-cell">
+                  <div style="width:36px;height:36px;border-radius:50%;background:transparent;margin:0 auto 6px;border:2px dashed #90cdf4;"></div>
+                  <p class="em-prog-label" style="color:#e2e8f0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;">Örökbefogadás!</p>
                 </td>
               </tr>
             </table>
@@ -1000,7 +1083,7 @@ app.post('/api/adoption', async (req, res) => {
         </tr>
         <!-- BODY -->
         <tr>
-          <td style="padding:48px;">
+          <td class="em-body" style="padding:48px;background-color:#ffffff;">
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Kedves <strong style="color:#1a202c;">${user.felhasznalonev}</strong>,</p>
             <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">Rögzítettük az örökbefogadási kérelmedet! Ez egy hatalmas és csodálatos lépés – köszönjük, hogy megnyitod a szívedet és az otthonod egy kutyus előtt. 🐾❤️</p>
             <!-- Info box -->
@@ -1022,30 +1105,30 @@ app.post('/api/adoption', async (req, res) => {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding-bottom:14px;">
-                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:16px;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef2ff;border-radius:10px;padding:16px;">
                     <tr>
                       <td width="40" style="font-size:24px;vertical-align:top;">1️⃣</td>
-                      <td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Kérelem átvizsgálása</strong><br><span style="color:#4a5568;font-size:13px;">Csapatunk 2-3 munkanapon belül felülvizsgálja a kérelmedet.</span></td>
+                      <td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Kérelem átvizsgálása</strong><br><span style="color:#718096;font-size:13px;">Csapatunk 2-3 munkanapon belül felülvizsgálja a kérelmedet.</span></td>
                     </tr>
                   </table>
                 </td>
               </tr>
               <tr>
                 <td style="padding-bottom:14px;">
-                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:16px;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef2ff;border-radius:10px;padding:16px;">
                     <tr>
                       <td width="40" style="font-size:24px;vertical-align:top;">2️⃣</td>
-                      <td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Telefonos egyeztetés</strong><br><span style="color:#4a5568;font-size:13px;">Felvesszük veled a kapcsolatot a megadott telefonszámon: <strong>${telefonszam}</strong></span></td>
+                      <td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Telefonos egyeztetés</strong><br><span style="color:#718096;font-size:13px;">Felvesszük veled a kapcsolatot a megadott telefonszámon: <strong>${telefonszam}</strong></span></td>
                     </tr>
                   </table>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:10px;padding:16px;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef2ff;border-radius:10px;padding:16px;">
                     <tr>
                       <td width="40" style="font-size:24px;vertical-align:top;">3️⃣</td>
-                      <td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Személyes találkozó</strong><br><span style="color:#4a5568;font-size:13px;">Megismerkedsz a leendő kutyusoddal a menhelyen! 🐕</span></td>
+                      <td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Személyes találkozó</strong><br><span style="color:#718096;font-size:13px;">Megismerkedsz a leendő kutyusoddal a menhelyen! 🐕</span></td>
                     </tr>
                   </table>
                 </td>
@@ -1068,9 +1151,9 @@ app.post('/api/adoption', async (req, res) => {
         </tr>
         <!-- FOOTER -->
         <tr>
-          <td style="background:#1a1a2e;padding:32px 48px;text-align:center;">
-            <p style="color:#ffffff;font-size:16px;font-weight:700;margin:0 0 8px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
-            <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          <td class="em-footer" style="background:#f7fafc;padding:32px 48px;text-align:center;">
+            <p style="color:#1a202c;font-size:16px;font-weight:700;margin:0 0 8px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#718096;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
         </tr>
       </table>
@@ -1184,10 +1267,10 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
 
       const stepStyle = (active) => active
         ? `width:36px;height:36px;border-radius:50%;background:#e94560;margin:0 auto 6px;`
-        : `width:36px;height:36px;border-radius:50%;background:transparent;border:2px dashed #a0aec0;margin:0 auto 6px;`;
+        : `width:36px;height:36px;border-radius:50%;background:transparent;border:2px dashed #90cdf4;margin:0 auto 6px;`;
       const stepText = (active) => active
         ? `color:#ff8fa3;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;`
-        : `color:#a0aec0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;`;
+        : `color:#e2e8f0;font-size:11px;font-weight:700;margin:4px 0 0;text-transform:uppercase;`;
       const checkMark = (active) => active
         ? `<span style="color:#fff;font-size:18px;font-weight:900;line-height:36px;display:block;text-align:center;">✓</span>` : '';
 
@@ -1196,7 +1279,7 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
 
       const progressHTML = `
         <tr>
-          <td style="background:#0f3460;padding:20px 48px;">
+          <td class="em-prog" style="background:#1e3a8a;padding:20px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" width="25%">
@@ -1244,8 +1327,8 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
               <p style="color:#fff;font-size:14px;font-weight:800;margin:0 0 8px;letter-spacing:1px;text-transform:uppercase;">📞 Következő lépés</p>
               <p style="color:rgba(255,255,255,0.9);font-size:15px;margin:0;line-height:1.6;">Hamarosan felhívjuk a <strong>${r.telefonszam}</strong> telefonszámodat, hogy egyeztessük az interjú időpontját. Kérjük, tartsd kézben a telefont! 😊</p>
             </td></tr></table>
-            <table width="100%" cellpadding="0" cellspacing="0"><tr><td style="background:#f7fafc;border-radius:10px;padding:16px;"><table width="100%">
-              <tr><td width="40" style="font-size:24px;vertical-align:top;">🐕</td><td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Kutya: ${r.kutya_nev || 'Még nem kiválasztott'}</strong><br><span style="color:#4a5568;font-size:13px;">A látogatás során személyesen találkozhatsz leendő társaddal!</span></td></tr>
+            <table width="100%" cellpadding="0" cellspacing="0"><tr><td style="background:#eef2ff;border-radius:10px;padding:16px;"><table width="100%">
+              <tr><td width="40" style="font-size:24px;vertical-align:top;">🐕</td><td style="vertical-align:top;"><strong style="color:#1a202c;font-size:14px;">Kutya: ${r.kutya_nev || 'Még nem kiválasztott'}</strong><br><span style="color:#718096;font-size:13px;">A látogatás során személyesen találkozhatsz leendő társaddal!</span></td></tr>
             </table></td></tr></table>`
         },
         elfogadva: {
@@ -1276,7 +1359,7 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
             <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;"><tr><td style="background:#f3f4f6;border-radius:12px;padding:24px;border-left:4px solid #6b7280;">
               <p style="color:#374151;font-size:15px;margin:0;line-height:1.7;">Sajnálatos módon ezúttal a <strong>#${r.id}</strong> azonosítójú kérelmedet nem tudtuk elfogadni. Ez nem jelenti azt, hogy a jövőben ne próbálkozhatnál újra, vagy ne segíthetnél más módon – például önkéntesként nálunk! 🐾</p>
             </td></tr></table>
-            <p style="color:#4a5568;font-size:15px;line-height:1.8;margin:0;">Ha kérdésed van, keress minket bátran! Minden megkeresésre válaszolunk.</p>`
+            <p style="color:#718096;font-size:15px;line-height:1.8;margin:0;">Ha kérdésed van, keress minket bátran! Minden megkeresésre válaszolunk.</p>`
         }
       };
 
@@ -1286,25 +1369,31 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
       const htmlEmail = `
 <!DOCTYPE html>
 <html lang="hu">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  ${EMAIL_CSS}
+</head>
+<body bgcolor="#0d1117" style="margin:0;padding:0;background:#0d1117;background-color:#0d1117;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" class="em-wrap" style="background:#0d1117;background-color:#0d1117;padding:32px 0;">
+    <tr><td align="center" style="padding:0 12px;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="em-card" style="background:#ffffff;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:100%;max-width:600px;">
         <tr>
-          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px;text-align:center;">
+          <td class="em-hero" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#2563eb 100%);padding:48px;text-align:center;">
             <div style="font-size:64px;margin-bottom:12px;">${cfg.emoji}</div>
-            <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:900;line-height:1.2;">${cfg.title}</h1>
-            <p style="color:#a0aec0;margin:10px 0 0;font-size:15px;">${cfg.subtitle}</p>
+            <h1 class="em-h1" style="color:#ffffff;margin:0;font-size:28px;font-weight:900;line-height:1.2;">${cfg.title}</h1>
+            <p style="color:#e2e8f0;margin:10px 0 0;font-size:15px;">${cfg.subtitle}</p>
           </td>
         </tr>
-        <tr><td style="background:${cfg.badge};padding:10px 48px;text-align:center;">
+        <tr><td class="em-badge" style="background:${cfg.badge};padding:10px 48px;text-align:center;">
           <p style="color:#fff;margin:0;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">${cfg.badgeText}</p>
         </td></tr>
         ${progressHTML}
-        <tr><td style="padding:40px 48px;">${cfg.body}</td></tr>
+        <tr><td class="em-body" style="padding:40px 48px;background-color:#ffffff;">${cfg.body}</td></tr>
         <tr>
-          <td style="background:#f7fafc;padding:28px 48px;">
+          <td class="em-sec" style="background:#f7fafc;padding:28px 48px;">
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
               <td style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:24px;text-align:center;">
                 <p style="color:#fff;font-size:16px;font-weight:700;margin:0;line-height:1.6;">"Egy kutya a legjobb barát,<br>akit valaha kaphatsz." 🐾</p>
@@ -1314,9 +1403,9 @@ app.put('/api/adoption/:id/status', isAdmin, async (req, res) => {
           </td>
         </tr>
         <tr>
-          <td style="background:#1a1a2e;padding:28px 48px;text-align:center;">
-            <p style="color:#ffffff;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
-            <p style="color:#a0aec0;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
+          <td class="em-footer" style="background:#f7fafc;padding:28px 48px;text-align:center;">
+            <p style="color:#1a202c;font-size:15px;font-weight:700;margin:0 0 6px;">🐾 Robi &amp; Ricsi &amp; Norbi Kutyamenhely</p>
+            <p style="color:#718096;font-size:12px;margin:0;">Ez egy automatikus értesítő email. Kérjük, ne válaszolj erre az üzenetre.</p>
           </td>
         </tr>
       </table>
@@ -1381,6 +1470,38 @@ app.delete('/api/admin/users/:id', isAdmin, (req, res) => {
       db.query('SET FOREIGN_KEY_CHECKS = 1'); // mindig visszakapcsoljuk
       if (err) return res.status(500).json({ error: 'Adatbázis hiba: ' + err.message });
       res.json({ success: true, message: 'Felhasználó sikeresen törölve.' });
+    });
+  });
+});
+
+// --- Örökbefogadás törlése (felhasználó: saját nem-elfogadott; admin: bármelyik) ---
+app.delete('/api/adoption/:id', (req, res) => {
+  const { id } = req.params;
+  const userId   = req.session.userId || req.session.felhasznalo_id;
+  const isAdminU = req.session.szerepkor === 'admin';
+
+  if (!userId && !isAdminU) {
+    return res.status(401).json({ error: 'Bejelentkezés szükséges!' });
+  }
+
+  db.query('SELECT id, felhasznalo_id, statusz FROM orokbefogadasok WHERE id = ?', [id], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Adatbázis hiba!' });
+    if (!rows.length) return res.status(404).json({ error: 'Kérelem nem található.' });
+
+    const adoption = rows[0];
+
+    if (!isAdminU) {
+      if (adoption.felhasznalo_id !== userId) {
+        return res.status(403).json({ error: 'Nincs jogosultságod ehhez!' });
+      }
+      if (adoption.statusz === 'elfogadva') {
+        return res.status(403).json({ error: 'Elfogadott kérelmet nem lehet visszavonni.' });
+      }
+    }
+
+    db.query('DELETE FROM orokbefogadasok WHERE id = ?', [id], (err2) => {
+      if (err2) return res.status(500).json({ error: 'Adatbázis hiba!' });
+      res.json({ success: true, message: 'Kérelem sikeresen törölve.' });
     });
   });
 });
