@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Örökbefogadási Feltételek – Kutyamenhely</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="img/logo2.png">
+    <link rel="stylesheet" href="reg.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="profil-page">
+
+    <header>
+        <nav>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn"><i class="fas fa-bars"></i></label>
+            <label class="logo">
+                <a href="index.html"><img src="img/logo2.png" alt="" style="margin-top:13px"></a>
+            </label>
+            <ul>
+                <li><a href="index.html">Főoldal</a></li>
+                <li><a href="index.html#kutyaink">Kutyáink</a></li>
+                <li><a href="index.html#ricsirobinorbi">Rólunk</a></li>
+                <li><a href="index.html#visszajelzesek">Visszajelzések</a></li>
+                <li><a href="index.html#elerheto">Elérhetőségek</a></li>
+                <li id="adminNavItem" style="display:none;"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
+                <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
+                <li id="profileNavItem" style="display:none; vertical-align:middle;">
+                    <img id="profileIcon" src="img/profilok/blank-profile-picture-973460_640.webp"
+                         style="width:50px;height:50px;border-radius:50%;cursor:pointer;border:2px solid #f0f0f0;object-fit:cover;margin-left:15px;">
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+
+<div class="content-wrapper">
+
+    <!-- Gyorsnézet -->
+    <div class="quick-summary">
+        <h2><i class="fas fa-list-check" style="margin-right:6px;"></i>Feltételek összefoglalója</h2>
+        <ul>
+            <li><i class="fas fa-check-circle"></i> Minimum 18 éves kor</li>
+            <li><i class="fas fa-check-circle"></i> Állandó lakcím Magyarországon</li>
+            <li><i class="fas fa-check-circle"></i> Háztartás összes tagjának beleegyezése</li>
+            <li><i class="fas fa-check-circle"></i> Megfelelő életkörülmények biztosítása</li>
+            <li><i class="fas fa-check-circle"></i> Rendszeres állatorvosi ellátás vállalása</li>
+            <li><i class="fas fa-check-circle"></i> Utógondozási látogatás elfogadása</li>
+        </ul>
+    </div>
+
+    <!-- Fontos figyelmeztetés -->
+    <div class="alert-box">
+        <i class="fas fa-triangle-exclamation"></i>
+        <p>Az örökbefogadás egy életre szóló elköteleződés. Győződj meg arról, hogy készen állsz arra, hogy a kutyádat élete végéig szerető otthont biztosíts neki – jóban, rosszban.</p>
+    </div>
+
+    <!-- 1. Általános feltételek -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-file-contract"></i></div>
+            <h2>1. Általános feltételek</h2>
+        </div>
+        <div class="section-body">
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> Az örökbefogadónak elmúlt <strong>18 évesnek</strong> kell lennie.</li>
+                <li><i class="fas fa-circle-dot"></i> Magyarországi <strong>állandó lakcímmel</strong> kell rendelkezni.</li>
+                <li><i class="fas fa-circle-dot"></i> A kérelemhez <strong>személyazonosság igazolása</strong> szükséges (személyi igazolvány vagy útlevél).</li>
+                <li><i class="fas fa-circle-dot"></i> A háztartásban élő <strong>összes felnőtt személy beleegyezése</strong> szükséges az örökbefogadáshoz.</li>
+                <li><i class="fas fa-circle-dot"></i> Ha bérelt ingatlanban laksz, a <strong>bérbeadó engedélye</strong> szükséges állattartáshoz.</li>
+                <li><i class="fas fa-circle-dot"></i> Az örökbefogadó köteles <strong>valós adatokat</strong> megadni a kérelemben – hamis információ megadása az örökbefogadás azonnali visszavonásával jár.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 2. Az otthon és a körülmények -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-house"></i></div>
+            <h2>2. Az otthon és az életkörülmények</h2>
+        </div>
+        <div class="section-body">
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> A kutyának <strong>megfelelő méretű, biztonságos életteret</strong> kell biztosítani – nem tartható folyamatosan ketrecben vagy láncon.</li>
+                <li><i class="fas fa-circle-dot"></i> Ha kert is tartozik az ingatlanhoz, azt <strong>biztonságos, stabil kerítéssel</strong> kell körbevenni, amelyből a kutya nem tud kiszabadulni.</li>
+                <li><i class="fas fa-circle-dot"></i> A lakásban tartott kutyának <strong>rendszeres, napi többszöri sétát</strong> kell biztosítani.</li>
+                <li><i class="fas fa-circle-dot"></i> A kutyának folyamatosan hozzáférhetőnek kell lennie <strong>friss ivóvízhez</strong>.</li>
+                <li><i class="fas fa-circle-dot"></i> A kutya nem maradhat egyedül <strong>8 óránál hosszabb ideig</strong> rendszeres jelleggel.</li>
+            </ul>
+            <div class="highlight-text">
+                <i class="fas fa-leaf" style="margin-right:6px;"></i>
+                A menhely jogosult az örökbefogadás előtt <strong>helyszíni megtekintést</strong> javasolni, hogy meggyőződjön a körülmények megfelelőségéről.
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Egészségügyi kötelezettségek -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-stethoscope"></i></div>
+            <h2>3. Egészségügyi kötelezettségek</h2>
+        </div>
+        <div class="section-body">
+            <p>Az örökbe adott kutyák a menhely által alapvizsgálaton, oltásokon és (kor szerint) ivartalanításon esnek át, azonban az örökbefogadónak a következőket kell vállalnia:</p>
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> <strong>Éves védőoltások</strong> és kötelező szűrővizsgálatok elvégeztetése.</li>
+                <li><i class="fas fa-circle-dot"></i> <strong>Rendszeres bolha-, kullancs- és féreghajtókezelés</strong> (legalább évente 4 alkalommal).</li>
+                <li><i class="fas fa-circle-dot"></i> Betegség vagy sérülés esetén <strong>haladéktalan állatorvosi ellátás</strong> biztosítása.</li>
+                <li><i class="fas fa-circle-dot"></i> A kutya <strong>microchipjének és tenyésztési könyvének</strong> (ha van) megőrzése.</li>
+                <li><i class="fas fa-circle-dot"></i> Ivartalanítás elvégeztetése, ha a menhely által kiadott kutya még nem volt ivartalanítva <span class="badge-note">kötelező 6 hónapon belül</span>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 4. Viselkedés és képzés -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h2>4. Viselkedés és nevelés</h2>
+        </div>
+        <div class="section-body">
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> Az örökbefogadó köteles a kutyát <strong>türelemmel, pozitív megerősítéssel nevelni</strong> – fizikai büntetés alkalmazása tilos és az örökbefogadás azonnali visszavonásával jár.</li>
+                <li><i class="fas fa-circle-dot"></i> Problémaviselkedés esetén az örökbefogadó köteles <strong>szakképzett kutyaoktatót felkeresni</strong> – a kutyát nem adhatja vissza csak azért, mert „nehéz".</li>
+                <li><i class="fas fa-circle-dot"></i> Nyilvános helyen a kutya <strong>mindig pórázon vezetve</strong> kell legyen, kivéve kijelölt szabadon futó területeket.</li>
+                <li><i class="fas fa-circle-dot"></i> A kutya <strong>megfelelő szocializálásáról</strong> gondoskodni kell (más állatok, emberek, különböző helyszínek).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 5. Visszavonás és visszaadás -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-arrows-rotate"></i></div>
+            <h2>5. Visszaadás, visszavonás</h2>
+        </div>
+        <div class="section-body">
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> Ha az örökbefogadó <strong>bármilyen okból nem tudja tovább tartani</strong> a kutyát, köteles azt elsőként a menhelynek visszaadni – harmadik félnek nem adható tovább önkényesen.</li>
+                <li><i class="fas fa-circle-dot"></i> A menhely jogosult az örökbefogadást <strong>visszavonni</strong>, ha az örökbefogadó megsérti a feltételeket, elhanyagolja vagy rosszul bánik az állattal.</li>
+                <li><i class="fas fa-circle-dot"></i> Visszavonás esetén a kutyát <strong>haladéktalanul vissza kell szolgáltatni</strong> a menhelynek, és az örökbefogadással kapcsolatos díjak nem kerülnek visszatérítésre.</li>
+                <li><i class="fas fa-circle-dot"></i> Visszaadás esetén a menhely <strong>nem számít fel külön díjat</strong>, de elvárja az állat megfelelő állapotban való visszaszolgáltatását.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 6. Utógondozás -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-heart"></i></div>
+            <h2>6. Utógondozás és ellenőrzés</h2>
+        </div>
+        <div class="section-body">
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> Az örökbefogadást követő <strong>30 napon</strong> belül a menhely kapcsolatba lép az örökbefogadóval az állat beilleszkedéséről.</li>
+                <li><i class="fas fa-circle-dot"></i> Az örökbefogadónak vállalnia kell, hogy az örökbefogadástól számított <strong>1 éven belül</strong> lehetővé teszi a menhely munkatársainak egy ellenőrző látogatást.</li>
+                <li><i class="fas fa-circle-dot"></i> Az örökbefogadó szívesen látott tagja a <strong>menhely online közösségének</strong>, ahol tapasztalatait megoszthatja másokkal.</li>
+                <li><i class="fas fa-circle-dot"></i> Kérdés vagy probléma esetén a menhely <strong>tanácsadással és támogatással</strong> áll rendelkezésre.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 7. Díjak -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-coins"></i></div>
+            <h2>7. Örökbefogadási díj</h2>
+        </div>
+        <div class="section-body">
+            <p>Az örökbefogadási díj a menhely fenntartásához és a többi kutya ellátásához járul hozzá. A díj a következőket fedezi:</p>
+            <ul>
+                <li><i class="fas fa-circle-dot"></i> Alapvizsgálat, szükséges <strong>oltások és kezelések</strong> költsége.</li>
+                <li><i class="fas fa-circle-dot"></i> <strong>Microchip</strong> behelyezése (ha még nem volt).</li>
+                <li><i class="fas fa-circle-dot"></i> <strong>Ivartalanítás</strong> (ha a kutya kora azt lehetővé teszi).</li>
+                <li><i class="fas fa-circle-dot"></i> Átmeneti <strong>ellátás és gondozás</strong> a menhelyen töltött idő alatt.</li>
+            </ul>
+            <div class="highlight-text">
+                <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                A pontos díjakról érdeklődjetek közvetlenül a menhelynél – a díj mértéke az egyes kutyák körülményeitől és korától függ.
+            </div>
+        </div>
+    </div>
+
+    <!-- Elérhetőség blokk -->
+    <div class="contact-block">
+        <h3>🐕 Kérdésed van?</h3>
+        <p>Ne habozz kapcsolatba lépni velünk – örömmel segítünk mindenben!</p>
+        <div class="contact-links">
+            <a href="tel:+36303249866" class="contact-link">
+                <i class="fas fa-phone"></i> +36 30 324 9866
+            </a>
+            <a href="mailto:kirajok69@gmail.com" class="contact-link">
+                <i class="fas fa-envelope"></i> kirajok69@gmail.com
+            </a>
+            <a href="index.html" class="contact-link">
+                <i class="fas fa-arrow-left"></i> Vissza a főoldalra
+            </a>
+        </div>
+    </div>
+
+</div>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="elerheto">
+        <div class="container">
+            <div class="nemtudom">
+                <div class="footer-col">
+                    <h4>Elérhetőségek</h4>
+                    <p>
+                        <b>Telefonszám:</b> <a href="tel:+36303249866">+36 30 324 9866</a><br>
+                        <b>E-mail:</b> <a href="mailto:kirajok69@gmail.com">kirajok69@gmail.com</a><br>
+                        <b>Cím:</b> 1171 Budapest, Csordakút utca vége
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Kövess minket</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/profile.php?id=100013403523353"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com/elonmusk"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/szentprichie/"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="responsive-map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2698.544431786523!2d19.293!3d47.47!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDfCsDI4JzEyLjAiTiAxOcKwMTcnMzQuOCJF!5e0!3m2!1shu!2shu!4v1630000000000!5m2!1shu!2shu"
+                            width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="java.js"></script>
+</body>
+</html>
