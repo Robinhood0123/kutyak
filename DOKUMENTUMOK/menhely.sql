@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1:3307
--- Létrehozás ideje: 2026. Már 25. 10:04
+-- Létrehozás ideje: 2026. Feb 25. 18:00
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -20,7 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `menhely`
 --
-
+CREATE DATABASE IF NOT EXISTS `menhely` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `menhely`;
 -- --------------------------------------------------------
 
 --
@@ -161,6 +162,8 @@ CREATE TABLE `orokbefogadasok` (
   `ingatlan_tipus` varchar(50) DEFAULT NULL,
   `kert` varchar(10) DEFAULT NULL,
   `kutya_tapasztalat` varchar(10) DEFAULT NULL,
+  `allatok` text DEFAULT NULL,
+  `csalad_tagok` int(11) DEFAULT NULL,
   `statusz` enum('folyamatban','elbiralt','interju','elfogadva','elutasitva') DEFAULT 'folyamatban',
   `letrehozva` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -169,8 +172,8 @@ CREATE TABLE `orokbefogadasok` (
 -- A tábla adatainak kiíratása `orokbefogadasok`
 --
 
-INSERT INTO `orokbefogadasok` (`id`, `felhasznalo_id`, `kutya_id`, `telefonszam`, `iranyitoszam`, `varos`, `utca_hazszam`, `lakas_tipus`, `ingatlan_tipus`, `kert`, `kutya_tapasztalat`, `statusz`, `letrehozva`) VALUES
-(3, 8, 61, '06202222222', '1108', 'Budapest', 'Kiraly utca 61', 'panel', 'sajat', 'nincs', 'igen', 'folyamatban', '2026-02-25 09:55:54');
+INSERT INTO `orokbefogadasok` (`id`, `felhasznalo_id`, `kutya_id`, `telefonszam`, `iranyitoszam`, `varos`, `utca_hazszam`, `lakas_tipus`, `ingatlan_tipus`, `kert`, `kutya_tapasztalat`, `allatok`, `csalad_tagok`, `statusz`, `letrehozva`) VALUES
+(3, 8, 61, '06202222222', '1108', 'Budapest', 'Kiraly utca 61', 'panel', 'sajat', 'nincs', 'igen', NULL, NULL, 'folyamatban', '2026-02-25 09:55:54');
 
 -- --------------------------------------------------------
 
