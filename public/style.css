@@ -1646,7 +1646,7 @@ body.profil-page { padding-top: 100px !important; }
 .content-wrapper {
     max-width: 860px;
     margin: 0 auto;
-    padding: 120px 20px 60px; /* 120px felső padding a fix header miatt */
+    padding: 20px 20px 60px; /* feljebb húzva a navbarhoz közelebb */
 }
 
 .quick-summary {
@@ -1734,7 +1734,7 @@ body.profil-page { padding-top: 100px !important; }
 .highlight-text { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 0.9rem; color: #166534; font-weight: 600; margin-top: 12px; line-height: 1.7; }
 
 @media (max-width: 576px) {
-    .content-wrapper { padding: 110px 14px 40px; }
+    .content-wrapper { padding: 95px 14px 40px; }
     .section-header, .section-body { padding: 16px; }
     .contact-block { padding: 24px 16px; }
     .section-body ul li { font-size: 0.88rem; }
