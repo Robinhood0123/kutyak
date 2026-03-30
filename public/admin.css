@@ -336,7 +336,6 @@
 
 /* ===== MOBILE CARD ROWS for adoption/user tables ===== */
 @media (max-width: 600px) {
-  /* Hide standard table layout, switch to card rows */
   .adoptions-table-wrap {
     overflow-x: hidden;
   }
@@ -344,67 +343,107 @@
   .adoptions-table {
     min-width: unset;
     width: 100%;
+    display: block;
   }
 
   .adoptions-table thead {
     display: none;
   }
 
-  .adoptions-table tbody tr {
+  .adoptions-table tbody {
     display: block;
-    border: 1px solid #ffffff;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    padding: 14px;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   }
 
+  /* Reset zebra in card mode */
+  .adoptions-table tbody tr:nth-child(even) {
+    background: #fff;
+  }
+
+  /* Each row = a card */
+  .adoptions-table tbody tr {
+    display: block;
+    border: 1px solid #e4e8f0;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+
+  /* Data rows: label above, value below */
   .adoptions-table tbody td {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 6px 0;
+    display: block;
+    padding: 5px 0;
     border: none;
     font-size: 0.88rem;
   }
 
   .adoptions-table tbody td::before {
+    display: block;
     content: attr(data-label);
     font-weight: 700;
-    color: #ffffff;
-    min-width: 90px;
-    flex-shrink: 0;
-    font-size: 0.78rem;
+    color: #aaa;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    padding-top: 2px;
+    letter-spacing: 0.06em;
+    margin-bottom: 2px;
   }
 
-  .action-cell {
-    flex-direction: column;
-    align-items: stretch;
+  /* Action cell: separator + stacked controls */
+  .adoptions-table tbody td.action-cell {
+    display: block;
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px solid #eef0f4;
   }
 
-  .action-cell .status-select,
-  .action-cell .btn-send-status,
-  .action-cell .btn-delete-adopt,
-  .action-cell .btn-delete-user {
+  .adoptions-table tbody td.action-cell::before {
+    margin-bottom: 10px;
+  }
+
+  /* Override desktop flex on action-cell — stack vertically */
+  .adoptions-table .action-cell {
+    display: block !important;
+    min-width: unset;
+  }
+
+  .adoptions-table .action-cell .status-select {
+    display: block;
     width: 100%;
-    box-sizing: border-box;
+    margin-bottom: 8px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .adoptions-table .action-cell .btn-send-status,
+  .adoptions-table .action-cell .btn-delete-adopt,
+  .adoptions-table .action-cell .btn-delete-user {
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .adoptions-table .action-cell .btn-delete-adopt,
+  .adoptions-table .action-cell .btn-delete-user {
+    margin-bottom: 0;
   }
 
   .date-cell {
     white-space: normal;
   }
+
+  /* User info cell keeps row layout */
+  .user-info-cell {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
 }
 
 /* ===== DESIGN POLISH ===== */
-
-/* Admin body background */
-body.admin-body {
-  background: #ffffff;
-}
 
 /* Section heading improvement */
 .adoptions-card h2,
