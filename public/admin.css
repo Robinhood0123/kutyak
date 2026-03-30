@@ -1,3 +1,35 @@
+/* ===== ADMIN SECTION TOP PADDING (fix navbar overlap) ===== */
+.admin-section {
+  padding-top: 120px !important;
+  padding-bottom: 40px;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+@media (max-width: 768px) {
+  .admin-section {
+    padding-top: 110px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: 28px;
+  }
+}
+
+/* ===== FORM POLISH ===== */
+.feedback-card {
+  padding: 32px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.10) !important;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+@media (max-width: 576px) {
+  .feedback-card {
+    padding: 20px !important;
+  }
+}
+
 /* A kártya és az inputok alapstílusa */
     .feedback-card input, 
     .feedback-card select {
@@ -302,12 +334,176 @@
   }
 }
 
-@media (max-width: 480px) {
-  .adoptions-table thead th:nth-child(4),
-  .adoptions-table tbody td:nth-child(4),
-  .adoptions-table thead th:nth-child(5),
-  .adoptions-table tbody td:nth-child(5) {
+/* ===== MOBILE CARD ROWS for adoption/user tables ===== */
+@media (max-width: 600px) {
+  /* Hide standard table layout, switch to card rows */
+  .adoptions-table-wrap {
+    overflow-x: hidden;
+  }
+
+  .adoptions-table {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .adoptions-table thead {
     display: none;
+  }
+
+  .adoptions-table tbody tr {
+    display: block;
+    border: 1px solid #ffffff;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    padding: 14px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  .adoptions-table tbody td {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    border: none;
+    font-size: 0.88rem;
+  }
+
+  .adoptions-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #ffffff;
+    min-width: 90px;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding-top: 2px;
+  }
+
+  .action-cell {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-cell .status-select,
+  .action-cell .btn-send-status,
+  .action-cell .btn-delete-adopt,
+  .action-cell .btn-delete-user {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .date-cell {
+    white-space: normal;
   }
 }
 
+/* ===== DESIGN POLISH ===== */
+
+/* Admin body background */
+body.admin-body {
+  background: #ffffff;
+}
+
+/* Section heading improvement */
+.adoptions-card h2,
+.feedback-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* Table header gradient improvement */
+.adoptions-table thead {
+  background: linear-gradient(135deg, #0057d9, #007bff) !important;
+}
+
+/* Stripe rows */
+.adoptions-table tbody tr:nth-child(even) {
+  background: #f8faff;
+}
+
+/* Adoption cards spacing */
+.adoptions-section .feedback-card {
+  max-width: 100%;
+}
+
+/* Users message */
+#users-msg {
+  display: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+#users-msg.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+#users-msg.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Buttons consistent look */
+.btn-send-status {
+  background: linear-gradient(135deg, #0057d9, #007bff) !important;
+  transition: transform 0.15s, opacity 0.2s !important;
+}
+.btn-send-status:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 1 !important;
+  filter: brightness(1.08);
+}
+
+.btn-delete-adopt,
+.btn-delete-user {
+  transition: transform 0.15s, opacity 0.2s;
+}
+.btn-delete-adopt:hover,
+.btn-delete-user:hover {
+  transform: translateY(-1px);
+  opacity: 1 !important;
+  filter: brightness(1.08);
+}
+
+/* Form submit button */
+#kutyaForm .btn-primary,
+#kutyaForm button[type="submit"] {
+  background: linear-gradient(135deg, #0057d9, #007bff);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s, filter 0.15s;
+}
+#kutyaForm .btn-primary:hover,
+#kutyaForm button[type="submit"]:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Medical data block styling */
+.form-row.border {
+  border-radius: 12px !important;
+  border-color: #d0e0ff !important;
+  background: #f0f6ff !important;
+}
+
+/* File input */
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  font-size: 0.92rem;
+}
+
+/* Section gap between admin cards */
+.admin-section + .admin-section {
+  padding-top: 0 !important;
+}

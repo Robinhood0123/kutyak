@@ -367,14 +367,14 @@
         ).join('');
 
         return `<tr>
-          <td><strong>#${a.id}</strong></td>
-          <td><strong>${a.felhasznalonev}</strong><br><small>${a.email}</small></td>
-          <td>${a.kutya_nev || '—'}</td>
-          <td>${a.varos || '—'}</td>
-          <td>${a.telefonszam || '—'}</td>
-          <td class="date-cell">${formatDate(a.letrehozva)}</td>
-          <td><span class="badge-statusz badge-${a.statusz}">${statusLabels[a.statusz] || a.statusz}</span></td>
-          <td class="action-cell">
+          <td data-label="#"><strong>#${a.id}</strong></td>
+          <td data-label="Jelentkező"><strong>${a.felhasznalonev}</strong><br><small>${a.email}</small></td>
+          <td data-label="Kutya">${a.kutya_nev || '—'}</td>
+          <td data-label="Város">${a.varos || '—'}</td>
+          <td data-label="Telefon">${a.telefonszam || '—'}</td>
+          <td class="date-cell" data-label="Beadva">${formatDate(a.letrehozva)}</td>
+          <td data-label="Státusz"><span class="badge-statusz badge-${a.statusz}">${statusLabels[a.statusz] || a.statusz}</span></td>
+          <td class="action-cell" data-label="Műveletek">
             <select class="status-select" id="sel-${a.id}">${opts}</select>
             <button class="btn-send-status" onclick="sendStatus(${a.id})">📧 Küldés</button>
             <button class="btn-delete-adopt" onclick="deleteAdoption(${a.id})">🗑️ Törlés</button>
@@ -505,8 +505,8 @@
           : `<div class="user-avatar-placeholder">${(u.felhasznalonev || '?')[0].toUpperCase()}</div>`;
 
         return `<tr>
-          <td><strong>#${u.felhasznalo_id}</strong></td>
-          <td>
+          <td data-label="#"><strong>#${u.felhasznalo_id}</strong></td>
+          <td data-label="Felhasználó">
             <div class="user-info-cell">
               ${avatar}
               <div>
@@ -515,11 +515,11 @@
               </div>
             </div>
           </td>
-          <td><span class="badge-statusz ${roleBadgeClass[u.szerepkor] || ''}">${roleLabels[u.szerepkor] || u.szerepkor}</span></td>
-          <td>
+          <td data-label="Szerepkör"><span class="badge-statusz ${roleBadgeClass[u.szerepkor] || ''}">${roleLabels[u.szerepkor] || u.szerepkor}</span></td>
+          <td data-label="Új szerepkör">
             <select class="status-select" id="role-sel-${u.felhasznalo_id}" ${isSelf ? 'disabled' : ''}>${opts}</select>
           </td>
-          <td class="action-cell">
+          <td class="action-cell" data-label="Műveletek">
             <button class="btn-send-status" onclick="saveRole(${u.felhasznalo_id})" ${isSelf ? 'disabled' : ''}>💾 Mentés</button>
             <button class="btn-delete-user" onclick="deleteUser(${u.felhasznalo_id}, '${u.felhasznalonev}')" ${isSelf ? 'disabled' : ''}>🗑️ Törlés</button>
           </td>
