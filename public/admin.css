@@ -1,4 +1,3 @@
-/* ===== ADMIN SECTION TOP PADDING (fix navbar overlap) ===== */
 .admin-section {
   padding-top: 120px !important;
   padding-bottom: 40px;
@@ -15,7 +14,7 @@
   }
 }
 
-/* ===== FORM POLISH ===== */
+/* ===== FORM DIZÁJN ===== */
 .feedback-card {
   padding: 32px !important;
   border-radius: 16px !important;
@@ -30,19 +29,16 @@
   }
 }
 
-/* A kártya és az inputok alapstílusa */
     .feedback-card input, 
     .feedback-card select {
-        height: 45px !important; /* Egységes magasság */
+        height: 45px !important;
     }
 
-    /* Select2 tároló szélessége */
     .select2-container {
         display: block;
         width: 100% !important;
     }
 
-    /* A Select2 látható dobozának javítása (Bootstrap 4 téma mellett) */
     .select2-container--bootstrap4 .select2-selection--single {
         height: 45px !important;
         line-height: 45px !important;
@@ -53,13 +49,11 @@
         border-radius: 0.25rem !important;
     }
 
-    /* A szöveg pozícionálása a keresőben */
     .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
         line-height: 45px !important;
         padding-left: 0 !important;
     }
 
-    /* A kis nyíl (dropdown arrow) középre igazítása */
     .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
         height: 43px !important;
     }
@@ -70,7 +64,7 @@
         border: 1px solid #ddd;
         border-radius: 8px;
         font-size: 15px;
-        resize: vertical; /* Csak függőlegesen lehessen nyújtani */
+        resize: vertical;
         min-height: 100px;
     }
     
@@ -80,7 +74,7 @@
         outline: none;
     }
 
-/* ===== ADOPTIONS SECTION ===== */
+/* ===== ÖRÖKBEFOGADÁSOK ===== */
 .adoptions-section {
   margin-top: 0;
 }
@@ -101,7 +95,7 @@
   margin-bottom: 1.2rem;
 }
 
-/* Message box */
+/* Üzenet doboz */
 #adoptions-msg {
   display: none;
   padding: 0.75rem 1rem;
@@ -120,7 +114,6 @@
   border: 1px solid #f5c6cb;
 }
 
-/* Scrollable table wrapper */
 .adoptions-table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -128,7 +121,7 @@
   border-radius: 8px;
 }
 
-/* Table */
+/* Táblázat */
 .adoptions-table {
   width: 100%;
   min-width: 700px;
@@ -181,7 +174,7 @@
   font-style: italic;
 }
 
-/* Status badges */
+/* Státusz jelvények */
 .badge-statusz {
   display: inline-block;
   padding: 0.28rem 0.7rem;
@@ -196,7 +189,7 @@
 .badge-elfogadva   { background: #d4edda; color: #155724; }
 .badge-elutasitva  { background: #f8d7da; color: #721c24; }
 
-/* Action cell */
+/* Művelet cella */
 .action-cell {
   display: flex;
   flex-wrap: wrap;
@@ -252,7 +245,7 @@
 }
 .btn-delete-adopt:hover { opacity: 0.82; }
 
-/* ===== USERS SECTION ===== */
+/* ===== FELHASZNÁLÓK ===== */
 .user-info-cell {
   display: flex;
   align-items: center;
@@ -334,7 +327,7 @@
   }
 }
 
-/* ===== MOBILE CARD ROWS for adoption/user tables ===== */
+/* ===== MOBIL KÁRTYA SOROK ===== */
 @media (max-width: 600px) {
   .adoptions-table-wrap {
     overflow-x: hidden;
@@ -354,12 +347,12 @@
     display: block;
   }
 
-  /* Reset zebra in card mode */
+  /* Zebra visszaállítás */
   .adoptions-table tbody tr:nth-child(even) {
     background: #fff;
   }
 
-  /* Each row = a card */
+  /* Kártya sor */
   .adoptions-table tbody tr {
     display: block;
     border: 1px solid #e4e8f0;
@@ -370,7 +363,6 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.07);
   }
 
-  /* Data rows: label above, value below */
   .adoptions-table tbody td {
     display: block;
     padding: 5px 0;
@@ -389,7 +381,6 @@
     margin-bottom: 2px;
   }
 
-  /* Action cell: separator + stacked controls */
   .adoptions-table tbody td.action-cell {
     display: block;
     padding-top: 12px;
@@ -401,7 +392,6 @@
     margin-bottom: 10px;
   }
 
-  /* Override desktop flex on action-cell — stack vertically */
   .adoptions-table .action-cell {
     display: block !important;
     min-width: unset;
@@ -435,7 +425,6 @@
     white-space: normal;
   }
 
-  /* User info cell keeps row layout */
   .user-info-cell {
     flex-direction: row;
     flex-wrap: nowrap;
@@ -443,9 +432,8 @@
   }
 }
 
-/* ===== DESIGN POLISH ===== */
+/* ===== DIZÁJN CSISZOLÁS ===== */
 
-/* Section heading improvement */
 .adoptions-card h2,
 .feedback-card h2 {
   font-size: 1.5rem;
@@ -453,22 +441,19 @@
   color: #1a1a2e;
 }
 
-/* Table header gradient improvement */
 .adoptions-table thead {
   background: linear-gradient(135deg, #0057d9, #007bff) !important;
 }
 
-/* Stripe rows */
 .adoptions-table tbody tr:nth-child(even) {
   background: #f8faff;
 }
 
-/* Adoption cards spacing */
 .adoptions-section .feedback-card {
   max-width: 100%;
 }
 
-/* Users message */
+/* Felhasználói üzenet */
 #users-msg {
   display: none;
   padding: 0.75rem 1rem;
@@ -487,7 +472,6 @@
   border: 1px solid #f5c6cb;
 }
 
-/* Buttons consistent look */
 .btn-send-status {
   background: linear-gradient(135deg, #0057d9, #007bff) !important;
   transition: transform 0.15s, opacity 0.2s !important;
@@ -509,7 +493,6 @@
   filter: brightness(1.08);
 }
 
-/* Form submit button */
 #kutyaForm .btn-primary,
 #kutyaForm button[type="submit"] {
   background: linear-gradient(135deg, #0057d9, #007bff);
@@ -527,14 +510,13 @@
   transform: translateY(-1px);
 }
 
-/* Medical data block styling */
 .form-row.border {
   border-radius: 12px !important;
   border-color: #d0e0ff !important;
   background: #f0f6ff !important;
 }
 
-/* File input */
+/* Fájl feltöltő */
 .file-input {
   display: block;
   width: 100%;
@@ -542,7 +524,6 @@
   font-size: 0.92rem;
 }
 
-/* Section gap between admin cards */
 .admin-section + .admin-section {
   padding-top: 0 !important;
 }

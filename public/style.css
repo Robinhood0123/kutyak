@@ -16,12 +16,12 @@ header {
     top: 0;
     right: 0;
     z-index: 1000;
-    background: #ffffff; /* háttérszín */
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* kis árnyék */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 
@@ -32,18 +32,18 @@ nav {
     align-items: center;
     height: 100px;
     width: 100%;
-    background-color: transparent; /* Alapértelmezett háttérszín */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Simább átmenet */
+    background-color: transparent;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     position: fixed;
     top: 0;
     z-index: 1000;
     padding: 0 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0); /* Árnyék alapértelmezésként láthatatlan */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0);
 }
 
 #check:checked ~ nav {
-    background-color: white; /* Fehér háttérszín nyitott menü esetén */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Árnyék hozzáadása */
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -111,8 +111,8 @@ nav ul li a {
         position: fixed;
         width: 100%;
         height: 100vh;
-        background: #f5f5dc; /* Bézs szín */
-        top: 0; /* Lefedi az egész képernyőt */
+        background: #f5f5dc;
+        top: 0;
         left: -100%;
         flex-direction: column;
         align-items: center;
@@ -421,13 +421,11 @@ section{
     color: black;
 }
 
-/* --- Modern Kutyalist Elrendezés --- */
 .kutyak {
-    display: grid !important; /* Kényszerítjük a rács elrendezést */
-    /* Ez mondja meg, hogy a kártyák min. 250px, max 300px szélesek legyenek: */
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
-    gap: 30px; /* Távolság a kártyák között */
-    justify-content: center; /* Középre rendezi a kártyákat */
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    justify-content: center;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
@@ -448,7 +446,7 @@ section{
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    height: 100%; /* Egységes magasság */
+    height: 100%;
 }
 
 .kutya-card:hover {
@@ -457,14 +455,14 @@ section{
 
 .kutya-card-img-wrapper {
     width: 100%;
-    height: 250px; /* Itt állítsd be, milyen magas legyen a kiskép */
+    height: 250px;
     overflow: hidden;
 }
 
 .kutya-card-img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ez vágja méretre a képet torzítás nélkül */
+    object-fit: cover;
     transition: transform 0.5s ease;
 }
 
@@ -472,11 +470,10 @@ section{
     transform: scale(1.1);
 }
 
-/* Kártya szöveges része */
 .kutya-card-body {
     padding: 20px;
     text-align: center;
-    flex-grow: 1; /* Kitölti a maradék helyet */
+    flex-grow: 1;
 }
 
 .kutya-card-body h3 {
@@ -769,7 +766,7 @@ button:hover {
     padding: 60px 20px;
 }
 
-/* --- Feedback form --- */
+/* --- Visszajelzés form --- */
 .visszajelzesek-tamogatas-wrapper {
     display: flex;
     flex-direction: row;
@@ -873,7 +870,6 @@ button:hover {
     transform: none;
   }
 
-/* --- Feedback Toast értesítő --- */
 .feedback-toast {
   position: fixed;
   bottom: 36px;
@@ -922,7 +918,6 @@ button:hover {
   flex-shrink: 0;
 }
 
-/* Örökbefogadási modal stílusok */
 #adoptModal .modal-dialog {
     max-width: 800px;
 }
@@ -1014,7 +1009,6 @@ button:hover {
     border: 1px solid #f5c6cb;
 }
 
-/* Responsive a modalnak */
 @media (max-width: 768px) {
     #adoptModal .modal-dialog {
         margin: 10px;
@@ -1130,7 +1124,7 @@ button:hover {
     min-width: 0;
 }
 
-/* Responsive design */
+/* Reszponzív design */
 @media(max-width:1024px) {
     .kutyak-container {
         flex-direction: column;
@@ -1166,7 +1160,6 @@ button:hover {
     }
 }
 
-/* Az inputok és select-ek egységesítése */
 #kutyaForm input, 
 #kutyaForm select {
     width: 100%;
@@ -1185,7 +1178,6 @@ button:hover {
     outline: none;
 }
 
-/* Fájlfeltöltő mező díszítése */
 .file-label {
     display: block;
     margin-bottom: 5px;
@@ -1200,12 +1192,10 @@ button:hover {
     background: transparent !important;
 }
 
-/* Bootstrap sorok finomítása az admin formon belül */
 .form-row {
     margin-bottom: 0;
 }
 
-/* Mentés gomb kiemelése */
 #kutyaForm .btn-primary {
     margin-top: 20px;
     background-color: #007bff;
@@ -1224,7 +1214,7 @@ button:hover {
     width: 100%;
     height: 100%;
     min-height: 350px;
-    object-fit: cover; /* Kitölti a helyet, nem torzul */
+    object-fit: cover;
     border-radius: 15px;
 }
 
@@ -1244,10 +1234,9 @@ button:hover {
     font-size: 0.95rem;
     line-height: 1.6;
     max-height: 150px;
-    overflow-y: auto; /* Ha hosszú a leírás, görgethető lesz */
+    overflow-y: auto;
 }
 
-/* Szögletes gomb a modalba is, ha azt szereted */
 .modern-modal .btn-primary {
     border-radius: 0px; 
     padding: 12px;
@@ -1341,17 +1330,14 @@ nav ul, .navbar-nav {
     border-color: #007bff;
 }
 
-/* Ha nincs belépve, a kurzor ne legyen mutatóujj, csak egy tiltó jel */
 .not-logged-in .kutya-card {
     cursor: not-allowed;
 }
 
-/* Egy kis extra: ha nincs belépve, a részletek gomb legyen szürke */
 .not-logged-in .btn-reszletek-custom {
     background-color: #ccc;
 }
 
-/* Figyelmeztető sáv a lista felett */
 .login-warning-bar {
     background-color: #ffffff;
     color: black;
@@ -1383,7 +1369,6 @@ nav ul, .navbar-nav {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
 }
-/* Kék gomb stílusa a felugró ablakban */
 .btn-game-primary {
     background-color: #007bff;
     box-shadow: 0 5px 0 #007bff;
@@ -1406,9 +1391,8 @@ nav ul, .navbar-nav {
 }
 
 .scrolled nav {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Árnyék görgetéskor */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-/* Háttér elmosás mobilon a főoldalon */
 @media (max-width: 800px) {
     .main-text h5, .main-text h1 {
         display: table; 
@@ -1457,12 +1441,9 @@ nav ul, .navbar-nav {
 .text-success { color: #28a745; }
 .text-danger { color: #dc3545; }
 
-/* ================================================================
-   PROFILOM OLDAL (profil.html)
-   ================================================================ */
 body.profil-page { padding-top: 100px !important; }
 
-/* Layout */
+/* Elrendezés */
 .profile-main { background: #ffffff; padding: 0 20px 70px; min-height: 60vh; }
 .profile-grid {
     max-width: 1100px; margin: 0 auto;
@@ -1470,7 +1451,7 @@ body.profil-page { padding-top: 100px !important; }
 }
 @media (max-width: 800px) { .profile-grid { grid-template-columns: 1fr; } }
 
-/* Profile card */
+/* Profil kártya */
 .profile-card { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.09); overflow: hidden; }
 .pc-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1498,7 +1479,7 @@ body.profil-page { padding-top: 100px !important; }
 .role-dolgozo     { background: #dbeafe; color: #1d4ed8; }
 .role-felhasznalo { background: #d1fae5; color: #065f46; }
 
-/* Form */
+/* Űrlap */
 .pc-body { padding: 24px; }
 .pf-group { margin-bottom: 16px; }
 .pf-group label {
@@ -1534,7 +1515,7 @@ body.profil-page { padding-top: 100px !important; }
 }
 .btn-logout:hover { background: #dc3545; color: white; }
 
-/* Adoptions */
+/* Örökbefogadások */
 .adoptions-col { display: flex; flex-direction: column; gap: 20px; }
 #adoptionsList { display: flex; flex-direction: column; gap: 20px; }
 .adopt-header { display: flex; align-items: center; justify-content: space-between; }
@@ -1567,7 +1548,7 @@ body.profil-page { padding-top: 100px !important; }
 .s-elfogadva   { background: #d1fae5; color: #065f46; }
 .s-elutasitva  { background: #fee2e2; color: #dc2626; }
 
-/* Progress bar */
+/* Folyamatjelző */
 .adopt-progress { display: flex; align-items: flex-start; margin: 14px 0 10px; }
 .prog-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
 .prog-dot {
@@ -1598,7 +1579,7 @@ body.profil-page { padding-top: 100px !important; }
 }
 .adopt-cancel-btn:hover { background: #e53e3e; color: #fff; }
 
-/* State boxes */
+/* Állapot dobozok */
 .state-box {
     background: white; border-radius: 14px; padding: 60px 24px;
     text-align: center; box-shadow: 0 2px 14px rgba(0,0,0,0.07);
@@ -1614,7 +1595,7 @@ body.profil-page { padding-top: 100px !important; }
 }
 .state-box a:hover { opacity: 0.9; color: white; }
 
-/* Skeleton */
+/* Váz */
 .skeleton { background: #e2e8f0; border-radius: 6px; animation: skpulse 1.5s infinite; }
 @keyframes skpulse { 0%,100%{opacity:1} 50%{opacity:.45} }
 
@@ -1623,7 +1604,7 @@ body.profil-page { padding-top: 100px !important; }
     .adopt-card-img { width: 100%; height: 160px; }
 }
 
-/* Page header */
+/* Oldal fejléce */
 .page-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 36px 20px;
@@ -1636,9 +1617,6 @@ body.profil-page { padding-top: 100px !important; }
 .page-header h1 { color: white; font-size: 28px; font-weight: 800; margin: 0 0 4px; }
 .page-header p  { color: #ffffff; font-size: 14px; margin: 0; }
 
-/* ================================================================
-   FELTÉTELEK OLDAL (feltetelek.html)
-   ================================================================ */
 .back-bar { background: white; padding: 14px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; }
 .back-btn { display: inline-flex; align-items: center; gap: 8px; color: #667eea; font-weight: 700; font-size: 14px; text-decoration: none; transition: color 0.2s; }
 .back-btn:hover { color: #764ba2; text-decoration: none; }
@@ -1646,7 +1624,7 @@ body.profil-page { padding-top: 100px !important; }
 .content-wrapper {
     max-width: 860px;
     margin: 0 auto;
-    padding: 20px 20px 60px; /* feljebb húzva a navbarhoz közelebb */
+    padding: 20px 20px 60px;
 }
 
 .quick-summary {

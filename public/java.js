@@ -1,12 +1,10 @@
-// --- Törölt fiók + lejárt session detektálása ---
-async function checkAccountExists() {
+﻿async function checkAccountExists() {
   const raw = localStorage.getItem('loggedInUser');
   if (!raw) return;
   let user;
   try { user = JSON.parse(raw); } catch (e) { return; }
   if (!user || !user.id) return;
   try {
-    // 2. Ellenőrizzük, hogy a fiók még létezik-e
     const res = await fetch(`/api/check-user/${user.id}`);
     if (!res.ok) return;
     const data = await res.json();
@@ -17,16 +15,15 @@ async function checkAccountExists() {
   } catch (e) { /* szerver nem elérhető */ }
 }
 
-// --- Fejléc színváltás görgetésre ---
 window.onscroll = function() {scrollFunction()};
 
 function scrollFunction() {
   const nav = document.querySelector("nav");
   if (nav) {
     if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-      nav.style.backgroundColor = "#FFFFFF"; // Látható háttérszín görgetéskor
+      nav.style.backgroundColor = "#FFFFFF";
     } else {
-      nav.style.backgroundColor = "transparent"; // Átlátszó háttérszín az oldal tetején
+      nav.style.backgroundColor = "transparent";
     }
   }
 }
@@ -42,26 +39,21 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// --- Kutyák betöltése (MODERN, LAPOZHATÓ ÉS BIZTONSÁGOS VERZIÓ) ---
 let osszesKutya = []; 
-let szurtKutyak = []; // Szűrt kutyák tárolása
+let szurtKutyak = [];
 let jelenlegiOldal = 1;
 const kutyakPerOldal = 9;
-// A szerver elérhetősége a képekhez
 const serverUrl = "https://unantagonized-delisa-oneiric.ngrok-free.dev";
 
-// Azonnal futtatjuk, miután a serverUrl már definiált
 checkAccountExists();
 
 window.addEventListener('DOMContentLoaded', () => {
     const lista = document.getElementById('kutyaLista');
     const bejelentkezve = localStorage.getItem('loggedInUser');
 
-    // Ha nincs belépve, vizuális jelzést adunk (opcionális CSS-hez)
     if (lista && !bejelentkezve) {
       lista.classList.add('not-logged-in');
       
-      // Beszúrunk egy figyelmeztető üzenetet a lista elé
       const infoSáv = document.createElement('div');
       infoSáv.className = 'login-warning-bar';
       infoSáv.innerHTML = '<i class="fas fa-info-circle"></i> A kutyusok részletes adatainak megtekintéséhez kérjük, <a href="bejelentkezes.html">jelentkezz be</a>!';
@@ -69,17 +61,15 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
     if (lista) {
-        // ngrok-skip-browser-warning hozzáadva a zavartalan betöltéshez
         fetch(`${serverUrl}/kutyak`, {
             headers: { 'ngrok-skip-browser-warning': 'true' }
         })
             .then(res => res.json())
             .then(data => {
                 osszesKutya = data;
-                szurtKutyak = [...data]; // Kezdetben a szűrt lista megegyezik az eredetivel
-                betoltFajtak(); // Fajták betöltése a szűrőbe
+                szurtKutyak = [...data];
+                betoltFajtak();
                 megjelenitOldalt(1); 
-                // Szűrő eseménykezelők beállítása
                 beallitSzuroEsemenykezeloket();
             })
             .catch(() => {
@@ -88,7 +78,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- Fajták betöltése a szűrőbe ---
 function betoltFajtak() {
     const fajtak = [...new Set(osszesKutya.map(kutya => kutya.fajta))].sort();
     const fajtaFilter = document.getElementById('fajtaFilter');
@@ -103,7 +92,6 @@ function betoltFajtak() {
     }
 }
 
-// --- Szűrő eseménykezelők beállítása ---
 function beallitSzuroEsemenykezeloket() {
     const filterBtn = document.getElementById('filterBtn');
     const resetFilterBtn = document.getElementById('resetFilterBtn');
@@ -116,7 +104,6 @@ function beallitSzuroEsemenykezeloket() {
         resetFilterBtn.addEventListener('click', szuroReset);
     }
     
-    // Enter billentyű a kereső mezőben
     const kereso = document.getElementById('kereso');
     if (kereso) {
         kereso.addEventListener('keypress', (e) => {
@@ -164,7 +151,6 @@ function szures() {
             }
         }
         
-        // Név szerinti keresés
         if (kereso && kutya.nev.toLowerCase().indexOf(kereso) === -1) {
             return false;
         }
@@ -172,7 +158,7 @@ function szures() {
         return true;
     });
     
-    jelenlegiOldal = 1; // Vissza az első oldalra
+    jelenlegiOldal = 1;
     megjelenitOldalt(1);
     
     // Státusz üzenet
@@ -220,14 +206,11 @@ function megjelenitOldalt(oldal) {
         let kepUrl = `${serverUrl}/img/1770806719489-image.jpg`; 
 
         if (kutya.kep_url) {
-            // Ha véletlenül benne maradt a localhost, azt vágjuk le
             let tisztaUt = kutya.kep_url.replace('http://localhost:3000', '');
             
             if (tisztaUt.startsWith('http')) {
-                // Ha valódi külső link (pl. egy másik weboldalról)
                 kepUrl = tisztaUt;
             } else {
-                // Ha relatív út, akkor rakjuk elé az ngrok szerverünket
                 if (!tisztaUt.startsWith('/')) tisztaUt = '/' + tisztaUt;
                 kepUrl = `${serverUrl}${tisztaUt}`;
             }
@@ -279,20 +262,16 @@ function megjelenitOldalt(oldal) {
     frissitPagination(osszesOldalSzama);
 }
 
-// --- Kutya modal megnyitása ---
 function megnyitKutyaModalt(kutya) {
 
     let kepUrl = `${serverUrl}/img/1770806719489-image.jpg`; 
 
     if (kutya.kep_url) {
-        // Ha véletlenül benne maradt a localhost, azt vágjuk le
         let tisztaUt = kutya.kep_url.replace('http://localhost:3000', '');
         
         if (tisztaUt.startsWith('http')) {
-            // Ha valódi külső link (pl. egy másik weboldalról)
             kepUrl = tisztaUt;
         } else {
-            // Ha relatív út, akkor rakjuk elé az ngrok szerverünket
             if (!tisztaUt.startsWith('/')) tisztaUt = '/' + tisztaUt;
             kepUrl = `${serverUrl}${tisztaUt}`;
         }
@@ -404,7 +383,6 @@ function validateForm() {
   });
 }
 
-// --- Kutya hozzáadás Form ---
 const kutyaForm = document.getElementById('kutyaForm');
 if (kutyaForm) {
     const újForm = kutyaForm.cloneNode(true);
@@ -518,7 +496,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// --- Profil és Navigáció kezelése ---
 document.addEventListener('DOMContentLoaded', () => {
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
   const loginNavItem = document.getElementById('loginNavItem');
@@ -535,7 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutBtnModal = document.getElementById('logoutBtnModal');
   const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-  // --- JAVÍTOTT Profil és Navigáció kezelése ---
 if (user) {
     if (loginNavItem) loginNavItem.style.display = 'none';
     if (profileNavItem) profileNavItem.style.display = 'inline-block';
@@ -543,11 +519,10 @@ if (user) {
         if (user.szerepkor === 'admin') {
             adminNavItem.style.display = 'inline-block';
         } else {
-            adminNavItem.style.display = 'none'; // Ha nem admin, kényszerítve elrejtjük
+            adminNavItem.style.display = 'none';
         }
     }
 
-    // A változó neve legyen következetesen kepUrl
     let kepUrl = `${serverUrl}/img/profilok/blank-profile-picture-973460_640.webp`; 
 
     if (user.kep) {
@@ -559,7 +534,6 @@ if (user) {
         }
     }
         
-    // Most már a létező kepUrl változót használjuk
     if (navIcon) navIcon.src = kepUrl;
 
     if (navIcon) {
@@ -643,7 +617,7 @@ if (user) {
 });
 
 
-// --- Feedback Form ---
+// --- Visszajelzés Form ---
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('feedbackForm');
   if (form) {
@@ -785,7 +759,7 @@ $(document).ready(function() {
     });
 });
 
-// --- Toggle Password Visibility ---
+// --- Jelszó megjelenítő ---
 function togglePassword(inputId, icon) {
     const isRegPage = document.getElementById('jelszo') && document.getElementById('jelszo2');
 
@@ -816,7 +790,6 @@ function togglePassword(inputId, icon) {
     }
 }
 
-// --- Jelszó megjelenítő ikon csak gépelés közben ---
 document.addEventListener('DOMContentLoaded', () => {
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     passwordInputs.forEach(input => {
@@ -834,7 +807,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // PROFILOM OLDAL (profil.html)
 // ================================================================
 
-// togglePass globális kell, mert onclick="togglePass()" hívja
 function togglePass() {
     var inp = document.getElementById('editPassword');
     if (!inp) return;

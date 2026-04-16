@@ -102,7 +102,6 @@ function drawBackground() {
     ctx.fillStyle = '#bae6fd'; // Világoskék
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Sávhatárolók (fehér szaggatott)
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2;
     ctx.setLineDash([10, 15]);
@@ -160,7 +159,6 @@ function gameLoop() {
     drawItems();
     drawPlayer();
 
-    // Színes pontszám a játékon belül
     ctx.fillStyle = '#c2410c'; // Narancsos-barna
     ctx.font = 'bold 22px sans-serif';
     ctx.textAlign = 'left';
@@ -176,15 +174,11 @@ window.addEventListener('scroll', () => {
 
     const gameBtn = document.getElementById('game-button');
 
-    // Ha több mint 100 pixelt görgetett lefelé, elrejtjük
-
     if (window.scrollY > 100) {
 
         gameBtn.classList.add('btn-hidden');
 
     } else {
-
-        // Ha visszaugrik a tetejére, újra megjelenik
 
         gameBtn.classList.remove('btn-hidden');
 

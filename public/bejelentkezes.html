@@ -31,7 +31,6 @@
               <li><a href="index.html#elerheto">Elérhetőségek</a></li>
               <li id="adminNavItem" style="display: none;"><a href="admin.html" class="admin-nav-btn">Feltöltés</a></li>
           
-              <!-- Bejelentkezés gomb, ami eltűnik ha bejelentkezve -->
               <li id="loginNavItem"><a href="bejelentkezes.html">Bejelentkezés</a></li>
               <li id="profileNavItem" style="display:none; vertical-align: middle;">
                 <img id="profileIcon" src="img/profilok/blank-profile-picture-973460_640.webp" style="width:50px; height:50px; border-radius:50%; cursor:pointer;border: 2px solid #f0f0f0; object-fit: cover; margin-left: 15px;">
@@ -41,7 +40,6 @@
         </nav>
     </header>
 
-    <!-- ELFELEJTETT JELSZÓ MODAL -->
     <div id="forgotModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.15); padding:40px 36px; max-width:460px; width:90%; position:relative; font-family:'Jost',sans-serif;">
             
@@ -55,7 +53,7 @@
                 <p style="color:#718096; font-size:14px; margin:0; line-height:1.6;">Add meg a regisztrációhoz használt email címedet,<br>és kiküldünk egy visszaállító linket!</p>
             </div>
 
-            <!-- Form -->
+            <!-- Űrlap -->
             <form id="forgotForm" onsubmit="sendForgotPassword(event)">
                 <input 
                     type="email" 
@@ -78,7 +76,6 @@
                 </button>
             </form>
 
-            <!-- Siker üzenet (alapból rejtett) -->
             <div id="forgotSuccess" style="display:none; text-align:center; padding:10px 0;">
                 <div style="font-size:48px; margin-bottom:12px;">📬</div>
                 <h4 style="color:#1a202c; font-weight:700; font-size:18px; margin:0 0 10px;">Email elküldve!</h4>
