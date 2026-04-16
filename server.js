@@ -19,9 +19,9 @@ app.use(cors({
 app.use(session({
   secret: 'nemtudommitkellideirni',
   resave: false,
-  saveUninitialized: false, // Ezt állítsd false-ra
+  saveUninitialized: false,
   cookie: { 
-      secure: false, // Fejlesztés alatt, HTTP-n maradjon false
+      secure: false,
       httpOnly: true,
       sameSite: 'lax'
   }
