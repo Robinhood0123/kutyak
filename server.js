@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 app.use(session({
-  secret: 'nemtudommitkellideirni',
+  secret: '1234567890abcdef',
   resave: false,
   saveUninitialized: false,
   cookie: { 
