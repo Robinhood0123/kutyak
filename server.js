@@ -70,7 +70,7 @@ const db = mysql.createConnection({
   user: 'root',
   password: '',
   database: 'menhely',
-  port: 3307
+  port: 3306
 });
 db.connect(err => {
   if (err) console.error('MySQL kapcsolódási hiba:', err);
